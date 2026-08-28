@@ -1,17 +1,22 @@
 import type { HomePayload } from "./types";
 
-function getApiUrl() {
-  // Prefer internal URL for SSR inside Docker network.
-  const internal = process.env.INTERNAL_API_URL?.replace(/\/$/, "");
-  if (internal) return internal;
+function getServerApiUrl() {
+  return (
+    process.env.INTERNAL_API_URL?.replace(/\/$/, "") ||
+    "http://127.0.0.1:8000/api"
+  );
+}
+
+function getClientApiUrl() {
+  // Same-origin `/api` works with Next rewrites + ngrok demo.
   return (
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-    "http://localhost:8000/api"
+    "/api"
   );
 }
 
 export async function fetchHome(): Promise<HomePayload> {
-  const res = await fetch(`${getApiUrl()}/home/`, {
+  const res = await fetch(`${getServerApiUrl()}/home/`, {
     // Always get fresh CMS content (gallery, video, SEO) during local/dev.
     cache: "no-store",
   });
@@ -31,10 +36,7 @@ export async function submitLead(payload: {
   email: string;
   telegram: string;
 }) {
-  const clientApi =
-    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-    "http://localhost:8000/api";
-  const res = await fetch(`${clientApi}/leads/`, {
+  const res = await fetch(`${getClientApiUrl()}/leads/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -48,6 +50,4 @@ export async function submitLead(payload: {
   return res.json();
 }
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:8000/api";
+export const API_URL = getClientApiUrl();

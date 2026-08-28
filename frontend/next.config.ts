@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Keep trailing slashes for Django APPEND_SLASH via /api/[...path] proxy.
+  skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
       {

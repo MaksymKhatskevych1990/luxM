@@ -184,7 +184,8 @@ ensure_frontend() {
   fi
   if [[ ! -f .env.local ]]; then
     cat > .env.local <<EOF
-NEXT_PUBLIC_API_URL=http://localhost:${BACKEND_PORT}/api
+NEXT_PUBLIC_API_URL=/api
+INTERNAL_API_URL=http://127.0.0.1:${BACKEND_PORT}/api
 NEXT_PUBLIC_SITE_URL=http://localhost:${FRONTEND_PORT}
 EOF
     ok "Created frontend/.env.local"
