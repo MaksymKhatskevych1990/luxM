@@ -121,7 +121,18 @@ class SiteSettings(TimeStampedModel):
     )
     email = models.EmailField(default="studio@forma.ua", verbose_name="Email")
     telegram = models.CharField(
-        max_length=120, default="@forma_studio", verbose_name="Telegram"
+        max_length=120,
+        blank=True,
+        default="@forma_studio",
+        verbose_name="Telegram (відображення)",
+        help_text="Наприклад @forma_studio — показується в блоці контактів.",
+    )
+    whatsapp = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        verbose_name="WhatsApp (відображення)",
+        help_text="Номер для показу на сайті, наприклад +38 (050) 123 45 67.",
     )
     address = models.CharField(
         max_length=255,
@@ -129,10 +140,52 @@ class SiteSettings(TimeStampedModel):
         verbose_name="Адреса",
     )
     instagram_url = models.URLField(
-        blank=True, default="https://instagram.com/", verbose_name="Instagram"
+        blank=True,
+        default="https://instagram.com/",
+        verbose_name="Instagram URL",
+        help_text="Повне посилання, наприклад https://instagram.com/forma_studio",
     )
     telegram_url = models.URLField(
-        blank=True, default="https://t.me/", verbose_name="Посилання Telegram"
+        blank=True,
+        default="https://t.me/",
+        verbose_name="Telegram URL",
+        help_text="Повне посилання, наприклад https://t.me/forma_studio",
+    )
+    whatsapp_url = models.URLField(
+        blank=True,
+        default="",
+        verbose_name="WhatsApp URL",
+        help_text="Необов'язково. Якщо порожньо — збереться з номера (wa.me).",
+    )
+
+    # Bot credentials stay in admin only — never exposed via public API.
+    telegram_notify_enabled = models.BooleanField(
+        default=False,
+        verbose_name="Надсилати заявки в Telegram",
+        help_text=(
+            "Увімкніть після заповнення токена і Chat ID. "
+            "Заявки завжди зберігаються на сайті; при увімкненні — ще й у Telegram."
+        ),
+    )
+    telegram_bot_token = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Telegram Bot Token",
+        help_text=(
+            "Отримайте в @BotFather командою /newbot. "
+            "Формат: 123456789:AA.... Не публікується на сайті."
+        ),
+    )
+    telegram_notify_chat_id = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        verbose_name="Telegram Chat ID",
+        help_text=(
+            "ID особистого чату (число) або групи (часто з «-», наприклад -100…). "
+            "Дізнатися можна через @userinfobot / @getidsbot або getUpdates."
+        ),
     )
 
     seo_title = models.CharField(
@@ -382,6 +435,12 @@ class SiteSettings(TimeStampedModel):
     contact_label_telegram = models.CharField(
         max_length=80, default="Telegram", verbose_name="Мітка Telegram"
     )
+    contact_label_whatsapp = models.CharField(
+        max_length=80, default="WhatsApp", verbose_name="Мітка WhatsApp"
+    )
+    contact_label_instagram = models.CharField(
+        max_length=80, default="Instagram", verbose_name="Мітка Instagram"
+    )
 
     footer_services_heading = models.CharField(
         max_length=80, default="Послуги", verbose_name="Заголовок послуг у футері"
@@ -413,6 +472,28 @@ class SiteSettings(TimeStampedModel):
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(*args, **kwargs)
+
+    @staticmethod
+    def digits_only(value: str) -> str:
+        return "".join(ch for ch in (value or "") if ch.isdigit())
+
+    @property
+    def resolved_whatsapp_url(self) -> str:
+        if self.whatsapp_url:
+            return self.whatsapp_url
+        digits = self.digits_only(self.whatsapp or self.phone)
+        if digits:
+            return f"https://wa.me/{digits}"
+        return ""
+
+    @property
+    def resolved_telegram_url(self) -> str:
+        if self.telegram_url:
+            return self.telegram_url
+        handle = (self.telegram or "").strip().lstrip("@")
+        if handle:
+            return f"https://t.me/{handle}"
+        return ""
 
     @classmethod
     def load(cls):

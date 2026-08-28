@@ -7,10 +7,21 @@ type FooterProps = {
   navigation: NavItem[];
 };
 
-function FooterLink({ href, children }: { href: string; children: ReactNode }) {
+function FooterLink({
+  href,
+  children,
+  external = false,
+}: {
+  href: string;
+  children: ReactNode;
+  external?: boolean;
+}) {
   return (
     <a
       href={href}
+      {...(external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
       style={{
         display: "block",
         fontFamily: "var(--f-sans)",
@@ -30,6 +41,21 @@ export default function Footer({ settings, navigation }: FooterProps) {
   const year = new Date().getFullYear();
   const services = navByLocation(navigation, "footer_services");
   const studio = navByLocation(navigation, "footer_studio");
+
+  const socials = [
+    {
+      label: settings.contact_label_instagram || "Instagram",
+      href: settings.instagram_url,
+    },
+    {
+      label: settings.contact_label_telegram || "Telegram",
+      href: settings.telegram_url,
+    },
+    {
+      label: settings.contact_label_whatsapp || "WhatsApp",
+      href: settings.whatsapp_url,
+    },
+  ].filter((item) => Boolean(item.href));
 
   return (
     <footer style={{ background: "#171613", padding: "56px 0 36px" }}>
@@ -103,16 +129,19 @@ export default function Footer({ settings, navigation }: FooterProps) {
               <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
                 {settings.footer_contacts_heading}
               </div>
-              <FooterLink href={`mailto:${settings.email}`}>{settings.email}</FooterLink>
-              <FooterLink href={`tel:${settings.phone.replace(/\s/g, "")}`}>
-                {settings.phone}
-              </FooterLink>
-              {settings.instagram_url ? (
-                <FooterLink href={settings.instagram_url}>Instagram</FooterLink>
+              {settings.email ? (
+                <FooterLink href={`mailto:${settings.email}`}>{settings.email}</FooterLink>
               ) : null}
-              {settings.telegram_url ? (
-                <FooterLink href={settings.telegram_url}>Telegram</FooterLink>
+              {settings.phone ? (
+                <FooterLink href={`tel:${settings.phone.replace(/\s/g, "")}`}>
+                  {settings.phone}
+                </FooterLink>
               ) : null}
+              {socials.map((item) => (
+                <FooterLink key={item.label} href={item.href} external>
+                  {item.label}
+                </FooterLink>
+              ))}
             </div>
           </div>
         </div>

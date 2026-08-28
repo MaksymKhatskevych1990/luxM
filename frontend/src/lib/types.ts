@@ -26,9 +26,11 @@ export type SiteSettings = {
   phone: string;
   email: string;
   telegram: string;
+  whatsapp: string;
   address: string;
   instagram_url: string;
   telegram_url: string;
+  whatsapp_url: string;
 
   seo_title: string;
   seo_description: string;
@@ -97,6 +99,8 @@ export type SiteSettings = {
   contact_label_phone: string;
   contact_label_email: string;
   contact_label_telegram: string;
+  contact_label_whatsapp: string;
+  contact_label_instagram: string;
 
   footer_services_heading: string;
   footer_studio_heading: string;

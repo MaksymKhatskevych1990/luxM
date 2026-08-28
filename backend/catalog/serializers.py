@@ -18,9 +18,25 @@ from .models import (
 
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
+    whatsapp_url = serializers.SerializerMethodField()
+    telegram_url = serializers.SerializerMethodField()
+
     class Meta:
         model = SiteSettings
-        exclude = ("created_at", "updated_at")
+        exclude = (
+            "created_at",
+            "updated_at",
+            # Never expose bot secrets to the public API.
+            "telegram_bot_token",
+            "telegram_notify_chat_id",
+            "telegram_notify_enabled",
+        )
+
+    def get_whatsapp_url(self, obj: SiteSettings) -> str:
+        return obj.resolved_whatsapp_url
+
+    def get_telegram_url(self, obj: SiteSettings) -> str:
+        return obj.resolved_telegram_url
 
 
 class HeroStatSerializer(serializers.ModelSerializer):

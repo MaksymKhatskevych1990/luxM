@@ -163,9 +163,13 @@ class Command(BaseCommand):
         settings.phone = "+38 (044) 555 12 34"
         settings.email = "studio@forma.ua"
         settings.telegram = "@forma_studio"
+        settings.whatsapp = "+38 (050) 555 12 34"
         settings.address = "Київ · Стара Дарниця, вул. Промислова 14"
-        settings.instagram_url = "https://instagram.com/"
-        settings.telegram_url = "https://t.me/"
+        settings.instagram_url = "https://instagram.com/forma_studio"
+        settings.telegram_url = "https://t.me/forma_studio"
+        settings.whatsapp_url = ""
+        settings.contact_label_whatsapp = "WhatsApp"
+        settings.contact_label_instagram = "Instagram"
 
         settings.seo_title = "Форма Studio — меблі на замовлення в Києві"
         settings.seo_description = (

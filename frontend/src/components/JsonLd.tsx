@@ -26,7 +26,11 @@ export default function JsonLd({ settings }: JsonLdProps) {
       "@type": "City",
       name: settings.jsonld_city,
     },
-    sameAs: [settings.instagram_url, settings.telegram_url].filter(Boolean),
+    sameAs: [
+      settings.instagram_url,
+      settings.telegram_url,
+      settings.whatsapp_url,
+    ].filter(Boolean),
     ...(settings.og_image_url ? { image: settings.og_image_url } : {}),
   };
 

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from .models import (
     CraftDetail,
@@ -78,11 +79,96 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "fields": (
                     "phone",
                     "email",
-                    "telegram",
                     "address",
+                    "telegram",
+                    "whatsapp",
+                )
+            },
+        ),
+        (
+            "Соцмережі",
+            {
+                "description": (
+                    "Посилання для футера та блоку контактів. "
+                    "Якщо WhatsApp URL порожній — збереться з номера (wa.me)."
+                ),
+                "fields": (
                     "instagram_url",
                     "telegram_url",
-                )
+                    "whatsapp_url",
+                ),
+            },
+        ),
+        (
+            "Telegram-сповіщення заявок",
+            {
+                "description": mark_safe(
+                    """
+                    <div style="line-height:1.55;max-width:820px">
+                      <p style="margin:0 0 10px">
+                        <strong>Заявки з форми завжди зберігаються</strong> у розділі
+                        «Заявки». Нижче — як дублювати їх у Telegram.
+                      </p>
+                      <ol style="margin:0 0 10px;padding-left:1.3em">
+                        <li>
+                          Відкрийте Telegram і знайдіть бота
+                          <strong>@BotFather</strong>.
+                        </li>
+                        <li>
+                          Надішліть команду <code>/newbot</code>, задайте ім’я та username бота
+                          (має закінчуватися на <code>bot</code>).
+                        </li>
+                        <li>
+                          Скопіюйте <strong>токен</strong> (вигляд:
+                          <code>123456789:AA...</code>) і вставте в поле
+                          <em>Telegram Bot Token</em>.
+                        </li>
+                        <li>
+                          Напишіть своєму новому боту будь-яке повідомлення
+                          (наприклад <code>старт</code>), щоб чат активувався.
+                          Для групи: додайте бота в групу і зробіть його адміністратором
+                          (щоб міг надсилати повідомлення).
+                        </li>
+                        <li>
+                          Дізнайтесь <strong>Chat ID</strong>:
+                          <ul style="margin:6px 0 0;padding-left:1.2em">
+                            <li>
+                              особистий чат — напишіть боту
+                              <strong>@userinfobot</strong> або
+                              <strong>@getidsbot</strong>, скопіюйте ваш Id;
+                            </li>
+                            <li>
+                              група — додайте <strong>@getidsbot</strong> у групу
+                              або відкрийте в браузері
+                              <code>https://api.telegram.org/bot&lt;ТОКЕН&gt;/getUpdates</code>
+                              після повідомлення в групі і знайдіть
+                              <code>"chat":{"id":-100...}</code>
+                              (для груп ID часто від’ємний).
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          Вставте Chat ID у поле <em>Telegram Chat ID</em>,
+                          увімкніть <em>Надсилати заявки в Telegram</em> і збережіть.
+                        </li>
+                        <li>
+                          Перевірте: надішліть тестову заявку з сайту —
+                          повідомлення має прийти в Telegram, а копія з’явиться в «Заявки».
+                        </li>
+                      </ol>
+                      <p style="margin:0;color:#666">
+                        Токен і Chat ID <strong>не публікуються</strong> на сайті
+                        і не віддаються через API. Якщо сповіщення вимкнено або поля
+                        порожні — заявки все одно зберігаються лише в адмінці.
+                      </p>
+                    </div>
+                    """
+                ),
+                "fields": (
+                    "telegram_notify_enabled",
+                    "telegram_bot_token",
+                    "telegram_notify_chat_id",
+                ),
             },
         ),
         (
@@ -188,6 +274,8 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                     "contact_label_phone",
                     "contact_label_email",
                     "contact_label_telegram",
+                    "contact_label_whatsapp",
+                    "contact_label_instagram",
                 )
             },
         ),

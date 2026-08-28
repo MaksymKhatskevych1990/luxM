@@ -52,22 +52,44 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
 
   const rows = [
     { label: settings.contact_label_address, value: settings.address },
-    {
-      label: settings.contact_label_phone,
-      value: settings.phone,
-      href: `tel:${settings.phone.replace(/\s/g, "")}`,
-    },
-    {
-      label: settings.contact_label_email,
-      value: settings.email,
-      href: `mailto:${settings.email}`,
-    },
-    {
-      label: settings.contact_label_telegram,
-      value: settings.telegram,
-      href: settings.telegram_url,
-    },
-  ];
+    settings.phone
+      ? {
+          label: settings.contact_label_phone,
+          value: settings.phone,
+          href: `tel:${settings.phone.replace(/\s/g, "")}`,
+        }
+      : null,
+    settings.email
+      ? {
+          label: settings.contact_label_email,
+          value: settings.email,
+          href: `mailto:${settings.email}`,
+        }
+      : null,
+    settings.telegram || settings.telegram_url
+      ? {
+          label: settings.contact_label_telegram,
+          value: settings.telegram || settings.contact_label_telegram,
+          href: settings.telegram_url || undefined,
+        }
+      : null,
+    settings.whatsapp || settings.whatsapp_url
+      ? {
+          label: settings.contact_label_whatsapp,
+          value: settings.whatsapp || settings.contact_label_whatsapp,
+          href: settings.whatsapp_url || undefined,
+        }
+      : null,
+    settings.instagram_url
+      ? {
+          label: settings.contact_label_instagram,
+          value: settings.contact_label_instagram,
+          href: settings.instagram_url,
+        }
+      : null,
+  ].filter((row): row is { label: string; value: string; href?: string } =>
+    Boolean(row && row.value)
+  );
 
   return (
     <section
@@ -124,6 +146,9 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                   {row.href ? (
                     <a
                       href={row.href}
+                      {...(row.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
                       style={{
                         fontFamily: "var(--f-sans)",
                         fontSize: "0.9375rem",
