@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import type { ProcessStep } from "@/lib/types";
+import type { PageSection, ProcessStep } from "@/lib/types";
 
 type ProcessProps = {
+  section: PageSection;
   steps: ProcessStep[];
 };
 
@@ -12,7 +13,7 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function Process({ steps }: ProcessProps) {
+export default function Process({ section, steps }: ProcessProps) {
   const items = [...steps].sort((a, b) => a.order - b.order);
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
@@ -42,13 +43,13 @@ export default function Process({ steps }: ProcessProps) {
   return (
     <section
       ref={sectionRef}
-      id="процес"
+      id={section.section_id || undefined}
       className="section-pad"
       style={{ background: "var(--c-parchment)" }}
     >
       <div className="wrap">
         <div style={{ marginBottom: 64 }}>
-          <span className="label">Процес</span>
+          {section.eyebrow ? <span className="label">{section.eyebrow}</span> : null}
           <h2
             className="font-serif"
             style={{
@@ -57,8 +58,27 @@ export default function Process({ steps }: ProcessProps) {
               margin: "14px 0 0",
             }}
           >
-            Як це відбувається
+            {section.title}
+            {section.title_emphasis ? (
+              <>
+                {" "}
+                <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+              </>
+            ) : null}
           </h2>
+          {section.subtitle ? (
+            <p
+              style={{
+                fontFamily: "var(--f-sans)",
+                fontSize: "1rem",
+                color: "var(--c-stone)",
+                margin: "12px 0 0",
+                maxWidth: 520,
+              }}
+            >
+              {section.subtitle}
+            </p>
+          ) : null}
         </div>
 
         <div className="process-split" style={{ gap: 80 }}>

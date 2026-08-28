@@ -2,21 +2,21 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import type { PageSection, SiteSettings } from "@/lib/types";
 import FloorPlan from "./FloorPlan";
 
 type DrawingRealityProps = {
-  afterImageUrl: string;
+  settings: SiteSettings;
+  section?: PageSection;
 };
 
-function phaseLabel(progress: number) {
-  if (progress < 0.34) return "Креслення";
-  if (progress < 0.72) return "Ескіз";
-  return "Результат";
-}
-
-export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
+export default function DrawingReality({ settings, section }: DrawingRealityProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const afterImageUrl = settings.after_image_url;
+  const eyebrow = section?.eyebrow || settings.drawing_eyebrow;
+  const title = section?.title || settings.drawing_title;
+  const body = section?.subtitle || settings.drawing_body;
 
   useEffect(() => {
     const onScroll = () => {
@@ -37,13 +37,22 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
     };
   }, []);
 
-  const label = phaseLabel(progress);
+  const label =
+    progress < 0.34
+      ? settings.drawing_phase_1_label
+      : progress < 0.72
+        ? settings.drawing_phase_2_label
+        : settings.drawing_phase_3_label;
 
   return (
-    <section className="section-pad" style={{ background: "var(--c-parchment)" }}>
+    <section
+      id={section?.section_id || undefined}
+      className="section-pad"
+      style={{ background: "var(--c-parchment)" }}
+    >
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <span className="label">Від ескізу до реальності</span>
+          {eyebrow ? <span className="label">{eyebrow}</span> : null}
           <h2
             className="font-serif"
             style={{
@@ -52,20 +61,27 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
               margin: "16px 0 12px",
             }}
           >
-            Ідея, що стає простором
+            {title}
+            {section?.title_emphasis ? (
+              <>
+                {" "}
+                <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+              </>
+            ) : null}
           </h2>
-          <p
-            style={{
-              fontFamily: "var(--f-sans)",
-              fontSize: "1rem",
-              color: "var(--c-stone)",
-              maxWidth: 420,
-              margin: "0 auto",
-            }}
-          >
-            Прокрутіть — побачите трансформацію з технічного креслення в готовий
-            інтер&apos;єр
-          </p>
+          {body ? (
+            <p
+              style={{
+                fontFamily: "var(--f-sans)",
+                fontSize: "1rem",
+                color: "var(--c-stone)",
+                maxWidth: 420,
+                margin: "0 auto",
+              }}
+            >
+              {body}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -83,7 +99,7 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
               {afterImageUrl ? (
                 <Image
                   src={afterImageUrl}
-                  alt="Готова кухня"
+                  alt={settings.drawing_result_alt}
                   fill
                   sizes="(max-width: 960px) 100vw, 960px"
                   style={{ objectFit: "cover" }}
@@ -130,7 +146,7 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
               }}
             >
               <span className="label" style={{ fontSize: "0.5625rem", whiteSpace: "nowrap" }}>
-                Креслення
+                {settings.drawing_phase_1_label}
               </span>
               <div
                 style={{
@@ -161,7 +177,7 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
                 />
               </div>
               <span className="label" style={{ fontSize: "0.5625rem", whiteSpace: "nowrap" }}>
-                Ескіз
+                {settings.drawing_phase_2_label}
               </span>
               <div
                 style={{
@@ -179,7 +195,7 @@ export default function DrawingReality({ afterImageUrl }: DrawingRealityProps) {
                 />
               </div>
               <span className="label" style={{ fontSize: "0.5625rem", whiteSpace: "nowrap" }}>
-                Результат
+                {settings.drawing_phase_3_label}
               </span>
             </div>
           </div>

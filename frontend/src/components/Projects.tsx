@@ -1,22 +1,31 @@
+"use client";
+
 import Image from "next/image";
-import type { Project } from "@/lib/types";
+import { useState } from "react";
+import type { PageSection, Project, SiteSettings } from "@/lib/types";
+import ProjectModal from "./ProjectModal";
 
 type ProjectsProps = {
+  section: PageSection;
   projects: Project[];
+  settings: SiteSettings;
 };
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function Projects({ projects }: ProjectsProps) {
+export default function Projects({ section, projects, settings }: ProjectsProps) {
+  const [active, setActive] = useState<Project | null>(null);
   const items = [...projects].sort((a, b) => a.order - b.order).slice(0, 4);
   const featured = items[0];
   const portrait = items[1];
   const rest = items.slice(2);
+  const allLabel = section.cta_text || "";
+  const allHref = section.cta_href || `#${section.section_id || "проєкти"}`;
 
   return (
-    <section id="проєкти" className="section-pad">
+    <section id={section.section_id || undefined} className="section-pad">
       <div className="wrap">
         <div
           style={{
@@ -29,7 +38,7 @@ export default function Projects({ projects }: ProjectsProps) {
           }}
         >
           <div>
-            <span className="label">Вибрані роботи</span>
+            {section.eyebrow ? <span className="label">{section.eyebrow}</span> : null}
             <h2
               className="font-serif"
               style={{
@@ -39,32 +48,53 @@ export default function Projects({ projects }: ProjectsProps) {
                 lineHeight: 1.1,
               }}
             >
-              Кожен предмет —
-              <br />
-              <em style={{ color: "var(--c-oak)" }}>окрема історія.</em>
+              {section.title}
+              {section.title_line2 ? (
+                <>
+                  <br />
+                  {section.title_line2}
+                </>
+              ) : null}
+              {section.title_emphasis ? (
+                <>
+                  <br />
+                  <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                </>
+              ) : null}
             </h2>
           </div>
-          <a
-            href="#контакти"
-            className="desktop-only"
-            style={{
-              fontFamily: "var(--f-mono)",
-              fontSize: "0.75rem",
-              letterSpacing: "0.1em",
-              color: "var(--c-stone)",
-              textDecoration: "none",
-              borderBottom: "1px solid rgba(119, 115, 108, 0.3)",
-              paddingBottom: 2,
-            }}
-          >
-            Всі проєкти →
-          </a>
+          {allLabel ? (
+            <a
+              href={allHref}
+              className="desktop-only"
+              style={{
+                fontFamily: "var(--f-mono)",
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                color: "var(--c-stone)",
+                textDecoration: "none",
+                borderBottom: "1px solid rgba(119, 115, 108, 0.3)",
+                paddingBottom: 2,
+              }}
+            >
+              {allLabel}
+            </a>
+          ) : null}
         </div>
 
         <div className="proj-grid-inner">
           {featured ? (
             <article
               className="proj-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => setActive(featured)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setActive(featured);
+                }
+              }}
               style={{
                 gridColumn: 1,
                 gridRow: 1,
@@ -124,7 +154,7 @@ export default function Projects({ projects }: ProjectsProps) {
                 >
                   {featured.title}
                 </h3>
-                {featured.seo_description ? (
+                {featured.short_description || featured.seo_description ? (
                   <p
                     className="proj-meta"
                     style={{
@@ -135,7 +165,7 @@ export default function Projects({ projects }: ProjectsProps) {
                       maxWidth: 560,
                     }}
                   >
-                    {featured.seo_description}
+                    {featured.short_description || featured.seo_description}
                   </p>
                 ) : null}
               </div>
@@ -145,6 +175,15 @@ export default function Projects({ projects }: ProjectsProps) {
           {portrait ? (
             <article
               className="proj-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => setActive(portrait)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setActive(portrait);
+                }
+              }}
               style={{
                 gridColumn: 2,
                 gridRow: "1 / 3",
@@ -201,7 +240,7 @@ export default function Projects({ projects }: ProjectsProps) {
                 >
                   {portrait.title}
                 </h3>
-                {portrait.description ? (
+                {portrait.short_description || portrait.description ? (
                   <p
                     className="proj-meta"
                     style={{
@@ -211,7 +250,7 @@ export default function Projects({ projects }: ProjectsProps) {
                       marginTop: 6,
                     }}
                   >
-                    {portrait.description}
+                    {portrait.short_description || portrait.description}
                   </p>
                 ) : null}
               </div>
@@ -224,6 +263,15 @@ export default function Projects({ projects }: ProjectsProps) {
                 <article
                   key={project.id}
                   className="proj-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setActive(project)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setActive(project);
+                    }
+                  }}
                   style={{ position: "relative", cursor: "pointer" }}
                 >
                   <div
@@ -264,6 +312,12 @@ export default function Projects({ projects }: ProjectsProps) {
           ) : null}
         </div>
       </div>
+
+      <ProjectModal
+        project={active}
+        settings={settings}
+        onClose={() => setActive(null)}
+      />
     </section>
   );
 }

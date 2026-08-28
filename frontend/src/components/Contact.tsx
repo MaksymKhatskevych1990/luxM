@@ -2,22 +2,19 @@
 
 import { FormEvent, useState } from "react";
 import { submitLead } from "@/lib/api";
-import type { SiteSettings } from "@/lib/types";
+import type { PageSection, RoomType, SiteSettings } from "@/lib/types";
 
 type ContactProps = {
   settings: SiteSettings;
+  roomTypes: RoomType[];
+  section?: PageSection;
 };
 
-const ROOMS = [
-  { uk: "Кухня", value: "kitchen" },
-  { uk: "Гардеробна", value: "wardrobe" },
-  { uk: "Вітальня", value: "living" },
-  { uk: "Спальня", value: "bedroom" },
-  { uk: "Інше", value: "other" },
-];
-
-export default function Contact({ settings }: ContactProps) {
-  const [room, setRoom] = useState(ROOMS[0].value);
+export default function Contact({ settings, roomTypes, section }: ContactProps) {
+  const rooms = [...roomTypes]
+    .filter((item) => item.is_active !== false)
+    .sort((a, b) => a.order - b.order);
+  const [room, setRoom] = useState(rooms[0]?.value ?? "");
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,7 +27,7 @@ export default function Contact({ settings }: ContactProps) {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) {
       setStatus("error");
-      setError("Будь ласка, вкажіть ім'я та телефон.");
+      setError(settings.contact_validation_message);
       return;
     }
 
@@ -49,27 +46,39 @@ export default function Contact({ settings }: ContactProps) {
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setError(err instanceof Error ? err.message : "Не вдалося надіслати заявку");
+      setError(err instanceof Error ? err.message : settings.contact_validation_message);
     }
   }
 
   const rows = [
-    { label: "Адреса", value: settings.address },
-    { label: "Телефон", value: settings.phone, href: `tel:${settings.phone.replace(/\s/g, "")}` },
-    { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
-    { label: "Telegram", value: settings.telegram, href: settings.telegram_url },
+    { label: settings.contact_label_address, value: settings.address },
+    {
+      label: settings.contact_label_phone,
+      value: settings.phone,
+      href: `tel:${settings.phone.replace(/\s/g, "")}`,
+    },
+    {
+      label: settings.contact_label_email,
+      value: settings.email,
+      href: `mailto:${settings.email}`,
+    },
+    {
+      label: settings.contact_label_telegram,
+      value: settings.telegram,
+      href: settings.telegram_url,
+    },
   ];
 
   return (
     <section
-      id="контакти"
+      id={section?.section_id || undefined}
       className="section-pad-lg"
       style={{ background: "var(--c-void)" }}
     >
       <div className="wrap">
         <div className="contact-split" style={{ gap: 100 }}>
           <div>
-            <span className="label label--light">Зв&apos;язатися</span>
+            <span className="label label--light">{settings.contact_eyebrow}</span>
             <h2
               className="font-serif"
               style={{
@@ -80,11 +89,11 @@ export default function Contact({ settings }: ContactProps) {
                 letterSpacing: "-0.02em",
               }}
             >
-              Розкажіть
+              {settings.contact_title_line1}
               <br />
-              про свій
+              {settings.contact_title_line2}
               <br />
-              <em style={{ color: "var(--c-oak)" }}>простір.</em>
+              <em style={{ color: "var(--c-oak)" }}>{settings.contact_title_emphasis}</em>
             </h2>
             <p
               style={{
@@ -96,8 +105,7 @@ export default function Contact({ settings }: ContactProps) {
                 maxWidth: 380,
               }}
             >
-              Надішліть план приміщення, фотографію або просто ідею — ми зв&apos;яжемося
-              протягом одного робочого дня.
+              {settings.contact_intro}
             </p>
             <div>
               {rows.map((row) => (
@@ -144,7 +152,7 @@ export default function Contact({ settings }: ContactProps) {
             {status === "success" ? (
               <div style={{ paddingTop: 24 }}>
                 <span className="label label--oak" style={{ display: "block", marginBottom: 16 }}>
-                  Надіслано
+                  {settings.contact_success_eyebrow}
                 </span>
                 <h3
                   className="font-serif"
@@ -155,7 +163,7 @@ export default function Contact({ settings }: ContactProps) {
                     lineHeight: 1.2,
                   }}
                 >
-                  Дякуємо, ми отримали ваш запит.
+                  {settings.contact_success_title}
                 </h3>
                 <p
                   style={{
@@ -166,7 +174,7 @@ export default function Contact({ settings }: ContactProps) {
                     maxWidth: 360,
                   }}
                 >
-                  Зв&apos;яжемося протягом одного робочого дня, щоб обговорити ваш простір.
+                  {settings.contact_success_body}
                 </p>
               </div>
             ) : (
@@ -176,17 +184,17 @@ export default function Contact({ settings }: ContactProps) {
                     className="label label--light"
                     style={{ display: "block", marginBottom: 14 }}
                   >
-                    Що плануєте
+                    {settings.contact_room_heading}
                   </span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {ROOMS.map((item) => (
+                    {rooms.map((item) => (
                       <button
                         key={item.value}
                         type="button"
                         className={`chip${room === item.value ? " on" : ""}`}
                         onClick={() => setRoom(item.value)}
                       >
-                        {item.uk}
+                        {item.label}
                       </button>
                     ))}
                   </div>
@@ -195,7 +203,7 @@ export default function Contact({ settings }: ContactProps) {
                 <div style={{ marginBottom: 28 }}>
                   <textarea
                     rows={4}
-                    placeholder="Розкажіть про ваш проєкт…"
+                    placeholder={settings.contact_message_placeholder}
                     className="f-line"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -211,7 +219,7 @@ export default function Contact({ settings }: ContactProps) {
                   className="contact-fields"
                 >
                   <input
-                    placeholder="Ім'я"
+                    placeholder={settings.contact_name_placeholder}
                     className="f-line"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -220,7 +228,7 @@ export default function Contact({ settings }: ContactProps) {
                     required
                   />
                   <input
-                    placeholder="Телефон"
+                    placeholder={settings.contact_phone_placeholder}
                     className="f-line"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -229,7 +237,7 @@ export default function Contact({ settings }: ContactProps) {
                     required
                   />
                   <input
-                    placeholder="Email"
+                    placeholder={settings.contact_email_placeholder}
                     className="f-line"
                     type="email"
                     value={email}
@@ -238,7 +246,7 @@ export default function Contact({ settings }: ContactProps) {
                     autoComplete="email"
                   />
                   <input
-                    placeholder="Telegram"
+                    placeholder={settings.contact_telegram_placeholder}
                     className="f-line"
                     value={telegram}
                     onChange={(e) => setTelegram(e.target.value)}
@@ -279,8 +287,9 @@ export default function Contact({ settings }: ContactProps) {
                     opacity: status === "sending" ? 0.7 : 1,
                   }}
                 >
-                  {status === "sending" ? "Надсилаємо…" : "Надіслати запит"}
-                  <span style={{ fontSize: "1rem" }}>→</span>
+                  {status === "sending"
+                    ? settings.contact_submit_loading
+                    : settings.contact_submit_text}
                 </button>
               </form>
             )}

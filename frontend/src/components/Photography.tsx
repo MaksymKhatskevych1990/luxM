@@ -1,7 +1,8 @@
 import Image from "next/image";
-import type { CraftDetail } from "@/lib/types";
+import type { CraftDetail, PageSection } from "@/lib/types";
 
 type PhotographyProps = {
+  section: PageSection;
   details: CraftDetail[];
 };
 
@@ -12,11 +13,15 @@ const LAYOUT = [
   { left: "63%", top: "8%", width: "31%", rotate: "0.5deg", z: 1 },
 ];
 
-export default function Photography({ details }: PhotographyProps) {
+export default function Photography({ section, details }: PhotographyProps) {
   const items = [...details].sort((a, b) => a.order - b.order);
 
   return (
-    <section className="section-pad" style={{ background: "var(--c-ink)" }}>
+    <section
+      id={section.section_id || undefined}
+      className="section-pad"
+      style={{ background: "var(--c-ink)" }}
+    >
       <div className="wrap">
         <div
           style={{
@@ -28,7 +33,9 @@ export default function Photography({ details }: PhotographyProps) {
           }}
         >
           <div>
-            <span className="label label--light">Деталі майстерності</span>
+            {section.eyebrow ? (
+              <span className="label label--light">{section.eyebrow}</span>
+            ) : null}
             <h2
               className="font-serif"
               style={{
@@ -37,24 +44,36 @@ export default function Photography({ details }: PhotographyProps) {
                 margin: "12px 0 0",
               }}
             >
-              Кожне з&apos;єднання —
-              <br />
-              <em style={{ color: "var(--c-oak)" }}>ручна робота.</em>
+              {section.title}
+              {section.title_line2 ? (
+                <>
+                  <br />
+                  {section.title_line2}
+                </>
+              ) : null}
+              {section.title_emphasis ? (
+                <>
+                  <br />
+                  <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                </>
+              ) : null}
             </h2>
           </div>
-          <p
-            className="desktop-only"
-            style={{
-              fontFamily: "var(--f-sans)",
-              fontSize: "0.9375rem",
-              color: "rgba(247, 246, 242, 0.4)",
-              maxWidth: 260,
-              lineHeight: 1.65,
-              textAlign: "right",
-            }}
-          >
-            Без конвеєра. Кожна деталь — через руки майстра від початку до кінця.
-          </p>
+          {section.subtitle ? (
+            <p
+              className="desktop-only"
+              style={{
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.9375rem",
+                color: "rgba(247, 246, 242, 0.4)",
+                maxWidth: 260,
+                lineHeight: 1.65,
+                textAlign: "right",
+              }}
+            >
+              {section.subtitle}
+            </p>
+          ) : null}
         </div>
 
         <div className="photo-stack">

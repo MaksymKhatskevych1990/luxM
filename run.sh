@@ -51,7 +51,7 @@ stop_pid_file() {
 port_in_use() {
   local port="$1"
   if command -v ss >/dev/null 2>&1; then
-    ss -ltn 2>/dev/null | grep -qE ":${port}\\s" && return 0
+    ss -ltn 2>/dev/null | grep -qE ":${port}([[:space:]]|$)" && return 0
     return 1
   fi
   if command -v lsof >/dev/null 2>&1; then
@@ -61,15 +61,61 @@ port_in_use() {
   return 1
 }
 
+pids_on_port() {
+  local port="$1"
+  local pids=""
+
+  if command -v lsof >/dev/null 2>&1; then
+    pids="$(lsof -t -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | tr '\n' ' ' || true)"
+  fi
+
+  # Fallback: parse ss (works when lsof misses node/next listeners).
+  if [[ -z "${pids// /}" ]] && command -v ss >/dev/null 2>&1; then
+    pids="$(
+      ss -ltnp 2>/dev/null \
+        | grep -E ":${port}([[:space:]]|$)" \
+        | grep -oE 'pid=[0-9]+' \
+        | cut -d= -f2 \
+        | sort -u \
+        | tr '\n' ' ' || true
+    )"
+  fi
+
+  # shellcheck disable=SC2086
+  echo $pids
+}
+
 free_port() {
   local port="$1"
   local pids
-  pids="$(lsof -t -iTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
-  if [[ -n "${pids:-}" ]]; then
-    warn "Port $port is busy — stopping process(es): $pids"
-    # shellcheck disable=SC2086
-    kill $pids 2>/dev/null || true
-    sleep 1
+  local i
+
+  pids="$(pids_on_port "$port")"
+  if [[ -z "${pids// /}" ]]; then
+    return 0
+  fi
+
+  warn "Port $port is busy — stopping process(es): $pids"
+  # shellcheck disable=SC2086
+  kill $pids 2>/dev/null || true
+
+  for i in $(seq 1 20); do
+    pids="$(pids_on_port "$port")"
+    if [[ -z "${pids// /}" ]]; then
+      return 0
+    fi
+    # Escalate if still holding the port.
+    if [[ "$i" -eq 8 ]]; then
+      # shellcheck disable=SC2086
+      kill -9 $pids 2>/dev/null || true
+    fi
+    sleep 0.25
+  done
+
+  pids="$(pids_on_port "$port")"
+  if [[ -n "${pids// /}" ]]; then
+    err "Could not free port $port (still held by: $pids)"
+    return 1
   fi
 }
 
@@ -147,7 +193,7 @@ EOF
 
 start_backend() {
   info "Starting Django on :$BACKEND_PORT..."
-  free_port "$BACKEND_PORT"
+  free_port "$BACKEND_PORT" || exit 1
   cd "$BACKEND_DIR"
   # shellcheck disable=SC1091
   source "$VENV_DIR/bin/activate"
@@ -165,23 +211,40 @@ start_backend() {
 
 start_frontend() {
   info "Starting Next.js on :$FRONTEND_PORT..."
-  free_port "$FRONTEND_PORT"
+  free_port "$FRONTEND_PORT" || exit 1
+  : >"$FRONTEND_LOG"
   cd "$FRONTEND_DIR"
   npm run dev -- -p "$FRONTEND_PORT" --hostname 127.0.0.1 >"$FRONTEND_LOG" 2>&1 &
   echo $! >"$FRONTEND_PID_FILE"
-  # Wait until Next is ready or timeout
+
+  # Wait until our process is alive AND Next reports Ready (not a leftover server).
   local i
-  for i in $(seq 1 40); do
-    if curl -sf "http://127.0.0.1:${FRONTEND_PORT}/" >/dev/null 2>&1; then
-      break
-    fi
+  local ready=0
+  for i in $(seq 1 60); do
     if ! kill -0 "$(cat "$FRONTEND_PID_FILE")" 2>/dev/null; then
       err "Frontend failed to start. See $FRONTEND_LOG"
       tail -n 40 "$FRONTEND_LOG" || true
       exit 1
     fi
+    if grep -qE 'Ready in|Local:' "$FRONTEND_LOG" 2>/dev/null \
+      && curl -sf "http://127.0.0.1:${FRONTEND_PORT}/" >/dev/null 2>&1; then
+      ready=1
+      break
+    fi
+    if grep -qE 'EADDRINUSE|Failed to start server' "$FRONTEND_LOG" 2>/dev/null; then
+      err "Frontend failed to bind :$FRONTEND_PORT. See $FRONTEND_LOG"
+      tail -n 40 "$FRONTEND_LOG" || true
+      exit 1
+    fi
     sleep 0.5
   done
+
+  if [[ "$ready" -ne 1 ]]; then
+    err "Frontend did not become ready in time. See $FRONTEND_LOG"
+    tail -n 40 "$FRONTEND_LOG" || true
+    exit 1
+  fi
+
   ok "Frontend → http://127.0.0.1:${FRONTEND_PORT}"
 }
 

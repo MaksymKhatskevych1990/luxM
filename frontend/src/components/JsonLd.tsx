@@ -15,18 +15,19 @@ export default function JsonLd({ settings }: JsonLdProps) {
     telephone: settings.phone,
     email: settings.email,
     foundingDate: String(settings.founded_year),
-    priceRange: "$$$",
+    priceRange: settings.jsonld_price_range,
     address: {
       "@type": "PostalAddress",
       streetAddress: settings.address,
-      addressLocality: "Київ",
-      addressCountry: "UA",
+      addressLocality: settings.jsonld_city,
+      addressCountry: settings.jsonld_country,
     },
     areaServed: {
       "@type": "City",
-      name: "Київ",
+      name: settings.jsonld_city,
     },
     sameAs: [settings.instagram_url, settings.telegram_url].filter(Boolean),
+    ...(settings.og_image_url ? { image: settings.og_image_url } : {}),
   };
 
   return (

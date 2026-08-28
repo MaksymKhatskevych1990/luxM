@@ -1,17 +1,14 @@
-import type { SiteSettings } from "@/lib/types";
+import type { HeroStat, SiteSettings } from "@/lib/types";
 import FloorPlan from "./FloorPlan";
 
 type HeroProps = {
   settings: SiteSettings;
+  stats: HeroStat[];
 };
 
-export default function Hero({ settings }: HeroProps) {
-  const stats = [
-    { value: settings.stats_projects, label: "Виконаних проєктів" },
-    { value: settings.stats_years, label: "Років досвіду" },
-    { value: settings.stats_masters, label: "Майстри в команді" },
-    { value: settings.stats_production, label: "Власне виробництво" },
-  ];
+export default function Hero({ settings, stats }: HeroProps) {
+  const items = [...stats].sort((a, b) => a.order - b.order);
+  const bg = settings.hero_background_image_url;
 
   return (
     <section
@@ -23,7 +20,10 @@ export default function Hero({ settings }: HeroProps) {
         overflow: "hidden",
       }}
     >
-      <div className="hero-bg" />
+      <div
+        className="hero-bg"
+        style={bg ? { backgroundImage: `url(${bg})` } : undefined}
+      />
       <div
         aria-hidden="true"
         style={{
@@ -91,7 +91,7 @@ export default function Hero({ settings }: HeroProps) {
           className="anim-up"
           style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 56 }}
         >
-          <span className="label">Форма Studio · Київ, Україна</span>
+          <span className="label">{settings.hero_eyebrow}</span>
           <span
             style={{
               display: "inline-block",
@@ -100,7 +100,9 @@ export default function Hero({ settings }: HeroProps) {
               background: "var(--c-oak)",
             }}
           />
-          <span className="label label--oak">Заснована {settings.founded_year}</span>
+          <span className="label label--oak">
+            {settings.hero_founded_prefix} {settings.founded_year}
+          </span>
         </div>
 
         <div className="hero-grid" style={{ minHeight: "auto", padding: 0 }}>
@@ -115,11 +117,13 @@ export default function Hero({ settings }: HeroProps) {
                 margin: 0,
               }}
             >
-              Меблі,
+              {settings.hero_title_line1}
               <br />
-              <em style={{ fontStyle: "italic", color: "var(--c-oak)" }}>створені</em>
+              <em style={{ fontStyle: "italic", color: "var(--c-oak)" }}>
+                {settings.hero_title_emphasis}
+              </em>
               <br />
-              під ваш простір.
+              {settings.hero_title_line2}
             </h1>
             <div
               className="anim-up d2"
@@ -135,18 +139,18 @@ export default function Hero({ settings }: HeroProps) {
                   margin: 0,
                 }}
               >
-                Проєктування · Виробництво · Монтаж
+                {settings.hero_subline}
               </p>
             </div>
             <div
               className="anim-up d3"
               style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 48 }}
             >
-              <a href="#проєкти" className="btn-primary">
-                Дивитись проєкти
+              <a href={settings.hero_cta_primary_href} className="btn-primary">
+                {settings.hero_cta_primary_text}
               </a>
-              <a href="#процес" className="btn-ghost">
-                Про процес
+              <a href={settings.hero_cta_secondary_href} className="btn-ghost">
+                {settings.hero_cta_secondary_text}
               </a>
             </div>
           </div>
@@ -158,7 +162,7 @@ export default function Hero({ settings }: HeroProps) {
             >
               <div style={{ width: 20, height: 1, background: "var(--c-oak)" }} />
               <span className="label" style={{ fontSize: "0.625rem" }}>
-                Технічне креслення · Масштаб 1:25
+                {settings.hero_floorplan_caption}
               </span>
             </div>
           </div>
@@ -175,8 +179,8 @@ export default function Hero({ settings }: HeroProps) {
             borderTop: "1px solid rgba(37, 37, 37, 0.1)",
           }}
         >
-          {stats.map((stat) => (
-            <div key={stat.label}>
+          {items.map((stat) => (
+            <div key={stat.id}>
               <div
                 className="font-serif"
                 style={{ fontSize: "2.25rem", color: "var(--c-ink)", lineHeight: 1 }}
@@ -206,7 +210,7 @@ export default function Hero({ settings }: HeroProps) {
         }}
       >
         <span className="label" style={{ fontSize: "0.5625rem" }}>
-          Гортати
+          {settings.hero_scroll_hint}
         </span>
         <div
           style={{

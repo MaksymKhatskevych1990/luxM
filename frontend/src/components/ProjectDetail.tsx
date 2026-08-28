@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import type { Project } from "@/lib/types";
+import type { Project, SiteSettings } from "@/lib/types";
 
 type ProjectDetailProps = {
   project: Project;
+  settings: SiteSettings;
 };
 
 function pad(n: number) {
@@ -14,7 +15,7 @@ function pad(n: number) {
 
 const STAGE_MS = 4200;
 
-export default function ProjectDetail({ project }: ProjectDetailProps) {
+export default function ProjectDetail({ project, settings }: ProjectDetailProps) {
   const stages = [...project.stages].sort((a, b) => a.order - b.order);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -50,18 +51,23 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
   const current = stages[index];
   const paragraphs = project.description.split("\n\n").filter(Boolean);
   const meta = [
-    { label: "Площа", value: project.area },
-    { label: "Матеріали", value: project.materials_label },
-    { label: "Тривалість", value: project.duration },
-    { label: "Рік", value: project.year ? String(project.year) : "" },
-    { label: "Локація", value: project.location },
+    { label: settings.meta_label_area, value: project.area },
+    { label: settings.meta_label_materials, value: project.materials_label },
+    { label: settings.meta_label_duration, value: project.duration },
+    {
+      label: settings.meta_label_year,
+      value: project.year ? String(project.year) : "",
+    },
+    { label: settings.meta_label_location, value: project.location },
   ].filter((row) => row.value);
 
   return (
     <section className="section-pad" style={{ background: "var(--c-linen)" }}>
       <div className="wrap">
         <div style={{ marginBottom: 52 }}>
-          <span className="label">Проєкт у деталях · {pad(project.order)}</span>
+          <span className="label">
+            {settings.detail_eyebrow_prefix} · {pad(project.order)}
+          </span>
           <h2
             className="font-serif"
             style={{
@@ -70,7 +76,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
               margin: "12px 0 0",
             }}
           >
-            Від ескізу до встановлення
+            {settings.detail_section_title}
           </h2>
         </div>
 
@@ -211,7 +217,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 }}
               >
                 <span className="label" style={{ display: "block", marginBottom: 10 }}>
-                  Проєкт № {pad(project.order)}
+                  {settings.detail_number_prefix} {pad(project.order)}
                   {project.year ? ` · ${project.year}` : ""}
                 </span>
                 <h3
@@ -271,8 +277,12 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                   </div>
                 ))}
               </div>
-              <a href="#контакти" className="btn-primary" style={{ marginTop: 32 }}>
-                Схожий проєкт <span>→</span>
+              <a
+                href={settings.detail_cta_href}
+                className="btn-primary"
+                style={{ marginTop: 32 }}
+              >
+                {settings.detail_cta_text}
               </a>
             </div>
           </div>

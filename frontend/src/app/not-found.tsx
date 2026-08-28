@@ -5,7 +5,7 @@ import { fallbackHome } from "@/lib/fallback";
 export default function NotFound() {
   return (
     <>
-      <Header />
+      <Header settings={fallbackHome.settings} navigation={fallbackHome.navigation} />
       <main className="section-pad">
         <div
           className="wrap"
@@ -43,7 +43,7 @@ export default function NotFound() {
           </a>
         </div>
       </main>
-      <Footer settings={fallbackHome.settings} />
+      <Footer settings={fallbackHome.settings} navigation={fallbackHome.navigation} />
     </>
   );
 }

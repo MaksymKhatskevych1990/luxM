@@ -1,15 +1,20 @@
 import Image from "next/image";
-import type { Material } from "@/lib/types";
+import type { Material, PageSection } from "@/lib/types";
 
 type MaterialsProps = {
+  section: PageSection;
   materials: Material[];
 };
 
-export default function Materials({ materials }: MaterialsProps) {
+export default function Materials({ section, materials }: MaterialsProps) {
   const items = [...materials].sort((a, b) => a.order - b.order);
 
   return (
-    <section className="section-pad" style={{ background: "var(--c-ink)" }}>
+    <section
+      id={section.section_id || undefined}
+      className="section-pad"
+      style={{ background: "var(--c-ink)" }}
+    >
       <div className="wrap">
         <div
           style={{
@@ -21,7 +26,9 @@ export default function Materials({ materials }: MaterialsProps) {
           }}
         >
           <div>
-            <span className="label label--light">Бібліотека матеріалів</span>
+            {section.eyebrow ? (
+              <span className="label label--light">{section.eyebrow}</span>
+            ) : null}
             <h2
               className="font-serif"
               style={{
@@ -30,21 +37,35 @@ export default function Materials({ materials }: MaterialsProps) {
                 margin: "12px 0 0",
               }}
             >
-              Матеріали, що <em style={{ color: "var(--c-oak)" }}>живуть</em>
+              {section.title}
+              {section.title_emphasis ? (
+                <>
+                  {" "}
+                  <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                </>
+              ) : null}
+              {section.title_line2 ? (
+                <>
+                  <br />
+                  {section.title_line2}
+                </>
+              ) : null}
             </h2>
           </div>
-          <p
-            className="desktop-only"
-            style={{
-              fontFamily: "var(--f-sans)",
-              fontSize: "0.9375rem",
-              color: "rgba(247, 246, 242, 0.35)",
-              maxWidth: 240,
-              lineHeight: 1.6,
-            }}
-          >
-            Тільки натуральне. Перевірено роками.
-          </p>
+          {section.subtitle ? (
+            <p
+              className="desktop-only"
+              style={{
+                fontFamily: "var(--f-sans)",
+                fontSize: "0.9375rem",
+                color: "rgba(247, 246, 242, 0.35)",
+                maxWidth: 240,
+                lineHeight: 1.6,
+              }}
+            >
+              {section.subtitle}
+            </p>
+          ) : null}
         </div>
 
         <div className="materials-grid">

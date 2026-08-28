@@ -2,16 +2,22 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { PageSection, SiteSettings } from "@/lib/types";
 
 type BeforeAfterProps = {
-  beforeUrl: string;
-  afterUrl: string;
+  settings: SiteSettings;
+  section?: PageSection;
 };
 
-export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
+export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const [pct, setPct] = useState(50);
+  const beforeUrl = settings.before_image_url;
+  const afterUrl = settings.after_image_url;
+  const eyebrow = section?.eyebrow || settings.ba_eyebrow;
+  const title = section?.title || settings.ba_title;
+  const hint = section?.subtitle || settings.ba_hint;
 
   const setFromClientX = useCallback((clientX: number) => {
     const el = frameRef.current;
@@ -38,10 +44,14 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
   }, [setFromClientX]);
 
   return (
-    <section className="section-pad" style={{ background: "var(--c-parchment)" }}>
+    <section
+      id={section?.section_id || undefined}
+      className="section-pad"
+      style={{ background: "var(--c-parchment)" }}
+    >
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <span className="label">Трансформація простору</span>
+          {eyebrow ? <span className="label">{eyebrow}</span> : null}
           <h2
             className="font-serif"
             style={{
@@ -50,17 +60,19 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
               margin: "16px 0 10px",
             }}
           >
-            До і після
+            {title}
           </h2>
-          <p
-            style={{
-              fontFamily: "var(--f-sans)",
-              fontSize: "1rem",
-              color: "var(--c-stone)",
-            }}
-          >
-            Перетягніть повзунок
-          </p>
+          {hint ? (
+            <p
+              style={{
+                fontFamily: "var(--f-sans)",
+                fontSize: "1rem",
+                color: "var(--c-stone)",
+              }}
+            >
+              {hint}
+            </p>
+          ) : null}
         </div>
 
         <div
@@ -94,7 +106,7 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
           {afterUrl ? (
             <Image
               src={afterUrl}
-              alt="Після"
+              alt={settings.ba_label_after}
               fill
               draggable={false}
               sizes="(max-width: 1100px) 100vw, 1100px"
@@ -112,7 +124,7 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
             {beforeUrl ? (
               <Image
                 src={beforeUrl}
-                alt="До"
+                alt={settings.ba_label_before}
                 fill
                 draggable={false}
                 sizes="(max-width: 1100px) 100vw, 1100px"
@@ -130,7 +142,7 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
               }}
             >
               <span className="label" style={{ fontSize: "0.5625rem" }}>
-                ДО
+                {settings.ba_label_before}
               </span>
             </div>
           </div>
@@ -162,7 +174,7 @@ export default function BeforeAfter({ beforeUrl, afterUrl }: BeforeAfterProps) {
               className="label"
               style={{ color: "rgba(247, 246, 242, 0.8)", fontSize: "0.5625rem" }}
             >
-              ПІСЛЯ
+              {settings.ba_label_after}
             </span>
           </div>
           <div

@@ -148,6 +148,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Allow project video uploads up to 100 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 105 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 105 * 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -220,6 +225,10 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "catalog",
         "catalog.SiteSettings",
+        "catalog.NavItem",
+        "catalog.PageSection",
+        "catalog.HeroStat",
+        "catalog.RoomType",
         "catalog.Project",
         "catalog.Material",
         "catalog.ProcessStep",
@@ -234,6 +243,10 @@ JAZZMIN_SETTINGS = {
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
         "catalog.SiteSettings": "fas fa-sliders-h",
+        "catalog.NavItem": "fas fa-bars",
+        "catalog.PageSection": "fas fa-th-large",
+        "catalog.HeroStat": "fas fa-hashtag",
+        "catalog.RoomType": "fas fa-door-open",
         "catalog.Project": "fas fa-couch",
         "catalog.ProjectStage": "fas fa-layer-group",
         "catalog.Material": "fas fa-tree",

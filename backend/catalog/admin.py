@@ -4,10 +4,15 @@ from django.urls import reverse
 
 from .models import (
     CraftDetail,
+    HeroStat,
     Material,
+    NavItem,
+    PageSection,
     ProcessStep,
     Project,
+    ProjectImage,
     ProjectStage,
+    RoomType,
     SiteSettings,
     WorkshopImage,
     WorkshopStat,
@@ -16,8 +21,16 @@ from .models import (
 
 class ProjectStageInline(admin.TabularInline):
     model = ProjectStage
-    extra = 1
+    extra = 0
     fields = ("title", "image_url", "order")
+    ordering = ("order", "id")
+    verbose_name_plural = "Етапи (fallback, якщо немає відео)"
+
+
+class ProjectImageInline(admin.TabularInline):
+    model = ProjectImage
+    extra = 2
+    fields = ("image", "image_url", "caption", "order", "is_published")
     ordering = ("order", "id")
 
 
@@ -27,6 +40,37 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (
             "Бренд",
             {"fields": ("brand_name", "tagline", "founded_year")},
+        ),
+        (
+            "Header",
+            {
+                "fields": (
+                    "header_logo_primary",
+                    "header_logo_secondary",
+                    "header_cta_text",
+                    "header_cta_href",
+                )
+            },
+        ),
+        (
+            "Hero",
+            {
+                "fields": (
+                    "hero_eyebrow",
+                    "hero_title_line1",
+                    "hero_title_emphasis",
+                    "hero_title_line2",
+                    "hero_subline",
+                    "hero_cta_primary_text",
+                    "hero_cta_primary_href",
+                    "hero_cta_secondary_text",
+                    "hero_cta_secondary_href",
+                    "hero_floorplan_caption",
+                    "hero_scroll_hint",
+                    "hero_founded_prefix",
+                    "hero_background_image_url",
+                )
+            },
         ),
         (
             "Контакти",
@@ -43,17 +87,29 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ),
         (
             "SEO",
-            {"fields": ("seo_title", "seo_description", "seo_keywords")},
+            {
+                "fields": (
+                    "seo_title",
+                    "seo_description",
+                    "seo_keywords",
+                    "og_image_url",
+                )
+            },
         ),
         (
             "Статистика",
             {
+                "classes": ("collapse",),
+                "description": (
+                    "Застарілі значення. Актуальна статистика героя "
+                    "редагується в розділі «Статистика героя»."
+                ),
                 "fields": (
                     "stats_projects",
                     "stats_years",
                     "stats_masters",
                     "stats_production",
-                )
+                ),
             },
         ),
         (
@@ -61,10 +117,104 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             {"fields": ("workshop_quote", "workshop_author", "workshop_text")},
         ),
         (
+            "Проєкт у деталях",
+            {
+                "fields": (
+                    "featured_project",
+                    "detail_eyebrow_prefix",
+                    "detail_section_title",
+                    "detail_number_prefix",
+                    "detail_cta_text",
+                    "detail_cta_href",
+                    "meta_label_area",
+                    "meta_label_materials",
+                    "meta_label_duration",
+                    "meta_label_year",
+                    "meta_label_location",
+                )
+            },
+        ),
+        (
+            "Drawing",
+            {
+                "fields": (
+                    "drawing_eyebrow",
+                    "drawing_title",
+                    "drawing_body",
+                    "drawing_phase_1_label",
+                    "drawing_phase_2_label",
+                    "drawing_phase_3_label",
+                    "drawing_result_alt",
+                    "drawing_sketch_image_url",
+                )
+            },
+        ),
+        (
             "До / Після",
-            {"fields": ("before_image_url", "after_image_url")},
+            {
+                "fields": (
+                    "ba_eyebrow",
+                    "ba_title",
+                    "ba_hint",
+                    "ba_label_before",
+                    "ba_label_after",
+                    "before_image_url",
+                    "after_image_url",
+                )
+            },
+        ),
+        (
+            "Контактна форма",
+            {
+                "fields": (
+                    "contact_eyebrow",
+                    "contact_title_line1",
+                    "contact_title_line2",
+                    "contact_title_emphasis",
+                    "contact_intro",
+                    "contact_room_heading",
+                    "contact_message_placeholder",
+                    "contact_name_placeholder",
+                    "contact_phone_placeholder",
+                    "contact_email_placeholder",
+                    "contact_telegram_placeholder",
+                    "contact_submit_text",
+                    "contact_submit_loading",
+                    "contact_success_eyebrow",
+                    "contact_success_title",
+                    "contact_success_body",
+                    "contact_validation_message",
+                    "contact_label_address",
+                    "contact_label_phone",
+                    "contact_label_email",
+                    "contact_label_telegram",
+                )
+            },
+        ),
+        (
+            "Footer",
+            {
+                "fields": (
+                    "footer_services_heading",
+                    "footer_studio_heading",
+                    "footer_contacts_heading",
+                    "footer_copyright_suffix",
+                    "footer_location_tagline",
+                )
+            },
+        ),
+        (
+            "JSON-LD",
+            {
+                "fields": (
+                    "jsonld_city",
+                    "jsonld_country",
+                    "jsonld_price_range",
+                )
+            },
         ),
     )
+    autocomplete_fields = ("featured_project",)
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
@@ -79,6 +229,65 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         )
 
 
+@admin.register(HeroStat)
+class HeroStatAdmin(admin.ModelAdmin):
+    list_display = ("value", "label", "order")
+    list_editable = ("order",)
+    search_fields = ("value", "label")
+    ordering = ("order", "id")
+
+
+@admin.register(PageSection)
+class PageSectionAdmin(admin.ModelAdmin):
+    list_display = (
+        "key",
+        "section_id",
+        "eyebrow",
+        "title",
+        "cta_text",
+        "is_visible",
+        "order",
+    )
+    list_editable = ("is_visible", "order")
+    list_filter = ("is_visible",)
+    search_fields = ("key", "section_id", "eyebrow", "title", "cta_text")
+    ordering = ("order", "id")
+    fieldsets = (
+        (None, {"fields": ("key", "section_id", "order", "is_visible")}),
+        (
+            "Тексти",
+            {
+                "fields": (
+                    "eyebrow",
+                    "title",
+                    "title_line2",
+                    "title_emphasis",
+                    "subtitle",
+                )
+            },
+        ),
+        ("Кнопка / посилання", {"fields": ("cta_text", "cta_href")}),
+    )
+
+
+@admin.register(NavItem)
+class NavItemAdmin(admin.ModelAdmin):
+    list_display = ("label", "href", "location", "is_visible", "order")
+    list_editable = ("order", "is_visible")
+    list_filter = ("location", "is_visible")
+    search_fields = ("label", "href")
+    ordering = ("location", "order", "id")
+
+
+@admin.register(RoomType)
+class RoomTypeAdmin(admin.ModelAdmin):
+    list_display = ("value", "label", "is_active", "order")
+    list_editable = ("order", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("value", "label")
+    ordering = ("order", "id")
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
@@ -86,24 +295,42 @@ class ProjectAdmin(admin.ModelAdmin):
         "slug",
         "category",
         "year",
+        "has_video",
+        "gallery_count",
         "is_featured",
         "is_published",
         "order",
     )
-    list_filter = ("is_published", "is_featured", "year", "category")
-    search_fields = ("title", "subtitle", "description", "slug", "location")
+    list_filter = (
+        "is_published",
+        "is_featured",
+        "show_in_detail_section",
+        "year",
+        "category",
+    )
+    search_fields = (
+        "title",
+        "subtitle",
+        "description",
+        "short_description",
+        "slug",
+        "location",
+        "seo_title",
+        "seo_keywords",
+    )
     list_editable = ("order", "is_featured", "is_published")
     prepopulated_fields = {"slug": ("title",)}
-    inlines = [ProjectStageInline]
+    inlines = [ProjectImageInline, ProjectStageInline]
     save_on_top = True
     fieldsets = (
         (
-            None,
+            "Основне",
             {
                 "fields": (
                     "title",
                     "slug",
                     "subtitle",
+                    "short_description",
                     "description",
                     "category",
                     "year",
@@ -111,27 +338,51 @@ class ProjectAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Деталі проєкту",
+            "Метадані проєкту",
             {
                 "fields": (
                     "materials_label",
                     "area",
                     "duration",
                     "location",
-                    "image_url",
-                    "detail_image_url",
                 )
             },
         ),
         (
+            "Обкладинка",
+            {"fields": ("cover_image", "image_url", "detail_image_url")},
+        ),
+        (
+            "Відео (креслення → готове рішення)",
+            {
+                "fields": ("video", "video_url", "video_poster_url"),
+                "description": "Завантажте файл до 100 МБ або вкажіть зовнішній URL.",
+            },
+        ),
+        (
             "Публікація",
-            {"fields": ("is_featured", "is_published", "order")},
+            {
+                "fields": (
+                    "is_featured",
+                    "show_in_detail_section",
+                    "is_published",
+                    "order",
+                )
+            },
         ),
         (
             "SEO",
-            {"fields": ("seo_title", "seo_description")},
+            {"fields": ("seo_title", "seo_description", "seo_keywords")},
         ),
     )
+
+    @admin.display(boolean=True, description="Відео")
+    def has_video(self, obj: Project) -> bool:
+        return bool(obj.video or obj.video_url)
+
+    @admin.display(description="Фото")
+    def gallery_count(self, obj: Project) -> int:
+        return obj.gallery.filter(is_published=True).count()
 
 
 @admin.register(Material)

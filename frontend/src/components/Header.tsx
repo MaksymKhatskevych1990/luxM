@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { NavItem, SiteSettings } from "@/lib/types";
+import { navByLocation } from "@/lib/content";
 
-const NAV = [
-  { href: "#проєкти", label: "Проєкти" },
-  { href: "#процес", label: "Процес" },
-  { href: "#майстерня", label: "Майстерня" },
-  { href: "#контакти", label: "Контакти" },
-];
+type HeaderProps = {
+  settings: SiteSettings;
+  navigation: NavItem[];
+};
 
 function LogoMark() {
   return (
@@ -20,8 +20,9 @@ function LogoMark() {
   );
 }
 
-export default function Header() {
+export default function Header({ settings, navigation }: HeaderProps) {
   const [open, setOpen] = useState(false);
+  const items = navByLocation(navigation, "header");
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -61,27 +62,27 @@ export default function Header() {
                 letterSpacing: "-0.01em",
               }}
             >
-              Форма
+              {settings.header_logo_primary}
             </div>
             <div
               className="label label--oak"
               style={{ fontSize: "0.5rem", letterSpacing: "0.18em", marginTop: 1 }}
             >
-              STUDIO
+              {settings.header_logo_secondary}
             </div>
           </div>
         </a>
 
         <nav className="desktop-nav" aria-label="Основна навігація">
-          {NAV.map((item) => (
-            <a key={item.href} href={item.href} className="nav-item">
+          {items.map((item) => (
+            <a key={item.id} href={item.href} className="nav-item">
               {item.label}
             </a>
           ))}
         </nav>
 
-        <a href="#контакти" className="cta-invert desktop-cta">
-          Обговорити проєкт
+        <a href={settings.header_cta_href} className="cta-invert desktop-cta">
+          {settings.header_cta_text}
         </a>
 
         <button
@@ -126,18 +127,18 @@ export default function Header() {
 
       {open ? (
         <nav className="mobile-nav" aria-label="Мобільна навігація">
-          {NAV.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setOpen(false)}>
+          {items.map((item) => (
+            <a key={item.id} href={item.href} onClick={() => setOpen(false)}>
               {item.label}
             </a>
           ))}
           <a
-            href="#контакти"
+            href={settings.header_cta_href}
             className="cta-invert"
             style={{ alignSelf: "flex-start", marginTop: 8 }}
             onClick={() => setOpen(false)}
           >
-            Обговорити проєкт
+            {settings.header_cta_text}
           </a>
         </nav>
       ) : null}

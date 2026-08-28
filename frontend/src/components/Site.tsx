@@ -1,4 +1,5 @@
-import type { HomePayload } from "@/lib/types";
+import type { HomePayload, PageSection, Project } from "@/lib/types";
+import { getSection } from "@/lib/content";
 import Header from "./Header";
 import Hero from "./Hero";
 import Projects from "./Projects";
@@ -17,35 +18,79 @@ type SiteProps = {
   data: HomePayload;
 };
 
+function isVisible(section: PageSection | undefined): section is PageSection {
+  return Boolean(section && section.is_visible !== false);
+}
+
+function resolveFeaturedProject(data: HomePayload): Project | undefined {
+  if (data.featured_project_slug) {
+    const bySlug = data.projects.find((p) => p.slug === data.featured_project_slug);
+    if (bySlug) return bySlug;
+  }
+  const byFlag = data.projects.find((p) => p.show_in_detail_section);
+  if (byFlag) return byFlag;
+  return data.projects.find((p) => p.stages.length > 0);
+}
+
 export default function Site({ data }: SiteProps) {
-  const featured =
-    data.projects.find((p) => p.is_featured && p.stages.length > 0) ??
-    data.projects.find((p) => p.stages.length > 0);
+  const featured = resolveFeaturedProject(data);
+  const projectsSection = getSection(data.sections, "projects");
+  const photographySection = getSection(data.sections, "photography");
+  const materialsSection = getSection(data.sections, "materials");
+  const processSection = getSection(data.sections, "process");
+  const workshopSection = getSection(data.sections, "workshop");
+  const drawingSection = getSection(data.sections, "drawing");
+  const beforeAfterSection = getSection(data.sections, "before_after");
+  const contactSection = getSection(data.sections, "contact");
 
   return (
     <>
       <JsonLd settings={data.settings} />
-      <Header />
+      <Header settings={data.settings} navigation={data.navigation} />
       <main>
-        <Hero settings={data.settings} />
-        <Projects projects={data.projects} />
-        {featured ? <ProjectDetail project={featured} /> : null}
-        <Photography details={data.craft_details} />
-        <DrawingReality afterImageUrl={data.settings.after_image_url} />
-        <Materials materials={data.materials} />
-        <Process steps={data.process_steps} />
-        <Workshop
-          settings={data.settings}
-          stats={data.workshop_stats}
-          images={data.workshop_images}
-        />
-        <BeforeAfter
-          beforeUrl={data.settings.before_image_url}
-          afterUrl={data.settings.after_image_url}
-        />
-        <Contact settings={data.settings} />
+        <Hero settings={data.settings} stats={data.hero_stats} />
+        {isVisible(projectsSection) ? (
+          <Projects
+            section={projectsSection}
+            projects={data.projects}
+            settings={data.settings}
+          />
+        ) : null}
+        {isVisible(projectsSection) && featured ? (
+          <ProjectDetail project={featured} settings={data.settings} />
+        ) : null}
+        {isVisible(photographySection) ? (
+          <Photography section={photographySection} details={data.craft_details} />
+        ) : null}
+        {isVisible(drawingSection) ? (
+          <DrawingReality settings={data.settings} section={drawingSection} />
+        ) : null}
+        {isVisible(materialsSection) ? (
+          <Materials section={materialsSection} materials={data.materials} />
+        ) : null}
+        {isVisible(processSection) ? (
+          <Process section={processSection} steps={data.process_steps} />
+        ) : null}
+        {isVisible(workshopSection) ? (
+          <Workshop
+            section={workshopSection}
+            settings={data.settings}
+            stats={data.workshop_stats}
+            images={data.workshop_images}
+          />
+        ) : null}
+        {isVisible(beforeAfterSection) ? (
+          <BeforeAfter settings={data.settings} section={beforeAfterSection} />
+        ) : null}
+        {isVisible(contactSection) ? (
+          <Contact
+            section={contactSection}
+            settings={data.settings}
+            roomTypes={data.room_types}
+          />
+        ) : null}
       </main>
-      <Footer settings={data.settings} />
+      <Footer settings={data.settings} navigation={data.navigation} />
     </>
   );
 }

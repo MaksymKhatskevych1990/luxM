@@ -12,7 +12,8 @@ function getApiUrl() {
 
 export async function fetchHome(): Promise<HomePayload> {
   const res = await fetch(`${getApiUrl()}/home/`, {
-    next: { revalidate: 60 },
+    // Always get fresh CMS content (gallery, video, SEO) during local/dev.
+    cache: "no-store",
   });
 
   if (!res.ok) {

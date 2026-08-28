@@ -1,24 +1,34 @@
 import Image from "next/image";
-import type { SiteSettings, WorkshopImage, WorkshopStat } from "@/lib/types";
+import type {
+  PageSection,
+  SiteSettings,
+  WorkshopImage,
+  WorkshopStat,
+} from "@/lib/types";
 
 type WorkshopProps = {
+  section: PageSection;
   settings: SiteSettings;
   stats: WorkshopStat[];
   images: WorkshopImage[];
 };
 
-export default function Workshop({ settings, stats, images }: WorkshopProps) {
+export default function Workshop({ section, settings, stats, images }: WorkshopProps) {
   const items = [...images].sort((a, b) => a.order - b.order);
   const statItems = [...stats].sort((a, b) => a.order - b.order);
   const hero = items[0];
   const thumbs = items.slice(1, 3);
 
   return (
-    <section id="майстерня" className="section-pad" style={{ background: "var(--c-linen)" }}>
+    <section
+      id={section.section_id || undefined}
+      className="section-pad"
+      style={{ background: "var(--c-linen)" }}
+    >
       <div className="wrap">
         <div className="workshop-split" style={{ gap: 80, alignItems: "center" }}>
           <div>
-            <span className="label">Майстерня</span>
+            {section.eyebrow ? <span className="label">{section.eyebrow}</span> : null}
             <blockquote
               className="font-serif"
               style={{

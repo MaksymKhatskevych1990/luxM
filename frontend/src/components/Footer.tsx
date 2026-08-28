@@ -1,17 +1,11 @@
 import type { ReactNode } from "react";
-import type { SiteSettings } from "@/lib/types";
+import type { NavItem, SiteSettings } from "@/lib/types";
+import { navByLocation } from "@/lib/content";
 
 type FooterProps = {
   settings: SiteSettings;
+  navigation: NavItem[];
 };
-
-const SERVICES = ["Кухні", "Гардеробні", "Вітальні", "Кабінети"];
-const STUDIO = [
-  { label: "Про нас", href: "#майстерня" },
-  { label: "Майстерня", href: "#майстерня" },
-  { label: "Процес", href: "#процес" },
-  { label: "Проєкти", href: "#проєкти" },
-];
 
 function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -32,8 +26,10 @@ function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-export default function Footer({ settings }: FooterProps) {
+export default function Footer({ settings, navigation }: FooterProps) {
   const year = new Date().getFullYear();
+  const services = navByLocation(navigation, "footer_services");
+  const studio = navByLocation(navigation, "footer_studio");
 
   return (
     <footer style={{ background: "#171613", padding: "56px 0 36px" }}>
@@ -85,34 +81,38 @@ export default function Footer({ settings }: FooterProps) {
           <div className="footer-links">
             <div>
               <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
-                Послуги
+                {settings.footer_services_heading}
               </div>
-              {SERVICES.map((item) => (
-                <FooterLink key={item} href="#проєкти">
-                  {item}
-                </FooterLink>
-              ))}
-            </div>
-            <div>
-              <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
-                Студія
-              </div>
-              {STUDIO.map((item) => (
-                <FooterLink key={item.label} href={item.href}>
+              {services.map((item) => (
+                <FooterLink key={item.id} href={item.href}>
                   {item.label}
                 </FooterLink>
               ))}
             </div>
             <div>
               <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
-                Контакти
+                {settings.footer_studio_heading}
+              </div>
+              {studio.map((item) => (
+                <FooterLink key={item.id} href={item.href}>
+                  {item.label}
+                </FooterLink>
+              ))}
+            </div>
+            <div>
+              <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
+                {settings.footer_contacts_heading}
               </div>
               <FooterLink href={`mailto:${settings.email}`}>{settings.email}</FooterLink>
               <FooterLink href={`tel:${settings.phone.replace(/\s/g, "")}`}>
                 {settings.phone}
               </FooterLink>
-              <FooterLink href={settings.instagram_url}>Instagram</FooterLink>
-              <FooterLink href={settings.telegram_url}>Telegram</FooterLink>
+              {settings.instagram_url ? (
+                <FooterLink href={settings.instagram_url}>Instagram</FooterLink>
+              ) : null}
+              {settings.telegram_url ? (
+                <FooterLink href={settings.telegram_url}>Telegram</FooterLink>
+              ) : null}
             </div>
           </div>
         </div>
@@ -130,13 +130,13 @@ export default function Footer({ settings }: FooterProps) {
             className="label"
             style={{ color: "rgba(247, 246, 242, 0.18)", fontSize: "0.5625rem" }}
           >
-            © {year} {settings.brand_name} · Всі права захищено
+            © {year} {settings.brand_name} · {settings.footer_copyright_suffix}
           </span>
           <span
             className="label"
             style={{ color: "rgba(247, 246, 242, 0.18)", fontSize: "0.5625rem" }}
           >
-            Київ, Україна · Виготовлено з гордістю
+            {settings.footer_location_tagline}
           </span>
         </div>
       </div>
