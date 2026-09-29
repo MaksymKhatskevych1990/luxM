@@ -1,2 +1,2 @@
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://forma.ua";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://proprostir.com.ua";

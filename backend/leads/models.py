@@ -13,6 +13,13 @@ class Lead(models.Model):
     phone = models.CharField(max_length=64, verbose_name="Телефон")
     email = models.EmailField(blank=True, verbose_name="Email")
     telegram = models.CharField(max_length=120, blank=True, verbose_name="Telegram")
+    attachment = models.FileField(
+        upload_to="leads/%Y/%m/",
+        blank=True,
+        null=True,
+        verbose_name="Фото або план",
+        help_text="Фото «до» або план приміщення (JPG, PNG, WEBP, PDF).",
+    )
     is_processed = models.BooleanField(default=False, verbose_name="Опрацьовано")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Створено")
 

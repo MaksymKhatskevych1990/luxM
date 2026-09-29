@@ -5,6 +5,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .models import (
     CraftDetail,
+    HeroScene,
     HeroStat,
     Material,
     NavItem,
@@ -18,6 +19,7 @@ from .models import (
 )
 from .serializers import (
     CraftDetailSerializer,
+    HeroSceneSerializer,
     HeroStatSerializer,
     MaterialSerializer,
     NavItemSerializer,
@@ -102,10 +104,19 @@ class HomePageAPIView(APIView):
             )
         )
         featured = resolve_featured_project(settings, projects)
+        scene = (
+            HeroScene.objects.filter(is_published=True, is_active=True)
+            .prefetch_related("zones")
+            .first()
+            or HeroScene.objects.filter(is_published=True)
+            .prefetch_related("zones")
+            .first()
+        )
         ctx = {"request": request}
         return Response(
             {
                 "settings": SiteSettingsSerializer(settings).data,
+                "hero_scene": HeroSceneSerializer(scene).data if scene else None,
                 "hero_stats": HeroStatSerializer(
                     HeroStat.objects.all(), many=True
                 ).data,

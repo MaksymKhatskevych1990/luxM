@@ -1,225 +1,166 @@
-import type { HeroStat, SiteSettings } from "@/lib/types";
-import FloorPlan from "./FloorPlan";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
+import type { HeroScene, HeroStat, HeroZone, SiteSettings } from "@/lib/types";
+import HeroStageFilm from "./HeroStageFilm";
 
 type HeroProps = {
   settings: SiteSettings;
   stats: HeroStat[];
+  scene?: HeroScene | null;
 };
 
-export default function Hero({ settings, stats }: HeroProps) {
+export default function Hero({ settings, stats, scene }: HeroProps) {
   const items = [...stats].sort((a, b) => a.order - b.order);
-  const bg = settings.hero_background_image_url;
+  const zones = useMemo(
+    () => [...(scene?.zones ?? [])].sort((a, b) => a.order - b.order),
+    [scene],
+  );
+  const [interactive, setInteractive] = useState(false);
+  const [activeId, setActiveId] = useState<HeroZone["id"] | null>(null);
+  const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+  const [showFilm, setShowFilm] = useState(true);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const sync = () => setShowFilm(!media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  const onSettled = useCallback(() => setInteractive(true), []);
+
+  const active = zones.find((zone) => zone.id === activeId) ?? null;
+
+  function placeTip(event: MouseEvent<SVGElement>) {
+    const svg = event.currentTarget.ownerSVGElement ?? event.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    setTip({
+      x: ((event.clientX - rect.left) / rect.width) * 100,
+      y: ((event.clientY - rect.top) / rect.height) * 100,
+    });
+  }
+
+  function activate(zone: HeroZone, event?: MouseEvent<SVGRectElement>) {
+    if (!interactive) return;
+    setActiveId(zone.id);
+    if (event) {
+      placeTip(event);
+      return;
+    }
+    setTip({
+      x: Number(zone.x) + Number(zone.width) / 2,
+      y: Number(zone.y) + Number(zone.height) / 2,
+    });
+  }
+
+  function clear() {
+    setActiveId(null);
+    setTip(null);
+  }
 
   return (
-    <section
-      style={{
-        position: "relative",
-        minHeight: "100svh",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        className="hero-bg"
-        style={bg ? { backgroundImage: `url(${bg})` } : undefined}
-      />
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: "25%",
-            width: 1,
-            background: "rgba(37, 37, 37, 0.05)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: "50%",
-            width: 1,
-            background: "rgba(37, 37, 37, 0.05)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: "75%",
-            width: 1,
-            background: "rgba(37, 37, 37, 0.05)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: "45%",
-            left: 0,
-            right: 0,
-            height: 1,
-            background: "rgba(37, 37, 37, 0.04)",
-          }}
-        />
-      </div>
-
-      <div
-        className="wrap"
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          paddingTop: 48,
-          paddingBottom: 80,
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          className="anim-up"
-          style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 56 }}
-        >
-          <span className="label">{settings.hero_eyebrow}</span>
-          <span
-            style={{
-              display: "inline-block",
-              width: 40,
-              height: 1,
-              background: "var(--c-oak)",
-            }}
-          />
-          <span className="label label--oak">
-            {settings.hero_founded_prefix} {settings.founded_year}
-          </span>
-        </div>
-
-        <div className="hero-grid" style={{ minHeight: "auto", padding: 0 }}>
-          <div>
-            <h1
-              className="anim-up d1 font-serif"
-              style={{
-                fontSize: "clamp(3.75rem, 7.5vw, 7rem)",
-                lineHeight: 1,
-                letterSpacing: "-0.025em",
-                color: "var(--c-ink)",
-                margin: 0,
-              }}
-            >
-              {settings.hero_title_line1}
-              <br />
-              <em style={{ fontStyle: "italic", color: "var(--c-oak)" }}>
-                {settings.hero_title_emphasis}
-              </em>
-              <br />
-              {settings.hero_title_line2}
-            </h1>
-            <div
-              className="anim-up d2"
-              style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 36 }}
-            >
-              <div style={{ width: 2, height: 40, background: "var(--c-oak)" }} />
-              <p
-                style={{
-                  fontFamily: "var(--f-sans)",
-                  fontSize: "0.9375rem",
-                  letterSpacing: "0.1em",
-                  color: "var(--c-stone)",
-                  margin: 0,
-                }}
-              >
-                {settings.hero_subline}
-              </p>
-            </div>
-            <div
-              className="anim-up d3"
-              style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 48 }}
-            >
-              <a href={settings.hero_cta_primary_href} className="btn-primary">
-                {settings.hero_cta_primary_text}
-              </a>
-              <a href={settings.hero_cta_secondary_href} className="btn-ghost">
-                {settings.hero_cta_secondary_text}
-              </a>
-            </div>
+    <section className="hero hero--room">
+      <div className="hero-room">
+        <div className="hero-room-copy">
+          <div className="hero-eyebrow anim-up">
+            <span className="label">{settings.hero_eyebrow}</span>
+            <span className="hero-eyebrow-rule" />
+            <span className="label label--oak">
+              {settings.hero_founded_prefix} {settings.founded_year}
+            </span>
           </div>
 
-          <div className="hero-svg anim-up d2" style={{ opacity: 0.55 }}>
-            <FloorPlan idPrefix="hero" />
-            <div
-              style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}
-            >
-              <div style={{ width: 20, height: 1, background: "var(--c-oak)" }} />
-              <span className="label" style={{ fontSize: "0.625rem" }}>
-                {settings.hero_floorplan_caption}
-              </span>
-            </div>
+          <h1 className="hero-title anim-up d1 font-serif">
+            {settings.hero_title_line1}
+            <br />
+            <em>{settings.hero_title_emphasis}</em>
+            <br />
+            {settings.hero_title_line2}
+          </h1>
+
+          <div className="hero-subline anim-up d2">
+            <div className="hero-subline-bar" />
+            <p>{settings.hero_subline}</p>
+          </div>
+
+          <div className="hero-cta anim-up d3">
+            <a href={settings.hero_cta_primary_href} className="btn-primary">
+              {settings.hero_cta_primary_text}
+            </a>
+            <a href={settings.hero_cta_secondary_href} className="btn-ghost">
+              {settings.hero_cta_secondary_text}
+            </a>
+          </div>
+
+          <div className="hero-stats anim-up d4">
+            {items.map((stat) => (
+              <div key={stat.id}>
+                <div className="hero-stat-value font-serif">{stat.value}</div>
+                <div className="label" style={{ marginTop: 6 }}>
+                  {stat.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div
-          className="anim-up d4"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "24px 56px",
-            marginTop: 80,
-            paddingTop: 32,
-            borderTop: "1px solid rgba(37, 37, 37, 0.1)",
-          }}
-        >
-          {items.map((stat) => (
-            <div key={stat.id}>
-              <div
-                className="font-serif"
-                style={{ fontSize: "2.25rem", color: "var(--c-ink)", lineHeight: 1 }}
+        {showFilm ? (
+          <div
+            className={`hero-room-visual${active ? " is-dimmed" : ""}${
+              interactive ? " is-interactive" : ""
+            }`}
+          >
+            <div className="hero-film-stage">
+              <HeroStageFilm onSettled={onSettled} />
+              <svg
+                className="hero-zones"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-label="Інтерактивні зони інтер'єру"
               >
-                {stat.value}
-              </div>
-              <div className="label" style={{ marginTop: 6 }}>
-                {stat.label}
-              </div>
+                {zones.map((zone) => (
+                  <rect
+                    key={zone.id}
+                    x={Number(zone.x)}
+                    y={Number(zone.y)}
+                    width={Number(zone.width)}
+                    height={Number(zone.height)}
+                    className={activeId === zone.id ? "is-active" : ""}
+                    onMouseEnter={(event) => activate(zone, event)}
+                    onMouseMove={(event) => activate(zone, event)}
+                    onMouseLeave={clear}
+                    onFocus={() => activate(zone)}
+                    onBlur={clear}
+                    onClick={() => activate(zone)}
+                    tabIndex={interactive ? 0 : -1}
+                    role="button"
+                    aria-label={`${zone.name}: ${zone.service}`}
+                  />
+                ))}
+              </svg>
+
+              {active && tip ? (
+                <div
+                  className="hero-tooltip"
+                  style={{ left: `${tip.x}%`, top: `${tip.y}%` }}
+                >
+                  <span className="label label--oak">{active.name}</span>
+                  {active.service ? <b>{active.service}</b> : null}
+                  {active.materials ? <small>{active.materials}</small> : null}
+                </div>
+              ) : null}
             </div>
-          ))}
-        </div>
+          </div>
+        ) : null}
       </div>
 
-      <div
-        className="anim-up d5"
-        style={{
-          position: "absolute",
-          bottom: 40,
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 10,
-          zIndex: 1,
-        }}
-      >
+      <div className="hero-scroll anim-up d5">
         <span className="label" style={{ fontSize: "0.5625rem" }}>
           {settings.hero_scroll_hint}
         </span>
-        <div
-          style={{
-            width: 1,
-            height: 44,
-            background: "linear-gradient(var(--c-oak), transparent)",
-            animation: "bob 2s ease infinite",
-          }}
-        />
+        <div className="hero-scroll-line" />
       </div>
     </section>
   );

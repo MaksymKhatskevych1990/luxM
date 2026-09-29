@@ -19,6 +19,8 @@ async function proxy(req: NextRequest, path: string[]) {
   headers.delete("host");
   headers.delete("connection");
   headers.delete("content-length");
+  // Site gate uses Basic auth. Django would treat that header as an admin login.
+  headers.delete("authorization");
 
   const init: RequestInit = {
     method: req.method,

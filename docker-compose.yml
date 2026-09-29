@@ -6,6 +6,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-forma}
       POSTGRES_USER: ${POSTGRES_USER:-forma}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-forma_secret}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5434}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -66,6 +68,7 @@ services:
       - "${HTTP_PORT:-80}:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
       - static_data:/var/www/static:ro
       - media_data:/var/www/media:ro
     depends_on:

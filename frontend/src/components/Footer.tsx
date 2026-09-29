@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { navByLocation } from "@/lib/content";
+import SiteLogo from "./SiteLogo";
 
 type FooterProps = {
   settings: SiteSettings;
@@ -78,12 +79,11 @@ export default function Footer({ settings, navigation }: FooterProps) {
                 marginBottom: 12,
               }}
             >
-              <div className="logo-mark" aria-hidden="true" style={{ width: 24, height: 24 }}>
-                <span />
-                <span />
-                <span />
-                <span />
-              </div>
+              <SiteLogo
+                src={settings.header_logo_url}
+                alt={settings.brand_name}
+                size={24}
+              />
               <span
                 className="font-serif"
                 style={{ fontSize: "1.125rem", color: "var(--c-parchment)" }}
@@ -157,13 +157,13 @@ export default function Footer({ settings, navigation }: FooterProps) {
         >
           <span
             className="label"
-            style={{ color: "rgba(247, 246, 242, 0.18)", fontSize: "0.5625rem" }}
+            style={{ color: "rgba(247, 246, 242, 0.92)", fontSize: "0.5625rem" }}
           >
             © {year} {settings.brand_name} · {settings.footer_copyright_suffix}
           </span>
           <span
             className="label"
-            style={{ color: "rgba(247, 246, 242, 0.18)", fontSize: "0.5625rem" }}
+            style={{ color: "rgba(247, 246, 242, 0.92)", fontSize: "0.5625rem" }}
           >
             {settings.footer_location_tagline}
           </span>

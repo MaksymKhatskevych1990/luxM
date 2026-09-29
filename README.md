@@ -41,7 +41,6 @@ docker compose up --build -d
 
 ```bash
 ./run.sh --seed          # також залити демо-дані
-./run.sh --postgres      # Postgres з .env замість SQLite
 ./run.sh --backend-only
 ./run.sh --frontend-only
 ```
@@ -93,12 +92,26 @@ npm run dev
 
 Після змін у адмінці оновіть сторінку — frontend бере дані з `GET /api/home/`.
 
+## MCP
+
+Локальний сервер [Model Context Protocol](https://modelcontextprotocol.io) віддає Cursor публічний контент сайту: налаштування, секції, проєкти, матеріали, процес і майстерню. Джерело — живий API (`GET /api/home/` та сусідні ендпоінти). Заявки клієнтів і секрети адмінки не віддаються.
+
+Один раз:
+
+```bash
+python3 -m venv mcp/.venv
+mcp/.venv/bin/pip install -r mcp/requirements.txt
+```
+
+Конфіг уже в `.cursor/mcp.json` (`luxmeb` → `http://127.0.0.1:8000/api`). Увімкніть сервер у Cursor: **Settings → MCP**. Бекенд має бути запущений (`./run.sh`). Для Docker змініть `LUXMEB_API_URL` на `http://127.0.0.1/api`.
+
 ## Структура
 
 ```
 LuxMeb/
 ├── backend/          # Django + DRF + Jazzmin
 ├── frontend/         # Next.js
+├── mcp/              # MCP-сервер публічного контенту
 ├── nginx/            # reverse proxy
 ├── docker-compose.yml
 └── README.md

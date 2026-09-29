@@ -2,7 +2,9 @@ from rest_framework import serializers
 
 from .models import (
     CraftDetail,
+    HeroScene,
     HeroStat,
+    HeroZone,
     Material,
     NavItem,
     PageSection,
@@ -17,19 +19,40 @@ from .models import (
 )
 
 
+def public_media_url(url: str) -> str:
+    """Keep same-origin /media paths so Next/ngrok can proxy files."""
+    if not url:
+        return ""
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+    return url
+
+
 class SiteSettingsSerializer(serializers.ModelSerializer):
     whatsapp_url = serializers.SerializerMethodField()
     telegram_url = serializers.SerializerMethodField()
+    header_logo_url = serializers.SerializerMethodField()
+    hero_background_image_url = serializers.SerializerMethodField()
+    hero_floorplan_image_url = serializers.SerializerMethodField()
+    og_image_url = serializers.SerializerMethodField()
+    drawing_sketch_image_url = serializers.SerializerMethodField()
+    before_image_url = serializers.SerializerMethodField()
+    after_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = SiteSettings
         exclude = (
             "created_at",
-            "updated_at",
-            # Never expose bot secrets to the public API.
             "telegram_bot_token",
             "telegram_notify_chat_id",
             "telegram_notify_enabled",
+            "header_logo",
+            "hero_background",
+            "hero_floorplan_image",
+            "og_image",
+            "drawing_sketch",
+            "before_image",
+            "after_image",
         )
 
     def get_whatsapp_url(self, obj: SiteSettings) -> str:
@@ -37,6 +60,27 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
 
     def get_telegram_url(self, obj: SiteSettings) -> str:
         return obj.resolved_telegram_url
+
+    def get_header_logo_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_logo_url)
+
+    def get_hero_background_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_hero_background_url)
+
+    def get_hero_floorplan_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_hero_floorplan_url)
+
+    def get_og_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_og_image_url)
+
+    def get_drawing_sketch_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_drawing_sketch_url)
+
+    def get_before_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_before_image_url)
+
+    def get_after_image_url(self, obj: SiteSettings) -> str:
+        return public_media_url(obj.resolved_after_image_url)
 
 
 class HeroStatSerializer(serializers.ModelSerializer):
@@ -77,9 +121,14 @@ class RoomTypeSerializer(serializers.ModelSerializer):
 
 
 class ProjectStageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ProjectStage
         fields = ("id", "title", "image_url", "order")
+
+    def get_image_url(self, obj: ProjectStage):
+        return public_media_url(obj.resolved_image_url)
 
 
 class ProjectImageSerializer(serializers.ModelSerializer):
@@ -90,15 +139,7 @@ class ProjectImageSerializer(serializers.ModelSerializer):
         fields = ("id", "url", "caption", "order")
 
     def get_url(self, obj):
-        url = obj.resolved_url
-        if not url:
-            return ""
-        request = self.context.get("request")
-        if url.startswith("http"):
-            return url
-        if request:
-            return request.build_absolute_uri(url)
-        return url
+        return public_media_url(obj.resolved_url)
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -139,14 +180,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
 
     def _abs(self, url: str) -> str:
-        if not url:
-            return ""
-        if url.startswith("http"):
-            return url
-        request = self.context.get("request")
-        if request:
-            return request.build_absolute_uri(url)
-        return url
+        return public_media_url(url)
 
     def get_image_url(self, obj):
         return self._abs(obj.cover_url)
@@ -164,6 +198,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class MaterialSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Material
         fields = (
@@ -176,8 +212,13 @@ class MaterialSerializer(serializers.ModelSerializer):
             "is_published",
         )
 
+    def get_image_url(self, obj: Material):
+        return public_media_url(obj.resolved_image_url)
+
 
 class ProcessStepSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ProcessStep
         fields = (
@@ -190,11 +231,19 @@ class ProcessStepSerializer(serializers.ModelSerializer):
             "is_published",
         )
 
+    def get_image_url(self, obj: ProcessStep):
+        return public_media_url(obj.resolved_image_url)
+
 
 class CraftDetailSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = CraftDetail
         fields = ("id", "title", "image_url", "order", "is_published")
+
+    def get_image_url(self, obj: CraftDetail):
+        return public_media_url(obj.resolved_image_url)
 
 
 class WorkshopStatSerializer(serializers.ModelSerializer):
@@ -204,6 +253,53 @@ class WorkshopStatSerializer(serializers.ModelSerializer):
 
 
 class WorkshopImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = WorkshopImage
         fields = ("id", "title", "image_url", "order")
+
+    def get_image_url(self, obj: WorkshopImage):
+        return public_media_url(obj.resolved_image_url)
+
+
+class HeroZoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HeroZone
+        fields = (
+            "id",
+            "name",
+            "service",
+            "materials",
+            "tag",
+            "x",
+            "y",
+            "width",
+            "height",
+            "order",
+        )
+
+
+class HeroSceneSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    zones = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HeroScene
+        fields = (
+            "id",
+            "title",
+            "image_url",
+            "hint",
+            "idle_eyebrow",
+            "idle_title",
+            "idle_body",
+            "zones",
+        )
+
+    def get_image_url(self, obj: HeroScene) -> str:
+        return public_media_url(obj.resolved_image_url)
+
+    def get_zones(self, obj: HeroScene):
+        zones = obj.zones.filter(is_published=True)
+        return HeroZoneSerializer(zones, many=True).data

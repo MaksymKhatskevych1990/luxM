@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR.parent / ".env")
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -101,22 +102,15 @@ def _postgres_from_url(url: str) -> dict:
 
 if os.getenv("DATABASE_URL"):
     DATABASES = {"default": _postgres_from_url(os.getenv("DATABASE_URL"))}
-elif any(os.getenv(key) for key in ("POSTGRES_DB", "POSTGRES_HOST", "POSTGRES_USER")):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "luxmeb"),
-            "USER": os.getenv("POSTGRES_USER", "luxmeb"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
-            "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),
-        }
-    }
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "forma"),
+            "USER": os.getenv("POSTGRES_USER", "forma"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+            "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
         }
     }
 
@@ -205,12 +199,12 @@ if not DEBUG:
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Форма Studio",
-    "site_header": "Форма Studio",
-    "site_brand": "Форма",
+    "site_title": "ProProstir",
+    "site_header": "ProProstir",
+    "site_brand": "ProProstir",
     "site_logo_classes": "img-circle",
     "welcome_sign": "Адміністрування меблевої студії",
-    "copyright": "Форма Studio · Київ",
+    "copyright": "ProProstir · Від ідеї до вашого простору",
     "search_model": ["catalog.Project", "leads.Lead"],
     "user_avatar": None,
     "topmenu_links": [
@@ -259,7 +253,7 @@ JAZZMIN_SETTINGS = {
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "related_modal_active": True,
-    "custom_css": None,
+    "custom_css": "catalog/admin/collapsible-dropdowns.css",
     "custom_js": None,
     "use_google_fonts_cdn": True,
     "show_ui_builder": False,

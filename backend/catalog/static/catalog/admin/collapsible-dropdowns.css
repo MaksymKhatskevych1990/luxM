@@ -1,0 +1,52 @@
+#jazzy-collapsible .card {
+  overflow: hidden;
+}
+
+#jazzy-collapsible .collapsible-header {
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0.9rem 1.2rem !important;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+#jazzy-collapsible .collapsible-header:hover {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+#jazzy-collapsible .collapsible-header .card-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+#jazzy-collapsible .collapsible-header::after {
+  content: "\f078";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 0.85rem;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 193, 7, 0.55);
+  border-radius: 6px;
+  color: #ffc107;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 32px;
+  text-align: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+#jazzy-collapsible .card:has(> .show) .collapsible-header {
+  background: rgba(255, 193, 7, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#jazzy-collapsible .card:has(> .show) .collapsible-header::after {
+  transform: rotate(180deg);
+  background: rgba(255, 193, 7, 0.16);
+}

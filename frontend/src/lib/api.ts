@@ -28,6 +28,17 @@ export async function fetchHome(): Promise<HomePayload> {
   return res.json();
 }
 
+function leadErrorMessage(data: unknown): string {
+  if (!data || typeof data !== "object") return "Не вдалося надіслати заявку";
+  const record = data as Record<string, unknown>;
+  if (typeof record.detail === "string" && record.detail) return record.detail;
+  for (const value of Object.values(record)) {
+    if (typeof value === "string" && value) return value;
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  }
+  return "Не вдалося надіслати заявку";
+}
+
 export async function submitLead(payload: {
   room_type: string;
   message: string;
@@ -35,16 +46,27 @@ export async function submitLead(payload: {
   phone: string;
   email: string;
   telegram: string;
+  attachment?: File | null;
 }) {
+  const body = new FormData();
+  body.append("room_type", payload.room_type);
+  body.append("message", payload.message);
+  body.append("name", payload.name);
+  body.append("phone", payload.phone);
+  body.append("email", payload.email);
+  body.append("telegram", payload.telegram);
+  if (payload.attachment) {
+    body.append("attachment", payload.attachment);
+  }
+
   const res = await fetch(`${getClientApiUrl()}/leads/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body,
   });
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.detail || "Не вдалося надіслати заявку");
+    throw new Error(leadErrorMessage(data));
   }
 
   return res.json();

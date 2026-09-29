@@ -1,0 +1,69 @@
+.hero-zone-editor {
+  margin: 16px 0 24px;
+  padding: 16px 18px 20px;
+  background: #f8f8f6;
+  border: 1px solid #ddd;
+}
+
+.hero-zone-editor h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.hero-zone-editor p {
+  margin: 0 0 12px;
+  color: #555;
+  max-width: 720px;
+}
+
+.hero-zone-stage {
+  position: relative;
+  background: #1c1b19;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+.hero-zone-stage img {
+  max-width: 100%;
+  max-height: 560px;
+  display: block;
+}
+
+.hero-zone-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-zone-box {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid #b89b72;
+  background: rgba(184, 155, 114, 0.28);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 6px;
+  pointer-events: auto;
+  cursor: move;
+}
+
+.hero-zone-box.is-active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #b89b72;
+}
+
+.hero-zone-box .handle {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  background: #b89b72;
+  border: 1px solid #fff;
+  cursor: nwse-resize;
+}

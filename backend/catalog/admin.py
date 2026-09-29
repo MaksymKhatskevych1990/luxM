@@ -5,7 +5,9 @@ from django.utils.safestring import mark_safe
 
 from .models import (
     CraftDetail,
+    HeroScene,
     HeroStat,
+    HeroZone,
     Material,
     NavItem,
     PageSection,
@@ -23,7 +25,7 @@ from .models import (
 class ProjectStageInline(admin.TabularInline):
     model = ProjectStage
     extra = 0
-    fields = ("title", "image_url", "order")
+    fields = ("title", "image", "image_url", "order")
     ordering = ("order", "id")
     verbose_name_plural = "Етапи (fallback, якщо немає відео)"
 
@@ -46,6 +48,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             "Header",
             {
                 "fields": (
+                    "header_logo",
                     "header_logo_primary",
                     "header_logo_secondary",
                     "header_cta_text",
@@ -57,6 +60,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             "Hero",
             {
                 "fields": (
+                    "hero_background",
+                    "hero_background_image_url",
+                    "hero_floorplan_image",
                     "hero_eyebrow",
                     "hero_title_line1",
                     "hero_title_emphasis",
@@ -69,7 +75,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                     "hero_floorplan_caption",
                     "hero_scroll_hint",
                     "hero_founded_prefix",
-                    "hero_background_image_url",
                 )
             },
         ),
@@ -174,11 +179,38 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (
             "SEO",
             {
+                "description": (
+                    "Усі назви й тексти для Google, соцмереж і schema.org. "
+                    "Змінюйте їх, коли оновлюєте бренд або послуги."
+                ),
                 "fields": (
                     "seo_title",
                     "seo_description",
                     "seo_keywords",
+                    "seo_author",
+                    "seo_canonical_path",
+                    "seo_robots",
+                    "seo_html_lang",
+                    "seo_locale",
+                    "seo_geo_region",
+                    "seo_geo_placename",
+                ),
+            },
+        ),
+        (
+            "Open Graph / Twitter",
+            {
+                "fields": (
+                    "og_title",
+                    "og_description",
+                    "og_type",
+                    "og_image",
                     "og_image_url",
+                    "og_image_alt",
+                    "twitter_card",
+                    "twitter_title",
+                    "twitter_description",
+                    "twitter_site",
                 )
             },
         ),
@@ -231,6 +263,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                     "drawing_phase_2_label",
                     "drawing_phase_3_label",
                     "drawing_result_alt",
+                    "drawing_sketch",
                     "drawing_sketch_image_url",
                 )
             },
@@ -244,7 +277,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                     "ba_hint",
                     "ba_label_before",
                     "ba_label_after",
+                    "before_image",
                     "before_image_url",
+                    "after_image",
                     "after_image_url",
                 )
             },
@@ -292,13 +327,27 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "JSON-LD",
+            "JSON-LD / schema.org",
             {
+                "description": (
+                    "Структуровані дані для пошуку. Назви бізнесу та послуг "
+                    "можна змінювати без правки коду."
+                ),
                 "fields": (
+                    "jsonld_name",
+                    "jsonld_type",
+                    "jsonld_description",
+                    "jsonld_street",
                     "jsonld_city",
                     "jsonld_country",
+                    "jsonld_postal_code",
                     "jsonld_price_range",
-                )
+                    "jsonld_area_served",
+                    "jsonld_opening_hours",
+                    "jsonld_latitude",
+                    "jsonld_longitude",
+                    "jsonld_services",
+                ),
             },
         ),
     )
@@ -479,6 +528,15 @@ class MaterialAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("name_uk", "name_en", "description")
     list_editable = ("order", "is_published")
+    fields = (
+        "name_uk",
+        "name_en",
+        "description",
+        "image",
+        "image_url",
+        "order",
+        "is_published",
+    )
 
 
 @admin.register(ProcessStep)
@@ -487,6 +545,15 @@ class ProcessStepAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("title", "description")
     list_editable = ("order", "is_published")
+    fields = (
+        "title",
+        "description",
+        "duration",
+        "image",
+        "image_url",
+        "order",
+        "is_published",
+    )
 
 
 @admin.register(CraftDetail)
@@ -495,6 +562,7 @@ class CraftDetailAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("title",)
     list_editable = ("order", "is_published")
+    fields = ("title", "image", "image_url", "order", "is_published")
 
 
 @admin.register(WorkshopStat)
@@ -509,3 +577,61 @@ class WorkshopImageAdmin(admin.ModelAdmin):
     list_display = ("title", "order")
     search_fields = ("title",)
     list_editable = ("order",)
+    fields = ("title", "image", "image_url", "order")
+
+
+class HeroZoneInline(admin.TabularInline):
+    model = HeroZone
+    extra = 1
+    fields = (
+        "name",
+        "service",
+        "materials",
+        "tag",
+        "x",
+        "y",
+        "width",
+        "height",
+        "order",
+        "is_published",
+    )
+    ordering = ("order", "id")
+
+
+@admin.register(HeroScene)
+class HeroSceneAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_active", "is_published", "order", "zone_count")
+    list_editable = ("is_active", "is_published", "order")
+    list_filter = ("is_active", "is_published")
+    search_fields = ("title", "hint")
+    inlines = (HeroZoneInline,)
+    change_form_template = "admin/catalog/heroscene/change_form.html"
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "title",
+                    "image",
+                    "image_url",
+                    "is_active",
+                    "is_published",
+                    "order",
+                )
+            },
+        ),
+        (
+            "Тексти на головній",
+            {
+                "fields": ("hint", "idle_eyebrow", "idle_title", "idle_body"),
+            },
+        ),
+    )
+
+    class Media:
+        css = {"all": ("catalog/admin/hero-zone-editor.css",)}
+        js = ("catalog/admin/hero-zone-editor.js",)
+
+    @admin.display(description="Зони")
+    def zone_count(self, obj: HeroScene) -> int:
+        return obj.zones.count()

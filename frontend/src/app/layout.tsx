@@ -8,15 +8,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: fallbackHome.settings.seo_title,
-    template: `%s | ${fallbackHome.settings.brand_name}`,
+    template: `%s | ${fallbackHome.settings.jsonld_name || fallbackHome.settings.brand_name}`,
   },
   description: fallbackHome.settings.seo_description,
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
+    nocache: true,
     googleBot: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
+      noimageindex: true,
     },
   },
   alternates: {

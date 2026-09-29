@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { fallbackHome } from "@/lib/fallback";
+
+export const metadata: Metadata = {
+  title: "Сторінку не знайдено",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (
@@ -36,7 +42,7 @@ export default function NotFound() {
             }}
           >
             Можливо, вона була переміщена або ніколи не існувала. Поверніться на головну —
-            там проєкти, процес і майстерня.
+            там проєкти, процес і команда.
           </p>
           <a href="/" className="btn-primary">
             На головну

@@ -1,0 +1,9 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+  {{ block.super }}
+  <div
+    id="hero-zone-editor"
+    data-image="{% if original %}{{ original.resolved_image_url|default:'' }}{% endif %}"
+  ></div>
+{% endblock %}

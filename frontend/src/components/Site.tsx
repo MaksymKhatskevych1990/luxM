@@ -45,10 +45,18 @@ export default function Site({ data }: SiteProps) {
 
   return (
     <>
-      <JsonLd settings={data.settings} />
+      <JsonLd
+        settings={data.settings}
+        projects={data.projects}
+        sections={data.sections}
+      />
       <Header settings={data.settings} navigation={data.navigation} />
       <main>
-        <Hero settings={data.settings} stats={data.hero_stats} />
+        <Hero
+          settings={data.settings}
+          stats={data.hero_stats}
+          scene={data.hero_scene}
+        />
         {isVisible(projectsSection) ? (
           <Projects
             section={projectsSection}

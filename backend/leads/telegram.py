@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def format_lead_message(lead: Lead) -> str:
     lines = [
-        "🆕 Нова заявка з сайту Forma Studio",
+        "🆕 Нова заявка з сайту ProProstir",
         "",
         f"👤 Ім'я: {lead.name}",
         f"📞 Телефон: {lead.phone}",
@@ -27,6 +27,8 @@ def format_lead_message(lead: Lead) -> str:
         lines.append(f"🏠 Тип: {lead.room_type_label()}")
     if lead.message:
         lines.extend(["", "📝 Повідомлення:", lead.message])
+    if lead.attachment:
+        lines.extend(["", "📎 До заявки додано фото або план"])
     return "\n".join(lines)
 
 

@@ -4,6 +4,7 @@ export type SiteSettings = {
   tagline: string;
   founded_year: number;
 
+  header_logo_url?: string;
   header_logo_primary: string;
   header_logo_secondary: string;
   header_cta_text: string;
@@ -22,6 +23,7 @@ export type SiteSettings = {
   hero_scroll_hint: string;
   hero_founded_prefix: string;
   hero_background_image_url: string;
+  hero_floorplan_image_url?: string;
 
   phone: string;
   email: string;
@@ -32,13 +34,39 @@ export type SiteSettings = {
   telegram_url: string;
   whatsapp_url: string;
 
+  updated_at?: string;
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
+  seo_author?: string;
+  seo_canonical_path?: string;
+  seo_robots?: string;
+  seo_html_lang?: string;
+  seo_locale?: string;
+  seo_geo_region?: string;
+  seo_geo_placename?: string;
+  og_title?: string;
+  og_description?: string;
+  og_type?: string;
   og_image_url: string;
+  og_image_alt?: string;
+  twitter_card?: string;
+  twitter_title?: string;
+  twitter_description?: string;
+  twitter_site?: string;
+  jsonld_name?: string;
+  jsonld_type?: string;
+  jsonld_description?: string;
   jsonld_city: string;
   jsonld_country: string;
+  jsonld_postal_code?: string;
+  jsonld_street?: string;
   jsonld_price_range: string;
+  jsonld_area_served?: string;
+  jsonld_opening_hours?: string;
+  jsonld_latitude?: string;
+  jsonld_longitude?: string;
+  jsonld_services?: string;
 
   stats_projects: string;
   stats_years: string;
@@ -232,8 +260,33 @@ export type WorkshopImage = {
   order: number;
 };
 
+export type HeroZone = {
+  id: number | string;
+  name: string;
+  service: string;
+  materials: string;
+  tag: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  order: number;
+};
+
+export type HeroScene = {
+  id?: number;
+  title: string;
+  image_url: string;
+  hint: string;
+  idle_eyebrow: string;
+  idle_title: string;
+  idle_body: string;
+  zones: HeroZone[];
+};
+
 export type HomePayload = {
   settings: SiteSettings;
+  hero_scene?: HeroScene | null;
   hero_stats: HeroStat[];
   sections: PageSection[];
   navigation: NavItem[];

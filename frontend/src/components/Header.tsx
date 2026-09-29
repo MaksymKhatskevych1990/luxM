@@ -3,22 +3,12 @@
 import { useEffect, useState } from "react";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { navByLocation } from "@/lib/content";
+import SiteLogo from "./SiteLogo";
 
 type HeaderProps = {
   settings: SiteSettings;
   navigation: NavItem[];
 };
-
-function LogoMark() {
-  return (
-    <div className="logo-mark" aria-hidden="true">
-      <span />
-      <span />
-      <span />
-      <span />
-    </div>
-  );
-}
 
 export default function Header({ settings, navigation }: HeaderProps) {
   const [open, setOpen] = useState(false);
@@ -51,7 +41,11 @@ export default function Header({ settings, navigation }: HeaderProps) {
             textDecoration: "none",
           }}
         >
-          <LogoMark />
+          <SiteLogo
+            src={settings.header_logo_url}
+            alt={settings.brand_name}
+            size={32}
+          />
           <div>
             <div
               className="font-serif"

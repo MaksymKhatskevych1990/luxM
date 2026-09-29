@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { submitLead } from "@/lib/api";
 import type { PageSection, RoomType, SiteSettings } from "@/lib/types";
 
@@ -20,6 +20,8 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [telegram, setTelegram] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -28,6 +30,12 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
     if (!name.trim() || !phone.trim()) {
       setStatus("error");
       setError(settings.contact_validation_message);
+      return;
+    }
+
+    if (file && file.size > 15 * 1024 * 1024) {
+      setStatus("error");
+      setError("Файл завеликий. Максимум 15 МБ.");
       return;
     }
 
@@ -42,6 +50,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
         phone: phone.trim(),
         email: email.trim(),
         telegram: telegram.trim(),
+        attachment: file,
       });
       setStatus("success");
     } catch (err) {
@@ -233,6 +242,39 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                   />
+                </div>
+
+                <div style={{ marginBottom: 28 }}>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf"
+                    className="contact-file-input"
+                    onChange={(e) => {
+                      setFile(e.target.files?.[0] ?? null);
+                      setError("");
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="contact-file"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <span>{file ? file.name : "Додати фото «до» або план"}</span>
+                    <span className="contact-file-hint">JPG, PNG, WEBP або PDF · до 15 МБ</span>
+                  </button>
+                  {file ? (
+                    <button
+                      type="button"
+                      className="contact-file-clear"
+                      onClick={() => {
+                        setFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                    >
+                      Прибрати файл
+                    </button>
+                  ) : null}
                 </div>
 
                 <div

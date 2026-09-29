@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "luxmeb": {
+      "command": "bash",
+      "args": ["mcp/run.sh"],
+      "env": {
+        "LUXMEB_API_URL": "http://127.0.0.1:8000/api"
+      }
+    }
+  }
+}

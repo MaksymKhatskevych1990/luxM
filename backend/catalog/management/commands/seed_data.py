@@ -2,7 +2,9 @@ from django.core.management.base import BaseCommand
 
 from catalog.models import (
     CraftDetail,
+    HeroScene,
     HeroStat,
+    HeroZone,
     HERO_BACKGROUND_DEFAULT,
     Material,
     NavItem,
@@ -54,22 +56,10 @@ IMG = {
         "https://images.unsplash.com/photo-1659930087003-2d64e33181f7"
         "?w=700&h=900&fit=crop&auto=format"
     ),
-    "craft_1": (
-        "https://images.unsplash.com/photo-1659930087003-2d64e33181f7"
-        "?w=500&h=680&fit=crop&auto=format"
-    ),
-    "craft_2": (
-        "https://images.unsplash.com/photo-1631396326646-c06a935ff3a6"
-        "?w=500&h=650&fit=crop&auto=format"
-    ),
-    "craft_3": (
-        "https://images.unsplash.com/photo-1712171984530-e25a4aaa46dd"
-        "?w=500&h=700&fit=crop&auto=format"
-    ),
-    "craft_4": (
-        "https://images.unsplash.com/photo-1679797850019-3d0d8659a695"
-        "?w=500&h=620&fit=crop&auto=format"
-    ),
+    "craft_1": "/craft/craft-1-survey.jpg",
+    "craft_2": "/craft/craft-2-drawing.jpg",
+    "craft_3": "/craft/craft-3-renovation.jpg",
+    "craft_4": "/craft/craft-4-assembly.jpg",
     "oak": (
         "https://images.unsplash.com/photo-1582055193464-943584223be1"
         "?w=400&h=560&fit=crop&auto=format"
@@ -106,19 +96,13 @@ IMG = {
         "https://images.unsplash.com/photo-1631396326646-c06a935ff3a6"
         "?w=400&h=400&fit=crop&auto=format"
     ),
-    "before": (
-        "https://images.unsplash.com/photo-1664995156397-99bd42f5a8ab"
-        "?w=1400&h=900&fit=crop&auto=format"
-    ),
-    "after": (
-        "https://images.unsplash.com/photo-1758565811352-a439bd6f956e"
-        "?w=1400&h=900&fit=crop&auto=format"
-    ),
+    "before": "/before-after/before.jpg",
+    "after": "/before-after/after.jpg",
 }
 
 
 class Command(BaseCommand):
-    help = "Seed catalog content from the Forma Studio mockup."
+    help = "Seed catalog content for ProProstir."
 
     def handle(self, *args, **options):
         settings = self._seed_settings()
@@ -133,24 +117,25 @@ class Command(BaseCommand):
         self._seed_process_steps()
         self._seed_craft_details()
         self._seed_workshop()
-        self.stdout.write(self.style.SUCCESS("Seed data loaded from Forma Studio mockup."))
+        self._seed_hero_scene()
+        self.stdout.write(self.style.SUCCESS("Seed data loaded for ProProstir."))
 
     def _seed_settings(self):
         settings = SiteSettings.load()
-        settings.brand_name = "Форма Studio"
-        settings.tagline = "Унікальні меблі на замовлення. Київ, Україна."
+        settings.brand_name = "ProProstir"
+        settings.tagline = "Ми знаємо про простір все"
         settings.founded_year = 2018
 
-        settings.header_logo_primary = "Форма"
-        settings.header_logo_secondary = "STUDIO"
-        settings.header_cta_text = "Обговорити проєкт"
+        settings.header_logo_primary = "ProProstir"
+        settings.header_logo_secondary = "Ми знаємо про простір все"
+        settings.header_cta_text = "Розповісти бачення"
         settings.header_cta_href = "#контакти"
 
-        settings.hero_eyebrow = "Форма Studio · Київ, Україна"
-        settings.hero_title_line1 = "Меблі,"
-        settings.hero_title_emphasis = "створені"
-        settings.hero_title_line2 = "під ваш простір."
-        settings.hero_subline = "Проєктування · Виробництво · Монтаж"
+        settings.hero_eyebrow = "ProProstir · Повний цикл"
+        settings.hero_title_line1 = "Від дизайну"
+        settings.hero_title_emphasis = "до ключів."
+        settings.hero_title_line2 = "Заходь і живи."
+        settings.hero_subline = "Дизайн · Ремонт · Оздоблення · Комплектація"
         settings.hero_cta_primary_text = "Дивитись проєкти"
         settings.hero_cta_primary_href = "#проєкти"
         settings.hero_cta_secondary_text = "Про процес"
@@ -164,25 +149,58 @@ class Command(BaseCommand):
         settings.email = "studio@forma.ua"
         settings.telegram = "@forma_studio"
         settings.whatsapp = "+38 (050) 555 12 34"
-        settings.address = "Київ · Стара Дарниця, вул. Промислова 14"
+        settings.address = "Дніпро · працюємо по всій Україні"
         settings.instagram_url = "https://instagram.com/forma_studio"
         settings.telegram_url = "https://t.me/forma_studio"
         settings.whatsapp_url = ""
         settings.contact_label_whatsapp = "WhatsApp"
         settings.contact_label_instagram = "Instagram"
 
-        settings.seo_title = "Форма Studio — меблі на замовлення в Києві"
+        settings.seo_title = "Дизайн і ремонт під ключ у Дніпрі | ProProstir"
         settings.seo_description = (
-            "Преміальні меблі на замовлення: проєктування, виробництво та монтаж. "
-            "Кухні, гардеробні, вітальні та кабінети."
+            "ProProstir — повний цикл від дизайну інтер'єру до «заходь і живи». "
+            "База в Дніпрі, працюємо також по інших містах України. "
+            "Редизайн квартир і будинків, оздоблення, меблі, монтаж."
         )
         settings.seo_keywords = (
-            "меблі на замовлення, кухні Київ, гардеробні, Forma Studio"
+            "ремонт під ключ Дніпро, дизайн інтер'єру, редизайн квартири, "
+            "ремонт будинку, кахель, гіпсокартон, стелі, "
+            "меблі на замовлення, ProProstir"
         )
+        settings.seo_author = "ProProstir"
+        settings.seo_canonical_path = "/"
+        settings.seo_robots = "noindex, nofollow"
+        settings.seo_html_lang = "uk"
+        settings.seo_locale = "uk_UA"
+        settings.seo_geo_region = "UA-12"
+        settings.seo_geo_placename = "Дніпро"
+        settings.og_title = "ProProstir — Ми знаємо про простір все"
+        settings.og_description = (
+            "Повний цикл: дизайн, ремонт, оздоблення й комплектація. "
+            "Ви ділитеся баченням комфорту — ми втілюємо його до ключів."
+        )
+        settings.og_type = "website"
         settings.og_image_url = ""
-        settings.jsonld_city = "Київ"
+        settings.og_image_alt = (
+            "ProProstir: від дизайну інтер'єру до готового простору"
+        )
+        settings.twitter_card = "summary_large_image"
+        settings.jsonld_name = "ProProstir"
+        settings.jsonld_type = "HomeAndConstructionBusiness"
+        settings.jsonld_description = (
+            "ProProstir — повний цикл від дизайну до здачі. "
+            "База в Дніпрі, виїжджаємо в інші міста України."
+        )
+        settings.jsonld_city = "Дніпро"
         settings.jsonld_country = "UA"
+        settings.jsonld_street = "Дніпро"
+        settings.jsonld_area_served = "Дніпро та інші міста України"
+        settings.jsonld_opening_hours = "Mo-Fr 10:00-18:00"
         settings.jsonld_price_range = "$$$"
+        settings.jsonld_services = (
+            "Дизайн інтер'єру\nРемонт під ключ\nРедизайн квартир і будинків\n"
+            "Кахель і оздоблення\nГіпсокартон і стелі\nМеблі та комплектація\nМонтаж"
+        )
 
         settings.stats_projects = "147"
         settings.stats_years = "08"
@@ -190,18 +208,20 @@ class Command(BaseCommand):
         settings.stats_production = "100%"
 
         settings.workshop_quote = (
-            "Ми не просто виготовляємо меблі. Ми створюємо предмети, "
-            "які мають існувати саме у вашому просторі."
+            "Довірте нам своє бачення комфорту. Від найкращого дизайнера "
+            "до кахлю, гіпсу, стель і збірки меблів — ми втілимо його так, "
+            "щоб ви просто зайшли і жили."
         )
-        settings.workshop_author = "Андрій Коваль, засновник"
+        settings.workshop_author = "Команда ProProstir"
         settings.workshop_text = (
-            "Наша майстерня площею 800 м² в Старій Дарниці обладнана точними "
-            "верстатами ЧПУ та ручним інструментом. Кожен виріб — від першого "
-            "ескізу до встановлення — проходить через руки одного майстра."
+            "Ми ведемо весь цикл: слухаємо ваше бачення, проєктуємо інтер'єр "
+            "і реалізуємо його на об'єкті. База в Дніпрі — виїжджаємо в інші міста. "
+            "Нові квартири й будинки, перепроєктування старих просторів, "
+            "оздоблення та комплектація — одна команда відповідає від ескізу до ключів."
         )
 
         settings.detail_eyebrow_prefix = "Проєкт у деталях"
-        settings.detail_section_title = "Від ескізу до встановлення"
+        settings.detail_section_title = "Від ескізу до здачі"
         settings.detail_number_prefix = "Проєкт №"
         settings.detail_cta_text = "Схожий проєкт →"
         settings.detail_cta_href = "#контакти"
@@ -212,35 +232,38 @@ class Command(BaseCommand):
         settings.meta_label_location = "Локація"
 
         settings.drawing_eyebrow = "Від ескізу до реальності"
-        settings.drawing_title = "Ідея, що стає простором"
+        settings.drawing_title = "Бачення, що стає домом"
         settings.drawing_body = (
-            "Прокрутіть — побачите трансформацію з технічного креслення "
-            "в готовий інтер'єр"
+            "Прокрутіть — побачите, як креслення й ескіз перетворюються "
+            "на простір, у який можна зайти і жити"
         )
         settings.drawing_phase_1_label = "Креслення"
         settings.drawing_phase_2_label = "Ескіз"
         settings.drawing_phase_3_label = "Результат"
-        settings.drawing_result_alt = "Готова кухня"
+        settings.drawing_result_alt = "Готовий інтер'єр"
         settings.drawing_sketch_image_url = ""
 
-        settings.ba_eyebrow = "Трансформація простору"
+        settings.ba_eyebrow = "Редизайн і нове життя"
         settings.ba_title = "До і після"
         settings.ba_hint = "Перетягніть повзунок"
         settings.ba_label_before = "ДО"
         settings.ba_label_after = "ПІСЛЯ"
         settings.before_image_url = IMG["before"]
         settings.after_image_url = IMG["after"]
+        settings.before_image = None
+        settings.after_image = None
 
         settings.contact_eyebrow = "Зв'язатися"
         settings.contact_title_line1 = "Розкажіть"
-        settings.contact_title_line2 = "про свій"
-        settings.contact_title_emphasis = "простір."
+        settings.contact_title_line2 = "про своє"
+        settings.contact_title_emphasis = "бачення."
         settings.contact_intro = (
-            "Надішліть план приміщення, фотографію або просто ідею — "
-            "ми зв'яжемося протягом одного робочого дня."
+            "Надішліть план, фото «до» або просто слова про комфорт, "
+            "який хочете відчути вдома — у Дніпрі чи в іншому місті. "
+            "Зв'яжемося протягом одного робочого дня."
         )
-        settings.contact_room_heading = "Що плануєте"
-        settings.contact_message_placeholder = "Розкажіть про ваш проєкт…"
+        settings.contact_room_heading = "Тип об'єкта"
+        settings.contact_message_placeholder = "Опишіть своє бачення комфорту…"
         settings.contact_name_placeholder = "Ім'я"
         settings.contact_phone_placeholder = "Телефон"
         settings.contact_email_placeholder = "Email"
@@ -250,7 +273,7 @@ class Command(BaseCommand):
         settings.contact_success_eyebrow = "Надіслано"
         settings.contact_success_title = "Дякуємо, ми отримали ваш запит."
         settings.contact_success_body = (
-            "Зв'яжемося протягом одного робочого дня, щоб обговорити ваш простір."
+            "Зв'яжемося протягом одного робочого дня, щоб зрозуміти ваше бачення і шлях до нього."
         )
         settings.contact_validation_message = "Будь ласка, вкажіть ім'я та телефон."
         settings.contact_label_address = "Адреса"
@@ -262,7 +285,7 @@ class Command(BaseCommand):
         settings.footer_studio_heading = "Студія"
         settings.footer_contacts_heading = "Контакти"
         settings.footer_copyright_suffix = "Всі права захищено"
-        settings.footer_location_tagline = "Київ, Україна · Виготовлено з гордістю"
+        settings.footer_location_tagline = "Дніпро · працюємо по всій Україні"
         settings.save()
         return settings
 
@@ -273,7 +296,7 @@ class Command(BaseCommand):
                 HeroStat(value="147", label="Виконаних проєктів", order=1),
                 HeroStat(value="08", label="Років досвіду", order=2),
                 HeroStat(value="24", label="Майстри в команді", order=3),
-                HeroStat(value="100%", label="Власне виробництво", order=4),
+                HeroStat(value="100%", label="Повний цикл", order=4),
             ]
         )
 
@@ -285,7 +308,7 @@ class Command(BaseCommand):
                     key="projects",
                     section_id="проєкти",
                     eyebrow="Вибрані роботи",
-                    title="Кожен предмет —",
+                    title="Кожен простір —",
                     title_emphasis="окрема історія.",
                     cta_text="Всі проєкти →",
                     cta_href="#проєкти",
@@ -294,22 +317,25 @@ class Command(BaseCommand):
                 PageSection(
                     key="photography",
                     section_id="фотографія",
-                    eyebrow="Деталі майстерності",
-                    title="Кожне з'єднання —",
-                    title_emphasis="ручна робота.",
+                    eyebrow="Деталі реалізації",
+                    title="Кожен шар —",
+                    title_emphasis="своя майстерність.",
                     subtitle=(
-                        "Без конвеєра. Кожна деталь — через руки майстра "
-                        "від початку до кінця."
+                        "Дизайн, оздоблення, столярка й фініш — "
+                        "одна команда веде простір до ключів."
                     ),
                     order=2,
                 ),
                 PageSection(
                     key="materials",
                     section_id="матеріали",
-                    eyebrow="Бібліотека матеріалів",
-                    title="Матеріали, що",
-                    title_emphasis="живуть",
-                    subtitle="Тільки натуральне. Перевірено роками.",
+                    eyebrow="Матеріали простору",
+                    title="Те, з чого",
+                    title_emphasis="народжується дім",
+                    subtitle=(
+                        "Від дерева й каменю до кахлю, скла та металу — "
+                        "обираємо те, що витримає життя."
+                    ),
                     order=3,
                 ),
                 PageSection(
@@ -322,24 +348,24 @@ class Command(BaseCommand):
                 PageSection(
                     key="workshop",
                     section_id="майстерня",
-                    eyebrow="Майстерня",
+                    eyebrow="Команда",
                     order=5,
                 ),
                 PageSection(
                     key="drawing",
                     section_id="креслення",
                     eyebrow="Від ескізу до реальності",
-                    title="Ідея, що стає простором",
+                    title="Бачення, що стає домом",
                     subtitle=(
-                        "Прокрутіть — побачите трансформацію з технічного "
-                        "креслення в готовий інтер'єр"
+                        "Прокрутіть — побачите, як креслення й ескіз "
+                        "перетворюються на простір, у який можна зайти і жити"
                     ),
                     order=6,
                 ),
                 PageSection(
                     key="before_after",
                     section_id="до-після",
-                    eyebrow="Трансформація простору",
+                    eyebrow="Редизайн і нове життя",
                     title="До і після",
                     subtitle="Перетягніть повзунок",
                     order=7,
@@ -349,11 +375,12 @@ class Command(BaseCommand):
                     section_id="контакти",
                     eyebrow="Зв'язатися",
                     title="Розкажіть",
-                    title_line2="про свій",
-                    title_emphasis="простір.",
+                    title_line2="про своє",
+                    title_emphasis="бачення.",
                     subtitle=(
-                        "Надішліть план приміщення, фотографію або просто ідею — "
-                        "ми зв'яжемося протягом одного робочого дня."
+                        "Надішліть план, фото «до» або просто слова про комфорт, "
+                        "який хочете відчути вдома — у Дніпрі чи в іншому місті. "
+                        "Зв'яжемося протягом одного робочого дня."
                     ),
                     order=8,
                 ),
@@ -377,7 +404,7 @@ class Command(BaseCommand):
                     order=2,
                 ),
                 NavItem(
-                    label="Майстерня",
+                    label="Про нас",
                     href="#майстерня",
                     location=NavItem.LOCATION_HEADER,
                     order=3,
@@ -389,25 +416,25 @@ class Command(BaseCommand):
                     order=4,
                 ),
                 NavItem(
-                    label="Кухні",
-                    href="#проєкти",
+                    label="Дизайн інтер'єру",
+                    href="#процес",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=1,
                 ),
                 NavItem(
-                    label="Гардеробні",
-                    href="#проєкти",
+                    label="Ремонт і редизайн",
+                    href="#до-після",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=2,
                 ),
                 NavItem(
-                    label="Вітальні",
-                    href="#проєкти",
+                    label="Оздоблення",
+                    href="#матеріали",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=3,
                 ),
                 NavItem(
-                    label="Кабінети",
+                    label="Меблі та комплектація",
                     href="#проєкти",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=4,
@@ -419,7 +446,7 @@ class Command(BaseCommand):
                     order=1,
                 ),
                 NavItem(
-                    label="Майстерня",
+                    label="Команда",
                     href="#майстерня",
                     location=NavItem.LOCATION_FOOTER_STUDIO,
                     order=2,
@@ -443,10 +470,10 @@ class Command(BaseCommand):
         RoomType.objects.all().delete()
         RoomType.objects.bulk_create(
             [
-                RoomType(value="kitchen", label="Кухня", order=1),
-                RoomType(value="wardrobe", label="Гардеробна", order=2),
-                RoomType(value="living", label="Вітальня", order=3),
-                RoomType(value="bedroom", label="Спальня", order=4),
+                RoomType(value="apartment", label="Квартира", order=1),
+                RoomType(value="house", label="Будинок", order=2),
+                RoomType(value="redesign", label="Редизайн", order=3),
+                RoomType(value="newbuild", label="Нове житло", order=4),
                 RoomType(value="other", label="Інше", order=5),
             ]
         )
@@ -474,7 +501,7 @@ class Command(BaseCommand):
                 "year": 2026,
                 "area": "18 м²",
                 "duration": "11 тижнів",
-                "location": "Приватний будинок · Київ",
+                "location": "Приватний будинок · Дніпро",
                 "image_url": IMG["kitchen"],
                 "detail_image_url": IMG["install"],
                 "video_poster_url": IMG["kitchen"],
@@ -486,12 +513,12 @@ class Command(BaseCommand):
                 "is_published": True,
                 "show_in_detail_section": True,
                 "order": 1,
-                "seo_title": "Кухня з натурального дуба на замовлення | Форма Studio",
+                "seo_title": "Кухня з натурального дуба на замовлення | ProProstir",
                 "seo_description": (
                     "Острівна кухня з масиву дуба та мармуру Calacatta. "
-                    "Проєктування, виробництво та монтаж у Києві."
+                    "Проєктування, виробництво та монтаж у Дніпрі та інших містах."
                 ),
-                "seo_keywords": "кухня на замовлення, дуб, мармур Calacatta, Київ",
+                "seo_keywords": "кухня на замовлення, дуб, мармур Calacatta, Дніпро",
             },
         )
         kitchen.stages.all().delete()
@@ -555,7 +582,7 @@ class Command(BaseCommand):
                 "year": 2025,
                 "area": "22 м²",
                 "duration": "9 тижнів",
-                "location": "Квартира · Київ",
+                "location": "Квартира · Дніпро",
                 "image_url": IMG["library"],
                 "detail_image_url": IMG["library"],
                 "video_poster_url": IMG["library"],
@@ -566,11 +593,11 @@ class Command(BaseCommand):
                 "is_published": True,
                 "show_in_detail_section": False,
                 "order": 2,
-                "seo_title": "Бібліотека і кабінет з горіха | Форма Studio",
+                "seo_title": "Бібліотека і кабінет з горіха | ProProstir",
                 "seo_description": (
                     "Вбудована бібліотека по всій висоті. Ніжки та ручки — матова сталь."
                 ),
-                "seo_keywords": "бібліотека на замовлення, кабінет, горіх, Київ",
+                "seo_keywords": "бібліотека на замовлення, кабінет, горіх, Дніпро",
             },
         )
         self._seed_gallery(
@@ -598,7 +625,7 @@ class Command(BaseCommand):
                 "year": 2025,
                 "area": "14 м²",
                 "duration": "7 тижнів",
-                "location": "Приватний будинок · Київ",
+                "location": "Приватний будинок · Дніпро",
                 "image_url": IMG["wardrobe"],
                 "detail_image_url": IMG["wardrobe"],
                 "video_poster_url": IMG["wardrobe"],
@@ -607,11 +634,11 @@ class Command(BaseCommand):
                 "is_published": True,
                 "show_in_detail_section": False,
                 "order": 3,
-                "seo_title": "Гардеробна зі шпону | Форма Studio",
+                "seo_title": "Гардеробна зі шпону | ProProstir",
                 "seo_description": (
                     "Гардеробна система зі шпону ясена та матовим склом."
                 ),
-                "seo_keywords": "гардеробна на замовлення, шпон, скло, Київ",
+                "seo_keywords": "гардеробна на замовлення, шпон, скло, Дніпро",
             },
         )
         self._seed_gallery(
@@ -638,7 +665,7 @@ class Command(BaseCommand):
                 "year": 2024,
                 "area": "28 м²",
                 "duration": "8 тижнів",
-                "location": "Квартира · Київ",
+                "location": "Квартира · Дніпро",
                 "image_url": IMG["living"],
                 "detail_image_url": IMG["living"],
                 "video_poster_url": IMG["living"],
@@ -647,9 +674,9 @@ class Command(BaseCommand):
                 "is_published": True,
                 "show_in_detail_section": False,
                 "order": 4,
-                "seo_title": "Вітальня Wabi-Sabi | Форма Studio",
+                "seo_title": "Вітальня Wabi-Sabi | ProProstir",
                 "seo_description": "Тихі форми, натуральний дуб і льон.",
-                "seo_keywords": "вітальня на замовлення, wabi-sabi, дуб, Київ",
+                "seo_keywords": "вітальня на замовлення, wabi-sabi, дуб, Дніпро",
             },
         )
         self._seed_gallery(
@@ -684,7 +711,8 @@ class Command(BaseCommand):
                 "name_uk": "Дуб",
                 "name_en": "OAK",
                 "description": (
-                    "Масив із відкритою текстурою. Теплий на дотик, зносостійкий."
+                    "Масив і столярка: кухні, шафи, панелі. "
+                    "Теплий на дотик, зносостійкий."
                 ),
                 "image_url": IMG["oak"],
                 "order": 1,
@@ -694,7 +722,7 @@ class Command(BaseCommand):
                 "name_en": "WALNUT",
                 "description": (
                     "Темна деревина з виразним малюнком волокна. "
-                    "Для бібліотек і кабінетів."
+                    "Для кабінетів, бібліотек і теплих зон дому."
                 ),
                 "image_url": IMG["walnut"],
                 "order": 2,
@@ -703,7 +731,8 @@ class Command(BaseCommand):
                 "name_uk": "Шпон",
                 "name_en": "VENEER",
                 "description": (
-                    "Натуральний шпон ясена та клена. Рівна текстура, широка палітра."
+                    "Фасади, панелі, двері. Рівна текстура й широка палітра "
+                    "під будь-який інтер'єр."
                 ),
                 "image_url": IMG["veneer"],
                 "order": 3,
@@ -712,8 +741,8 @@ class Command(BaseCommand):
                 "name_uk": "Камінь",
                 "name_en": "STONE",
                 "description": (
-                    "Мармур Calacatta та граніт. Стільниці та острови "
-                    "з унікальним малюнком."
+                    "Камінь, кераміка, кахель. Підлоги, стіни, стільниці — "
+                    "матеріал, який тримає щодень."
                 ),
                 "image_url": IMG["stone"],
                 "order": 4,
@@ -722,7 +751,8 @@ class Command(BaseCommand):
                 "name_uk": "Метал",
                 "name_en": "METAL",
                 "description": (
-                    "Матова сталь, латунь. Ніжки, ручки, декоративні вставки."
+                    "Профілі, фурнітура, деталі світла. "
+                    "Точність, яка збирає простір докупи."
                 ),
                 "image_url": IMG["metal"],
                 "order": 5,
@@ -731,7 +761,7 @@ class Command(BaseCommand):
                 "name_uk": "Скло",
                 "name_en": "GLASS",
                 "description": (
-                    "Загартоване матове та прозоре скло. Вітрини, фасади, двері."
+                    "Перегородки, фасади, душові. Світло проходить — простір дихає."
                 ),
                 "image_url": IMG["glass"],
                 "order": 6,
@@ -752,59 +782,61 @@ class Command(BaseCommand):
     def _seed_process_steps(self):
         steps = [
             {
-                "title": "Ідея",
+                "title": "Бачення",
                 "description": (
-                    "Ви розповідаєте про простір та побажання. "
-                    "Ми слухаємо, вивчаємо, ставимо питання."
+                    "Ви ділитеся тим, як хочете жити. "
+                    "Ми слухаємо без поспіху, ставимо питання "
+                    "і беремо на себе відповідальність за довіру."
                 ),
                 "duration": "1–2 дні",
                 "image_url": IMG["idea"],
                 "order": 1,
             },
             {
-                "title": "Заміри",
+                "title": "Обміри",
                 "description": (
-                    "Виїзд майстра, детальні обміри приміщення, "
-                    "фотофіксація всіх нюансів."
+                    "Виїзд на квартиру чи будинок: обміри, фото, "
+                    "аудит старих планувань і прихованих нюансів."
                 ),
                 "duration": "1 день",
                 "image_url": IMG["measures"],
                 "order": 2,
             },
             {
-                "title": "Проєктування",
+                "title": "Дизайн",
                 "description": (
-                    "Розробка 3D-моделі, технічних креслень, "
-                    "вибір матеріалів та покриттів."
+                    "Дизайнер розгортає ваше бачення в планування, 3D і матеріали — "
+                    "так, щоб комфорт було видно ще до ремонту."
                 ),
-                "duration": "5–10 днів",
+                "duration": "1–3 тижні",
                 "image_url": IMG["model_3d"],
                 "order": 3,
             },
             {
-                "title": "Виробництво",
+                "title": "Реалізація",
                 "description": (
-                    "Виготовлення в майстерні вручну. "
-                    "Поетапний контроль якості кожної деталі."
+                    "Гіпс, стелі, кахель, електрика, столярка, збірка меблів — "
+                    "усе, що потрібно, щоб простір став готовим."
                 ),
-                "duration": "4–8 тижнів",
+                "duration": "за проєктом",
                 "image_url": IMG["production"],
                 "order": 4,
             },
             {
-                "title": "Монтаж",
+                "title": "Здача",
                 "description": (
-                    "Встановлення нашою командою майстрів, підключення, регулювання."
+                    "Фінішне прибирання, перевірка кожної зони, "
+                    "ключі у ваших руках. Заходьте і живіть."
                 ),
                 "duration": "1–3 дні",
                 "image_url": IMG["install"],
                 "order": 5,
             },
             {
-                "title": "Результат",
+                "title": "Життя",
                 "description": (
-                    "Фінальна перевірка, фотографування готового простору. "
-                    "Гарантія 5 років."
+                    "Простір працює щодня. Гарантія на роботи й підтримка, "
+                    "якщо щось потрібно підкрутити."
                 ),
                 "duration": "Назавжди",
                 "image_url": IMG["install"],
@@ -825,27 +857,27 @@ class Command(BaseCommand):
 
     def _seed_craft_details(self):
         details = [
-            ("Точна розмітка", IMG["craft_1"], 1),
-            ("Ручна обробка", IMG["craft_2"], 2),
-            ("Фінішне полірування", IMG["craft_3"], 3),
-            ("Перевірка якості", IMG["craft_4"], 4),
+            ("Огляд приміщення", IMG["craft_1"], 1),
+            ("Креслення", IMG["craft_2"], 2),
+            ("Ремонт", IMG["craft_3"], 3),
+            ("Збірка меблів", IMG["craft_4"], 4),
         ]
         for title, image_url, order in details:
             CraftDetail.objects.update_or_create(
-                title=title,
+                order=order,
                 defaults={
+                    "title": title,
                     "image_url": image_url,
-                    "order": order,
                     "is_published": True,
                 },
             )
 
     def _seed_workshop(self):
         stats = [
-            ("800 м²", "Площа майстерні", 1),
-            ("1 майстер", "Від ескізу до монтажу", 2),
-            ("ЧПУ + ручне", "Комбіноване виробництво", 3),
-            ("5 років", "Гарантія на вироби", 4),
+            ("Повний цикл", "Від дизайну до здачі", 1),
+            ("Одна команда", "Дизайнери та майстри", 2),
+            ("Квартири й будинки", "Нове та редизайн", 3),
+            ("5 років", "Гарантія на роботи", 4),
         ]
         for value, label, order in stats:
             WorkshopStat.objects.update_or_create(
@@ -854,12 +886,68 @@ class Command(BaseCommand):
             )
 
         images = [
-            ("Майстерня", IMG["workshop_1"], 1),
-            ("Деталь виробу", IMG["workshop_2"], 2),
-            ("Ручна робота", IMG["workshop_3"], 3),
+            ("Робота на об'єкті", IMG["workshop_1"], 1),
+            ("Деталі оздоблення", IMG["workshop_2"], 2),
+            ("Столярка на об'єкті", IMG["workshop_3"], 3),
         ]
         for title, image_url, order in images:
             WorkshopImage.objects.update_or_create(
                 order=order,
                 defaults={"title": title, "image_url": image_url},
             )
+
+    def _seed_hero_scene(self):
+        scene, _ = HeroScene.objects.update_or_create(
+            title="Вітальня",
+            defaults={
+                "image_url": (
+                    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6"
+                    "?w=2000&h=1400&fit=crop&auto=format"
+                ),
+                "hint": (
+                    "Наведіть курсор — дізнайтеся, які роботи ми пропонуємо "
+                    "для кожної зони простору."
+                ),
+                "idle_eyebrow": "Зона простору",
+                "idle_title": "Оберіть деталь інтер'єру",
+                "idle_body": (
+                    "Стеля, стіни, стелаж, м’які меблі, вікно чи підлога — наведіть "
+                    "на елемент і побачите, що саме ми реалізуємо."
+                ),
+                "is_active": True,
+                "is_published": True,
+                "order": 1,
+            },
+        )
+        zones = [
+            ("Стеля", "Трекове світло та натяжні системи", "Гіпсокартон · LED · натяг", "Стелі", 0, 0, 100, 16, 1),
+            ("Підлога", "Паркет, плитка, кахель", "Дуб · кераміка · камінь", "Підлога", 0, 82, 100, 18, 2),
+            ("Ліва стіна", "Оздоблення стін", "Штукатурка · фарба · панелі", "Стіни", 0, 12, 18, 70, 3),
+            ("Двері", "Столярка та приховані двері", "Шпон · прихована коробка · фурнітура", "Столярка", 5, 12, 11, 68, 4),
+            ("Стелаж", "Корпусні меблі на замовлення", "Шпон · фасади · LED-підсвіт", "Меблі", 22, 8, 36, 52, 5),
+            ("Диван", "М'які меблі під простір", "Тканина · наповнення · текстиль", "Меблі", 19, 52, 25, 36, 6),
+            ("Журнальний стіл", "Предмети з каменю, металу, скла", "Метал · камінь · скло", "Меблі", 39, 66, 15, 22, 7),
+            ("Крісло", "М'які меблі під простір", "Тканина · каркас · наповнення", "Меблі", 54, 50, 11, 28, 8),
+            ("Вікно", "Віконна зона, штори та підвіконня", "Штори · римські · підвіконня", "Вікна", 65, 8, 20, 70, 9),
+            ("Права стіна", "Рейкові панелі та акцентне світло", "Рейки · шпон · бра", "Стіни", 84, 0, 16, 100, 10),
+            ("Декор", "Аксесуари, рослини та світло", "Вази · текстиль · бра", "Декор", 78, 38, 14, 42, 11),
+        ]
+        scene.zones.all().delete()
+        HeroZone.objects.bulk_create(
+            [
+                HeroZone(
+                    scene=scene,
+                    name=name,
+                    service=service,
+                    materials=materials,
+                    tag=tag,
+                    x=x,
+                    y=y,
+                    width=width,
+                    height=height,
+                    order=order,
+                    is_published=True,
+                )
+                for name, service, materials, tag, x, y, width, height, order in zones
+            ]
+        )
