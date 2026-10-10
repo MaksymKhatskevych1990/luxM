@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { navByLocation } from "@/lib/content";
 
@@ -70,7 +71,7 @@ export default function Footer({ settings, navigation }: FooterProps) {
           }}
         >
           <div>
-            <a href="/" className="header-logo" aria-label={settings.brand_name} style={{ marginBottom: 12 }}>
+            <Link href="/" className="header-logo" aria-label={settings.brand_name} style={{ marginBottom: 12 }}>
               <svg className="header-logo-mark" viewBox="0 0 104 98" aria-hidden="true">
                 <path d="M51 1L0 30L0 87L12 87L12 38L51 16L92 38L92 79L104 79L104 30Z" />
                 <path
@@ -79,7 +80,7 @@ export default function Footer({ settings, navigation }: FooterProps) {
                 />
               </svg>
               <span className="header-logo-name">{settings.header_logo_primary}</span>
-            </a>
+            </Link>
             <p
               style={{
                 fontFamily: "var(--f-sans)",
