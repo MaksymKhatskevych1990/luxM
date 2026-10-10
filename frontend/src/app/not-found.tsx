@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { fallbackHome } from "@/lib/fallback";
@@ -44,9 +45,9 @@ export default function NotFound() {
             Можливо, вона була переміщена або ніколи не існувала. Поверніться на головну —
             там проєкти, процес і команда.
           </p>
-          <a href="/" className="btn-primary">
+          <Link href="/" className="btn-primary">
             На головну
-          </a>
+          </Link>
         </div>
       </main>
       <Footer settings={fallbackHome.settings} navigation={fallbackHome.navigation} />

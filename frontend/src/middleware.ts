@@ -37,5 +37,9 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Local photos must skip the gate. The image optimizer fetches them
+  // without the browser's Authorization header and otherwise receives HTML.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:jpg|jpeg|png|webp|gif|avif|svg|ico)$).*)",
+  ],
 };

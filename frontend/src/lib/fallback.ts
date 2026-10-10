@@ -594,7 +594,7 @@ export const fallbackHome: HomePayload = {
       name_en: "METAL",
       description: "Профілі, фурнітура, деталі світла. Точність, яка збирає простір докупи.",
       image_url:
-        "https://images.unsplash.com/photo-1497218770144-3fea6dbc33fe?w=400&h=560&fit=crop&auto=format",
+        "https://images.unsplash.com/photo-1761105439888-86c6e50d7af8?w=400&h=560&fit=crop&auto=format",
       order: 5,
     },
     {
@@ -603,7 +603,7 @@ export const fallbackHome: HomePayload = {
       name_en: "GLASS",
       description: "Перегородки, фасади, душові. Світло проходить — простір дихає.",
       image_url:
-        "https://images.unsplash.com/photo-1593173945705-d6451ed5909a?w=400&h=560&fit=crop&auto=format",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=560&fit=crop&auto=format",
       order: 6,
     },
   ],
@@ -684,7 +684,7 @@ export const fallbackHome: HomePayload = {
     },
     {
       id: 3,
-      title: "Ремонт",
+      title: "Штукатурка",
       image_url: "/craft/craft-3-renovation.jpg",
       order: 3,
     },

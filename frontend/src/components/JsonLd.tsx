@@ -60,7 +60,6 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     url: SITE_URL,
     telephone: settings.phone,
     email: settings.email,
-    foundingDate: String(settings.founded_year),
     priceRange: settings.jsonld_price_range,
     image,
     logo: settings.header_logo_url ? abs(settings.header_logo_url) : image,

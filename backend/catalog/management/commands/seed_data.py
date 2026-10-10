@@ -77,11 +77,11 @@ IMG = {
         "?w=400&h=560&fit=crop&auto=format"
     ),
     "metal": (
-        "https://images.unsplash.com/photo-1497218770144-3fea6dbc33fe"
+        "https://images.unsplash.com/photo-1761105439888-86c6e50d7af8"
         "?w=400&h=560&fit=crop&auto=format"
     ),
     "glass": (
-        "https://images.unsplash.com/photo-1593173945705-d6451ed5909a"
+        "https://images.unsplash.com/photo-1497366216548-37526070297c"
         "?w=400&h=560&fit=crop&auto=format"
     ),
     "workshop_1": (
@@ -859,7 +859,7 @@ class Command(BaseCommand):
         details = [
             ("Огляд приміщення", IMG["craft_1"], 1),
             ("Креслення", IMG["craft_2"], 2),
-            ("Ремонт", IMG["craft_3"], 3),
+            ("Штукатурка", IMG["craft_3"], 3),
             ("Збірка меблів", IMG["craft_4"], 4),
         ]
         for title, image_url, order in details:

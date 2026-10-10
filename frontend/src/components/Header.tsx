@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { navByLocation } from "@/lib/content";
-import SiteLogo from "./SiteLogo";
 
 type HeaderProps = {
   settings: SiteSettings;
@@ -32,40 +32,16 @@ export default function Header({ settings, navigation }: HeaderProps) {
           height: 72,
         }}
       >
-        <a
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            textDecoration: "none",
-          }}
-        >
-          <SiteLogo
-            src={settings.header_logo_url}
-            alt={settings.brand_name}
-            size={32}
-          />
-          <div>
-            <div
-              className="font-serif"
-              style={{
-                fontSize: "1.125rem",
-                color: "var(--c-ink)",
-                lineHeight: 1,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {settings.header_logo_primary}
-            </div>
-            <div
-              className="label label--oak"
-              style={{ fontSize: "0.5rem", letterSpacing: "0.18em", marginTop: 1 }}
-            >
-              {settings.header_logo_secondary}
-            </div>
-          </div>
-        </a>
+        <Link href="/" className="header-logo" aria-label={settings.brand_name}>
+          <svg className="header-logo-mark" viewBox="0 0 104 98" aria-hidden="true">
+            <path d="M51 1L0 30L0 87L12 87L12 38L51 16L92 38L92 79L104 79L104 30Z" />
+            <path
+              fillRule="evenodd"
+              d="M30 45H74V68A11 11 0 0 1 63 79H43V97H30ZM43 57H62V65A4 4 0 0 1 58 69H43Z"
+            />
+          </svg>
+          <span className="header-logo-name">{settings.header_logo_primary}</span>
+        </Link>
 
         <nav className="desktop-nav" aria-label="Основна навігація">
           {items.map((item) => (
@@ -91,7 +67,7 @@ export default function Header({ settings, navigation }: HeaderProps) {
               display: "block",
               width: 22,
               height: 1,
-              background: "var(--c-ink)",
+              background: "currentColor",
               transition: "transform 0.3s, opacity 0.3s",
               transform: open ? "translateY(6px) rotate(45deg)" : "none",
             }}
@@ -101,7 +77,7 @@ export default function Header({ settings, navigation }: HeaderProps) {
               display: "block",
               width: 22,
               height: 1,
-              background: "var(--c-ink)",
+              background: "currentColor",
               transition: "transform 0.3s, opacity 0.3s",
               opacity: open ? 0 : 1,
             }}
@@ -111,7 +87,7 @@ export default function Header({ settings, navigation }: HeaderProps) {
               display: "block",
               width: 22,
               height: 1,
-              background: "var(--c-ink)",
+              background: "currentColor",
               transition: "transform 0.3s, opacity 0.3s",
               transform: open ? "translateY(-6px) rotate(-45deg)" : "none",
             }}

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { navByLocation } from "@/lib/content";
-import SiteLogo from "./SiteLogo";
 
 type FooterProps = {
   settings: SiteSettings;
@@ -71,26 +70,16 @@ export default function Footer({ settings, navigation }: FooterProps) {
           }}
         >
           <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 12,
-              }}
-            >
-              <SiteLogo
-                src={settings.header_logo_url}
-                alt={settings.brand_name}
-                size={24}
-              />
-              <span
-                className="font-serif"
-                style={{ fontSize: "1.125rem", color: "var(--c-parchment)" }}
-              >
-                {settings.brand_name}
-              </span>
-            </div>
+            <a href="/" className="header-logo" aria-label={settings.brand_name} style={{ marginBottom: 12 }}>
+              <svg className="header-logo-mark" viewBox="0 0 104 98" aria-hidden="true">
+                <path d="M51 1L0 30L0 87L12 87L12 38L51 16L92 38L92 79L104 79L104 30Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M30 45H74V68A11 11 0 0 1 63 79H43V97H30ZM43 57H62V65A4 4 0 0 1 58 69H43Z"
+                />
+              </svg>
+              <span className="header-logo-name">{settings.header_logo_primary}</span>
+            </a>
             <p
               style={{
                 fontFamily: "var(--f-sans)",

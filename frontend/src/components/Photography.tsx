@@ -7,10 +7,10 @@ type PhotographyProps = {
 };
 
 const LAYOUT = [
-  { left: "0%", top: 0, width: "26%", rotate: "-0.6deg", z: 4 },
-  { left: "18%", top: "5%", width: "30%", rotate: "0.4deg", z: 3 },
-  { left: "42%", top: "2%", width: "27%", rotate: "-0.3deg", z: 2 },
-  { left: "63%", top: "8%", width: "31%", rotate: "0.5deg", z: 1 },
+  { left: "0%", top: 0, width: "26%", rotate: "-0.6deg", z: 1 },
+  { left: "18%", top: "5%", width: "30%", rotate: "0.4deg", z: 2 },
+  { left: "42%", top: "2%", width: "27%", rotate: "-0.3deg", z: 3 },
+  { left: "63%", top: "8%", width: "31%", rotate: "0.5deg", z: 4 },
 ];
 
 export default function Photography({ section, details }: PhotographyProps) {

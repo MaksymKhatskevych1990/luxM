@@ -341,7 +341,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                   style={{
                     marginTop: 8,
                     padding: "16px 40px",
-                    background: "var(--c-oak)",
+                    background: "var(--c-gold-btn)",
                     color: "var(--c-void)",
                     border: "none",
                     cursor: status === "sending" ? "wait" : "pointer",

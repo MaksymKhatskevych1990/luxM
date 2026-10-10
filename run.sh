@@ -24,7 +24,7 @@ mkdir -p "$PID_DIR"
 
 info()  { printf '\033[1;34m→\033[0m %s\n' "$*"; }
 ok()    { printf '\033[1;32m✓\033[0m %s\n' "$*"; }
-warn()  { printf '\033[1;33m!\033[0m %s\n' "$*"; }
+warn()  { printf '\033[1;33m!\033[0m %s\n' "$*" >&2; }
 err()   { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; }
 
 lan_ipv4() {
@@ -107,6 +107,43 @@ docker_on_port() {
     | grep -E "(0\.0\.0\.0|\[::\]|:::):${port}->" \
     | awk '{print $1}' \
     || true
+}
+
+# Docker-published ports have no killable pid. Move to the next free port
+# instead of stopping another project's container.
+choose_frontend_port() {
+  local port="$1"
+  local holders candidate alt
+
+  if ! port_in_use "$port"; then
+    printf '%s\n' "$port"
+    return 0
+  fi
+
+  holders="$(docker_on_port "$port" | tr '\n' ' ')"
+  if [[ -z "${holders// /}" ]]; then
+    printf '%s\n' "$port"
+    return 0
+  fi
+
+  for candidate in 3010 3011 3012 3013; do
+    if [[ "$candidate" == "$port" ]]; then
+      continue
+    fi
+    if port_in_use "$candidate"; then
+      alt="$(docker_on_port "$candidate" | tr '\n' ' ')"
+      if [[ -n "${alt// /}" ]]; then
+        continue
+      fi
+    fi
+    warn "Port $port is published by Docker (${holders}). Using :$candidate"
+    printf '%s\n' "$candidate"
+    return 0
+  done
+
+  err "Port $port is published by Docker: ${holders}"
+  err "Stop it: docker stop ${holders}"
+  return 1
 }
 
 free_port() {
@@ -277,6 +314,7 @@ start_backend() {
 }
 
 start_frontend() {
+  FRONTEND_PORT="$(choose_frontend_port "$FRONTEND_PORT")"
   info "Starting Next.js on :$FRONTEND_PORT..."
   free_port "$FRONTEND_PORT" || exit 1
   : >"$FRONTEND_LOG"
@@ -285,6 +323,7 @@ start_frontend() {
   for ip in $(lan_ipv4); do
     extra_origins="${extra_origins:+$extra_origins,}${ip}"
   done
+  NEXT_PUBLIC_SITE_URL="http://localhost:${FRONTEND_PORT}" \
   ALLOWED_DEV_ORIGINS="${ALLOWED_DEV_ORIGINS:+$ALLOWED_DEV_ORIGINS,}${extra_origins}" \
     npm run dev -- -p "$FRONTEND_PORT" --hostname 0.0.0.0 >"$FRONTEND_LOG" 2>&1 &
   echo $! >"$FRONTEND_PID_FILE"

@@ -66,10 +66,6 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
         <div className="hero-room-copy">
           <div className="hero-eyebrow anim-up">
             <span className="label">{settings.hero_eyebrow}</span>
-            <span className="hero-eyebrow-rule" />
-            <span className="label label--oak">
-              {settings.hero_founded_prefix} {settings.founded_year}
-            </span>
           </div>
 
           <h1 className="hero-title anim-up d1 font-serif">
@@ -94,15 +90,36 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
             </a>
           </div>
 
-          <div className="hero-stats anim-up d4">
-            {items.map((stat) => (
-              <div key={stat.id}>
-                <div className="hero-stat-value font-serif">{stat.value}</div>
-                <div className="label" style={{ marginTop: 6 }}>
-                  {stat.label}
+          <div className="hero-foot anim-up d4">
+            <div className="hero-brand" role="img" aria-label="ProProstir. Ремонти, дизайн, меблі">
+              <svg className="hero-brand-mark" viewBox="0 0 104 98" aria-hidden="true">
+                <path d="M51 1L0 30L0 87L12 87L12 38L51 16L92 38L92 79L104 79L104 30Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M30 45H74V68A11 11 0 0 1 63 79H43V97H30ZM43 57H62V65A4 4 0 0 1 58 69H43Z"
+                />
+              </svg>
+              <p className="hero-brand-name" aria-hidden="true">
+                ProProstir
+              </p>
+              <p className="hero-brand-tag" aria-hidden="true">
+                <span>Ремонти</span>
+                <span>•</span>
+                <span>Дизайн</span>
+                <span>•</span>
+                <span>Меблі</span>
+              </p>
+            </div>
+            <div className="hero-stats">
+              {items.map((stat) => (
+                <div key={stat.id}>
+                  <div className="hero-stat-value font-serif">{stat.value}</div>
+                  <div className="label" style={{ marginTop: 6 }}>
+                    {stat.label}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
