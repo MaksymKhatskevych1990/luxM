@@ -107,8 +107,8 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
       style={{ background: "var(--c-void)" }}
     >
       <div className="wrap">
-        <div className="contact-split" style={{ gap: 100 }}>
-          <div>
+        <div className="contact-split">
+          <div className="contact-copy">
             <span className="label label--light">{settings.contact_eyebrow}</span>
             <h2
               className="font-serif"
@@ -132,23 +132,16 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 fontSize: "1.0625rem",
                 color: "rgba(247, 246, 242, 0.45)",
                 lineHeight: 1.75,
-                margin: "32px 0 56px",
+                margin: "32px 0 0",
                 maxWidth: 380,
               }}
             >
               {settings.contact_intro}
             </p>
-            <div>
+          </div>
+          <div className="contact-list">
               {rows.map((row) => (
-                <div
-                  key={row.label}
-                  style={{
-                    display: "flex",
-                    gap: 20,
-                    padding: "16px 0",
-                    borderBottom: "1px solid rgba(247, 246, 242, 0.06)",
-                  }}
-                >
+                <div key={row.label} className="contact-row">
                   <span className="label label--light" style={{ minWidth: 72 }}>
                     {row.label}
                   </span>
@@ -179,12 +172,10 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                   )}
                 </div>
               ))}
-            </div>
           </div>
 
-          <div style={{ paddingTop: 8 }}>
-            {status === "success" ? (
-              <div style={{ paddingTop: 24 }}>
+          {status === "success" ? (
+              <div className="contact-success">
                 <span className="label label--oak" style={{ display: "block", marginBottom: 16 }}>
                   {settings.contact_success_eyebrow}
                 </span>
@@ -212,7 +203,8 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 </p>
               </div>
             ) : (
-              <form onSubmit={onSubmit}>
+              <form className="contact-form" onSubmit={onSubmit}>
+                <div className="contact-form-lead">
                 <div style={{ marginBottom: 36 }}>
                   <span
                     className="label label--light"
@@ -276,7 +268,9 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                     </button>
                   ) : null}
                 </div>
+                </div>
 
+                <div className="contact-form-fields">
                 <div
                   style={{
                     display: "grid",
@@ -358,9 +352,9 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                     ? settings.contact_submit_loading
                     : settings.contact_submit_text}
                 </button>
+                </div>
               </form>
             )}
-          </div>
         </div>
       </div>
     </section>

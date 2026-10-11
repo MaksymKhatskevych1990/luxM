@@ -1490,6 +1490,45 @@ section[id] {
   align-items: start;
 }
 
+.contact-split {
+  column-gap: 100px;
+  row-gap: 48px;
+}
+
+.contact-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.contact-list {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 52px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(247, 246, 242, 0.06);
+}
+
+.contact-form {
+  display: contents;
+}
+
+.contact-form-lead,
+.contact-success {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.contact-form-fields {
+  grid-column: 2;
+  grid-row: 2;
+}
+
 .materials-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -1619,6 +1658,15 @@ section[id] {
 
   .contact-fields {
     grid-template-columns: 1fr !important;
+  }
+
+  .contact-copy,
+  .contact-list,
+  .contact-form-lead,
+  .contact-form-fields,
+  .contact-success {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .hero--room {
