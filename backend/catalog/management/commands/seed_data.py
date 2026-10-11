@@ -158,42 +158,42 @@ class Command(BaseCommand):
 
         settings.seo_title = "Дизайн і ремонт під ключ у Дніпрі | ProProstir"
         settings.seo_description = (
-            "ProProstir — повний цикл від дизайну інтер'єру до «заходь і живи». "
-            "База в Дніпрі, працюємо також по інших містах України. "
-            "Редизайн квартир і будинків, оздоблення, меблі, монтаж."
+            "Дизайн інтер'єру, ремонт під ключ, оздоблення та меблі в Дніпрі. "
+            "ProProstir веде квартиру й будинок від ескізу до ключів "
+            "і працює по всій Україні."
         )
         settings.seo_keywords = (
-            "ремонт під ключ Дніпро, дизайн інтер'єру, редизайн квартири, "
-            "ремонт будинку, кахель, гіпсокартон, стелі, "
-            "меблі на замовлення, ProProstir"
+            "ремонт під ключ Дніпро, дизайн інтер'єру Дніпро, "
+            "редизайн квартири, ремонт будинку під ключ, оздоблення, "
+            "меблі на замовлення Дніпро, комплектація інтер'єру, ProProstir"
         )
         settings.seo_author = "ProProstir"
         settings.seo_canonical_path = "/"
-        settings.seo_robots = "noindex, nofollow"
+        settings.seo_robots = "index, follow"
         settings.seo_html_lang = "uk"
         settings.seo_locale = "uk_UA"
         settings.seo_geo_region = "UA-12"
         settings.seo_geo_placename = "Дніпро"
-        settings.og_title = "ProProstir — Ми знаємо про простір все"
+        settings.og_title = "ProProstir — дизайн, ремонт і меблі під ключ у Дніпрі"
         settings.og_description = (
-            "Повний цикл: дизайн, ремонт, оздоблення й комплектація. "
-            "Ви ділитеся баченням комфорту — ми втілюємо його до ключів."
+            "Одна команда: дизайн інтер'єру, ремонт, оздоблення та комплектація. "
+            "Від вашого бачення комфорту до ключів."
         )
         settings.og_type = "website"
-        settings.og_image_url = ""
+        settings.og_image_url = "https://proprostir.com.ua/hero/stage-4.jpg"
         settings.og_image_alt = (
-            "ProProstir: від дизайну інтер'єру до готового простору"
+            "Готова вітальня ProProstir: меблі, світло та оздоблення під ключ"
         )
         settings.twitter_card = "summary_large_image"
         settings.jsonld_name = "ProProstir"
         settings.jsonld_type = "HomeAndConstructionBusiness"
         settings.jsonld_description = (
-            "ProProstir — повний цикл від дизайну до здачі. "
+            "Дизайн інтер'єру, ремонт під ключ, оздоблення та меблі. "
             "База в Дніпрі, виїжджаємо в інші міста України."
         )
         settings.jsonld_city = "Дніпро"
         settings.jsonld_country = "UA"
-        settings.jsonld_street = "Дніпро"
+        settings.jsonld_street = ""
         settings.jsonld_area_served = "Дніпро та інші міста України"
         settings.jsonld_opening_hours = "Mo-Fr 10:00-18:00"
         settings.jsonld_price_range = "$$$"

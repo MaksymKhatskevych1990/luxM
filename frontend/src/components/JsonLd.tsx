@@ -28,12 +28,12 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     settings.telegram_url,
     settings.whatsapp_url,
   ].filter(Boolean);
-  const street = settings.jsonld_street || settings.address;
+  const street = settings.jsonld_street?.trim() || "";
   const published = projects.filter((project) => project.is_published !== false);
 
   const address = {
     "@type": "PostalAddress",
-    streetAddress: street,
+    ...(street ? { streetAddress: street } : {}),
     addressLocality: settings.jsonld_city,
     addressCountry: settings.jsonld_country,
     ...(settings.jsonld_postal_code

@@ -11,16 +11,6 @@ export const metadata: Metadata = {
     template: `%s | ${fallbackHome.settings.jsonld_name || fallbackHome.settings.brand_name}`,
   },
   description: fallbackHome.settings.seo_description,
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-      noimageindex: true,
-    },
-  },
   alternates: {
     canonical: "/",
     languages: {

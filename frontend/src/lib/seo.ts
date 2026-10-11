@@ -29,6 +29,22 @@ export function seoServices(settings: SiteSettings): string[] {
   return lines(settings.jsonld_services || "");
 }
 
+function robotsFromSettings(value: string | undefined): Metadata["robots"] {
+  const raw = (value || "index, follow").toLowerCase();
+  const index = !raw.includes("noindex");
+  const follow = !raw.includes("nofollow");
+  return {
+    index,
+    follow,
+    googleBot: {
+      index,
+      follow,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  };
+}
+
 export function metadataFromSettings(settings: SiteSettings): Metadata {
   const title = settings.seo_title;
   const description = settings.seo_description;
@@ -51,16 +67,7 @@ export function metadataFromSettings(settings: SiteSettings): Metadata {
     creator: author,
     publisher: settings.jsonld_name || settings.brand_name,
     category: "home",
-    robots: {
-      index: false,
-      follow: false,
-      nocache: true,
-      googleBot: {
-        index: false,
-        follow: false,
-        noimageindex: true,
-      },
-    },
+    robots: robotsFromSettings(settings.seo_robots),
     alternates: {
       canonical,
       languages: {

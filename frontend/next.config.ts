@@ -25,10 +25,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
-        ],
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
       },
     ];
   },
