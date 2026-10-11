@@ -16,6 +16,11 @@ export const HERO_STAGES = [
   {
     src: "/hero/stage-3.jpg",
     label: "03",
+    title: "Меблі",
+  },
+  {
+    src: "/hero/stage-4.jpg",
+    label: "04",
     title: "Заходь і живи",
   },
 ] as const;
