@@ -144,7 +144,7 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
           position: index + 1,
           name: project.seo_title || project.title,
           description: project.seo_description || project.short_description,
-          url: `${SITE_URL}/#проєкти`,
+          url: `${SITE_URL}/#projects`,
           image: project.image_url ? abs(project.image_url) : undefined,
         })),
       }

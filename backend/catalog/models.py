@@ -117,7 +117,7 @@ class SiteSettings(TimeStampedModel):
         max_length=120, default="Обговорити проєкт", verbose_name="CTA шапки"
     )
     header_cta_href = models.CharField(
-        max_length=200, default="#контакти", verbose_name="Посилання CTA шапки"
+        max_length=200, default="#contacts", verbose_name="Посилання CTA шапки"
     )
 
     hero_eyebrow = models.CharField(
@@ -148,7 +148,7 @@ class SiteSettings(TimeStampedModel):
     )
     hero_cta_primary_href = models.CharField(
         max_length=200,
-        default="#проєкти",
+        default="#projects",
         verbose_name="Посилання основної кнопки героя",
     )
     hero_cta_secondary_text = models.CharField(
@@ -156,7 +156,7 @@ class SiteSettings(TimeStampedModel):
     )
     hero_cta_secondary_href = models.CharField(
         max_length=200,
-        default="#процес",
+        default="#process",
         verbose_name="Посилання другої кнопки героя",
     )
     hero_floorplan_caption = models.CharField(
@@ -524,7 +524,7 @@ class SiteSettings(TimeStampedModel):
     )
     detail_cta_href = models.CharField(
         max_length=200,
-        default="#контакти",
+        default="#contacts",
         verbose_name="Посилання CTA блоку деталей",
     )
     meta_label_area = models.CharField(
@@ -843,7 +843,7 @@ class PageSection(TimeStampedModel):
         max_length=80,
         blank=True,
         verbose_name="Якір секції",
-        help_text="Без #, напр. проєкти",
+        help_text="Без #, напр. projects",
     )
     eyebrow = models.CharField(max_length=200, blank=True, verbose_name="Надзаголовок")
     title = models.CharField(max_length=255, blank=True, verbose_name="Заголовок")

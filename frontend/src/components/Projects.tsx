@@ -22,7 +22,7 @@ export default function Projects({ section, projects, settings }: ProjectsProps)
   const portrait = items[1];
   const rest = items.slice(2);
   const allLabel = section.cta_text || "";
-  const allHref = section.cta_href || `#${section.section_id || "проєкти"}`;
+  const allHref = section.cta_href || `#${section.section_id || "projects"}`;
 
   return (
     <section id={section.section_id || undefined} className="section-pad">

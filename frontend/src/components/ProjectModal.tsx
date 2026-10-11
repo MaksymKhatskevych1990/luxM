@@ -295,7 +295,7 @@ export default function ProjectModal({
               </dl>
               {settings.detail_cta_text ? (
                 <a
-                  href={settings.detail_cta_href || "#контакти"}
+                  href={settings.detail_cta_href || "#contacts"}
                   onClick={onClose}
                   className="cta-invert"
                   style={{ marginTop: 28, display: "inline-flex" }}

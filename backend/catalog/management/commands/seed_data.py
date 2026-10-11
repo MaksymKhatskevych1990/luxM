@@ -129,7 +129,7 @@ class Command(BaseCommand):
         settings.header_logo_primary = "ProProstir"
         settings.header_logo_secondary = "Ми знаємо про простір все"
         settings.header_cta_text = "Розповісти бачення"
-        settings.header_cta_href = "#контакти"
+        settings.header_cta_href = "#contacts"
 
         settings.hero_eyebrow = "ProProstir · Повний цикл"
         settings.hero_title_line1 = "Від дизайну"
@@ -137,9 +137,9 @@ class Command(BaseCommand):
         settings.hero_title_line2 = "Заходь і живи."
         settings.hero_subline = "Дизайн · Ремонт · Оздоблення · Комплектація"
         settings.hero_cta_primary_text = "Дивитись проєкти"
-        settings.hero_cta_primary_href = "#проєкти"
+        settings.hero_cta_primary_href = "#projects"
         settings.hero_cta_secondary_text = "Про процес"
-        settings.hero_cta_secondary_href = "#процес"
+        settings.hero_cta_secondary_href = "#process"
         settings.hero_floorplan_caption = "Технічне креслення · Масштаб 1:25"
         settings.hero_scroll_hint = "Гортати"
         settings.hero_founded_prefix = "Заснована"
@@ -224,7 +224,7 @@ class Command(BaseCommand):
         settings.detail_section_title = "Від ескізу до здачі"
         settings.detail_number_prefix = "Проєкт №"
         settings.detail_cta_text = "Схожий проєкт →"
-        settings.detail_cta_href = "#контакти"
+        settings.detail_cta_href = "#contacts"
         settings.meta_label_area = "Площа"
         settings.meta_label_materials = "Матеріали"
         settings.meta_label_duration = "Тривалість"
@@ -306,17 +306,17 @@ class Command(BaseCommand):
             [
                 PageSection(
                     key="projects",
-                    section_id="проєкти",
+                    section_id="projects",
                     eyebrow="Вибрані роботи",
                     title="Кожен простір —",
                     title_emphasis="окрема історія.",
                     cta_text="Всі проєкти →",
-                    cta_href="#проєкти",
+                    cta_href="#projects",
                     order=1,
                 ),
                 PageSection(
                     key="photography",
-                    section_id="фотографія",
+                    section_id="photography",
                     eyebrow="Деталі реалізації",
                     title="Кожен шар —",
                     title_emphasis="своя майстерність.",
@@ -328,7 +328,7 @@ class Command(BaseCommand):
                 ),
                 PageSection(
                     key="materials",
-                    section_id="матеріали",
+                    section_id="materials",
                     eyebrow="Матеріали простору",
                     title="Те, з чого",
                     title_emphasis="народжується дім",
@@ -340,20 +340,20 @@ class Command(BaseCommand):
                 ),
                 PageSection(
                     key="process",
-                    section_id="процес",
+                    section_id="process",
                     eyebrow="Процес",
                     title="Як це відбувається",
                     order=4,
                 ),
                 PageSection(
                     key="workshop",
-                    section_id="майстерня",
+                    section_id="workshop",
                     eyebrow="Команда",
                     order=5,
                 ),
                 PageSection(
                     key="drawing",
-                    section_id="креслення",
+                    section_id="drawing",
                     eyebrow="Від ескізу до реальності",
                     title="Бачення, що стає домом",
                     subtitle=(
@@ -364,7 +364,7 @@ class Command(BaseCommand):
                 ),
                 PageSection(
                     key="before_after",
-                    section_id="до-після",
+                    section_id="before-after",
                     eyebrow="Редизайн і нове життя",
                     title="До і після",
                     subtitle="Перетягніть повзунок",
@@ -372,7 +372,7 @@ class Command(BaseCommand):
                 ),
                 PageSection(
                     key="contact",
-                    section_id="контакти",
+                    section_id="contacts",
                     eyebrow="Зв'язатися",
                     title="Розкажіть",
                     title_line2="про своє",
@@ -393,73 +393,73 @@ class Command(BaseCommand):
             [
                 NavItem(
                     label="Проєкти",
-                    href="#проєкти",
+                    href="#projects",
                     location=NavItem.LOCATION_HEADER,
                     order=1,
                 ),
                 NavItem(
                     label="Процес",
-                    href="#процес",
+                    href="#process",
                     location=NavItem.LOCATION_HEADER,
                     order=2,
                 ),
                 NavItem(
                     label="Про нас",
-                    href="#майстерня",
+                    href="#workshop",
                     location=NavItem.LOCATION_HEADER,
                     order=3,
                 ),
                 NavItem(
                     label="Контакти",
-                    href="#контакти",
+                    href="#contacts",
                     location=NavItem.LOCATION_HEADER,
                     order=4,
                 ),
                 NavItem(
                     label="Дизайн інтер'єру",
-                    href="#процес",
+                    href="#process",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=1,
                 ),
                 NavItem(
                     label="Ремонт і редизайн",
-                    href="#до-після",
+                    href="#before-after",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=2,
                 ),
                 NavItem(
                     label="Оздоблення",
-                    href="#матеріали",
+                    href="#materials",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=3,
                 ),
                 NavItem(
                     label="Меблі та комплектація",
-                    href="#проєкти",
+                    href="#projects",
                     location=NavItem.LOCATION_FOOTER_SERVICES,
                     order=4,
                 ),
                 NavItem(
                     label="Про нас",
-                    href="#майстерня",
+                    href="#workshop",
                     location=NavItem.LOCATION_FOOTER_STUDIO,
                     order=1,
                 ),
                 NavItem(
                     label="Команда",
-                    href="#майстерня",
+                    href="#workshop",
                     location=NavItem.LOCATION_FOOTER_STUDIO,
                     order=2,
                 ),
                 NavItem(
                     label="Процес",
-                    href="#процес",
+                    href="#process",
                     location=NavItem.LOCATION_FOOTER_STUDIO,
                     order=3,
                 ),
                 NavItem(
                     label="Проєкти",
-                    href="#проєкти",
+                    href="#projects",
                     location=NavItem.LOCATION_FOOTER_STUDIO,
                     order=4,
                 ),
