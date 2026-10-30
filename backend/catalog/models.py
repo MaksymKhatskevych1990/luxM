@@ -194,7 +194,9 @@ class SiteSettings(TimeStampedModel):
     phone = models.CharField(
         max_length=64, default="+38 (097) 208 00 74", verbose_name="Телефон"
     )
-    email = models.EmailField(default="studio@forma.ua", verbose_name="Email")
+    email = models.EmailField(
+        blank=True, default="", verbose_name="Email"
+    )
     telegram = models.CharField(
         max_length=120,
         blank=True,

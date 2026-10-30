@@ -8,7 +8,7 @@ export const fallbackHome: HomePayload = {
     tagline: "Меблі будь-якої складності",
     founded_year: 2018,
     phone: "+38 (097) 208 00 74",
-    email: "studio@forma.ua",
+    email: "",
     telegram: "",
     whatsapp: "+38 (097) 208 00 74",
     address: "Дніпро · працюємо по всій Україні",

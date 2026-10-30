@@ -3,14 +3,16 @@ import type { NextRequest } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const BACKEND =
-  process.env.INTERNAL_API_URL?.replace(/\/$/, "") ||
-  "http://127.0.0.1:8000/api";
+function backendOrigin() {
+  const configured = process.env["INTERNAL_API_URL"];
+  if (configured) return configured.replace(/\/$/, "");
+  return "http://127.0.0.1:8000/api";
+}
 
 function backendUrl(path: string[], search: string) {
   const joined = path.map(encodeURIComponent).join("/");
   // Django APPEND_SLASH expects a trailing slash on API endpoints.
-  return `${BACKEND}/${joined}/${search}`;
+  return `${backendOrigin()}/${joined}/${search}`;
 }
 
 async function proxy(req: NextRequest, path: string[]) {

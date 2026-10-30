@@ -11,6 +11,7 @@ import Process from "./Process";
 import Workshop from "./Workshop";
 import BeforeAfter from "./BeforeAfter";
 import Contact from "./Contact";
+import ServiceBand from "./ServiceBand";
 import Footer from "./Footer";
 import JsonLd from "./JsonLd";
 
@@ -57,6 +58,7 @@ export default function Site({ data }: SiteProps) {
           stats={data.hero_stats}
           scene={data.hero_scene}
         />
+        <ServiceBand />
         {isVisible(projectsSection) ? (
           <Projects
             section={projectsSection}

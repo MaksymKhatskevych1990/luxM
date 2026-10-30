@@ -68,7 +68,7 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     description,
     url: SITE_URL,
     telephone: settings.phone,
-    email: settings.email,
+    ...(settings.email ? { email: settings.email } : {}),
     priceRange: settings.jsonld_price_range,
     image,
     logo: settings.header_logo_url ? abs(settings.header_logo_url) : image,

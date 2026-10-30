@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
-import { navByLocation } from "@/lib/content";
+import { homeHref, navByLocation } from "@/lib/content";
 
 type HeaderProps = {
   settings: SiteSettings;
@@ -45,13 +45,13 @@ export default function Header({ settings, navigation }: HeaderProps) {
 
         <nav className="desktop-nav" aria-label="Основна навігація">
           {items.map((item) => (
-            <a key={item.id} href={item.href} className="nav-item">
+            <a key={item.id} href={homeHref(item.href)} className="nav-item">
               {item.label}
             </a>
           ))}
         </nav>
 
-        <a href={settings.header_cta_href} className="cta-invert desktop-cta">
+        <a href={homeHref(settings.header_cta_href)} className="cta-invert desktop-cta">
           {settings.header_cta_text}
         </a>
 
@@ -98,12 +98,12 @@ export default function Header({ settings, navigation }: HeaderProps) {
       {open ? (
         <nav className="mobile-nav" aria-label="Мобільна навігація">
           {items.map((item) => (
-            <a key={item.id} href={item.href} onClick={() => setOpen(false)}>
+            <a key={item.id} href={homeHref(item.href)} onClick={() => setOpen(false)}>
               {item.label}
             </a>
           ))}
           <a
-            href={settings.header_cta_href}
+            href={homeHref(settings.header_cta_href)}
             className="cta-invert"
             style={{ alignSelf: "flex-start", marginTop: 8 }}
             onClick={() => setOpen(false)}

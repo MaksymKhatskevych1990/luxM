@@ -150,7 +150,7 @@ class Command(BaseCommand):
         settings.hero_background_image_url = HERO_BACKGROUND_DEFAULT
 
         settings.phone = "+38 (097) 208 00 74"
-        settings.email = "studio@forma.ua"
+        settings.email = ""
         settings.telegram = ""
         settings.whatsapp = "+38 (097) 208 00 74"
         settings.address = "Дніпро · працюємо по всій Україні"

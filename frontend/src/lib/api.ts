@@ -1,10 +1,10 @@
 import type { HomePayload } from "./types";
 
 function getServerApiUrl() {
-  return (
-    process.env.INTERNAL_API_URL?.replace(/\/$/, "") ||
-    "http://127.0.0.1:8000/api"
-  );
+  // Dynamic lookup so Next does not bake an empty value in at build time.
+  const configured = process.env["INTERNAL_API_URL"];
+  if (configured) return configured.replace(/\/$/, "");
+  return "http://127.0.0.1:8000/api";
 }
 
 function getClientApiUrl() {

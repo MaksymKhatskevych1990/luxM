@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
-import { navByLocation } from "@/lib/content";
+import { homeHref, navByLocation } from "@/lib/content";
+import { services as landingPages } from "@/lib/services";
 
 type FooterProps = {
   settings: SiteSettings;
@@ -19,7 +20,7 @@ function FooterLink({
 }) {
   return (
     <a
-      href={href}
+      href={homeHref(href)}
       {...(external
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
@@ -99,6 +100,11 @@ export default function Footer({ settings, navigation }: FooterProps) {
               <div className="label label--oak" style={{ marginBottom: 16, fontSize: "0.625rem" }}>
                 {settings.footer_services_heading}
               </div>
+              {landingPages.map((service) => (
+                <FooterLink key={service.slug} href={`/${service.slug}`}>
+                  {service.h1}
+                </FooterLink>
+              ))}
               {services.map((item) => (
                 <FooterLink key={item.id} href={item.href}>
                   {item.label}
