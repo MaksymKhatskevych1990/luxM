@@ -91,7 +91,11 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
           </div>
 
           <div className="hero-foot anim-up d4">
-            <div className="hero-brand" role="img" aria-label="ProProstir. Ремонти, дизайн, меблі">
+            <div
+              className="hero-brand"
+              role="img"
+              aria-label={`${settings.brand_name}. ${settings.hero_subline}`}
+            >
               <svg className="hero-brand-mark" viewBox="0 0 104 98" aria-hidden="true">
                 <path d="M51 1L0 30L0 87L12 87L12 38L51 16L92 38L92 79L104 79L104 30Z" />
                 <path
@@ -100,17 +104,27 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
                 />
               </svg>
               <p className="hero-brand-name" aria-hidden="true">
-                ProProstir
+                {settings.header_logo_primary || settings.brand_name}
               </p>
               <p className="hero-brand-tag" aria-hidden="true">
-                <span>Ремонти</span>
-                <span>•</span>
-                <span>Дизайн</span>
-                <span>•</span>
-                <span>Меблі</span>
+                {settings.hero_subline
+                  .split("·")
+                  .map((part) => part.trim())
+                  .filter(Boolean)
+                  .flatMap((part, index) =>
+                    index === 0
+                      ? [<span key={part}>{part}</span>]
+                      : [
+                          <span key={`${part}-dot`}>•</span>,
+                          <span key={part}>{part}</span>,
+                        ],
+                  )}
               </p>
             </div>
-            <div className="hero-stats">
+            <div
+              className="hero-stats"
+              style={{ ["--hero-stat-cols" as string]: items.length }}
+            >
               {items.map((stat) => (
                 <div key={stat.id}>
                   <div className="hero-stat-value font-serif">{stat.value}</div>

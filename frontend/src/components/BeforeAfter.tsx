@@ -9,12 +9,41 @@ type BeforeAfterProps = {
   section?: PageSection;
 };
 
+const WORK_PAIRS = [
+  {
+    id: "walnut",
+    label: "Кухня з горіха",
+    before: "/works/before/before-walnut-kitchen.jpg",
+    after: "/works/2024-10-08-a.jpg",
+  },
+  {
+    id: "white",
+    label: "Біла кухня",
+    before: "/works/before/before-white-kitchen.jpg",
+    after: "/works/2026-06-29.jpg",
+  },
+  {
+    id: "tv",
+    label: "Тумба під телевізор",
+    before: "/works/before/before-tv-wall.jpg",
+    after: "/works/2024-10-08-b.jpg",
+  },
+  {
+    id: "kids",
+    label: "Дитяча",
+    before: "/works/before/before-kids-room.jpg",
+    after: "/works/2023-04-08.webp",
+  },
+];
+
 export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const [pct, setPct] = useState(50);
-  const beforeUrl = settings.before_image_url;
-  const afterUrl = settings.after_image_url;
+  const [pairIndex, setPairIndex] = useState(0);
+  const pair = WORK_PAIRS[pairIndex];
+  const beforeUrl = pair.before;
+  const afterUrl = pair.after;
   const eyebrow = section?.eyebrow || settings.ba_eyebrow;
   const title = section?.title || settings.ba_title;
   const hint = section?.subtitle || settings.ba_hint;
@@ -95,7 +124,7 @@ export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
             maxWidth: 1100,
             margin: "0 auto",
             position: "relative",
-            aspectRatio: "16 / 9",
+            aspectRatio: "4 / 3",
             background: "var(--c-linen)",
             overflow: "hidden",
             cursor: "ew-resize",
@@ -105,8 +134,9 @@ export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
         >
           {afterUrl ? (
             <Image
+              key={`${pair.id}-after`}
               src={afterUrl}
-              alt={settings.ba_label_after}
+              alt={`${pair.label}. ${settings.ba_label_after}`}
               fill
               draggable={false}
               sizes="(max-width: 1100px) 100vw, 1100px"
@@ -123,8 +153,9 @@ export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
           >
             {beforeUrl ? (
               <Image
+                key={`${pair.id}-before`}
                 src={beforeUrl}
-                alt={settings.ba_label_before}
+                alt={`${pair.label}. ${settings.ba_label_before}`}
                 fill
                 draggable={false}
                 sizes="(max-width: 1100px) 100vw, 1100px"
@@ -196,6 +227,45 @@ export default function BeforeAfter({ settings, section }: BeforeAfterProps) {
               {Math.round(pct)}%
             </span>
           </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 10,
+            maxWidth: 1100,
+            margin: "22px auto 0",
+          }}
+        >
+          {WORK_PAIRS.map((item, index) => {
+            const active = index === pairIndex;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setPairIndex(index);
+                  setPct(50);
+                }}
+                style={{
+                  fontFamily: "var(--f-sans)",
+                  fontSize: "0.8125rem",
+                  letterSpacing: "0.04em",
+                  padding: "10px 16px",
+                  border: active
+                    ? "1px solid var(--c-ink)"
+                    : "1px solid rgba(37, 37, 37, 0.16)",
+                  background: active ? "var(--c-ink)" : "transparent",
+                  color: active ? "var(--c-parchment)" : "var(--c-ink)",
+                  cursor: "pointer",
+                }}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>

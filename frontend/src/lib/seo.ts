@@ -60,7 +60,7 @@ export function metadataFromSettings(settings: SiteSettings): Metadata {
   const keywords = csv(settings.seo_keywords || "");
 
   return {
-    title,
+    title: title ? { absolute: title } : undefined,
     description,
     keywords,
     authors: [{ name: author, url: SITE_URL }],

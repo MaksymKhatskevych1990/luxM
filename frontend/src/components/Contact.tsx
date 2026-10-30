@@ -252,7 +252,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                     className="contact-file"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <span>{file ? file.name : "Додати фото «до» або план"}</span>
+                    <span>{file ? file.name : "Додати фото ніші або ескіз"}</span>
                     <span className="contact-file-hint">JPG, PNG, WEBP або PDF · до 15 МБ</span>
                   </button>
                   {file ? (

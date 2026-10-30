@@ -31,10 +31,17 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
   const street = settings.jsonld_street?.trim() || "";
   const published = projects.filter((project) => project.is_published !== false);
 
+  const alternateName = [settings.tagline, "Меблі на замовлення в Дніпрі"].filter(
+    (value, index, list) => Boolean(value) && value !== name && list.indexOf(value) === index,
+  );
+
   const address = {
     "@type": "PostalAddress",
     ...(street ? { streetAddress: street } : {}),
     addressLocality: settings.jsonld_city,
+    ...(settings.jsonld_city === "Дніпро" || settings.seo_geo_region === "UA-12"
+      ? { addressRegion: "Дніпропетровська область" }
+      : {}),
     addressCountry: settings.jsonld_country,
     ...(settings.jsonld_postal_code
       ? { postalCode: settings.jsonld_postal_code }
@@ -55,7 +62,9 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     "@type": ["LocalBusiness", settings.jsonld_type || "FurnitureStore"],
     "@id": `${SITE_URL}/#business`,
     name,
-    alternateName: settings.brand_name,
+    ...(alternateName.length
+      ? { alternateName: alternateName.length === 1 ? alternateName[0] : alternateName }
+      : {}),
     description,
     url: SITE_URL,
     telephone: settings.phone,
@@ -138,7 +147,7 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     ? {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: "Проєкти",
+        name: "Меблі на замовлення в Дніпрі",
         itemListElement: published.slice(0, 8).map((project, index) => ({
           "@type": "ListItem",
           position: index + 1,

@@ -192,7 +192,7 @@ class SiteSettings(TimeStampedModel):
     )
 
     phone = models.CharField(
-        max_length=64, default="+38 (044) 555 12 34", verbose_name="Телефон"
+        max_length=64, default="+38 (097) 208 00 74", verbose_name="Телефон"
     )
     email = models.EmailField(default="studio@forma.ua", verbose_name="Email")
     telegram = models.CharField(
@@ -265,24 +265,29 @@ class SiteSettings(TimeStampedModel):
 
     seo_title = models.CharField(
         max_length=80,
-        default="Меблі на замовлення в Києві | ProProstir",
+        default="Кухні та меблі на замовлення в Дніпрі | ProProstir",
         verbose_name="SEO заголовок (title)",
         help_text="До 60–70 символів. Можна змінювати під бренд і сезон.",
     )
     seo_description = models.TextField(
         default=(
-            "ProProstir — від ідеї до вашого простору. Меблі на замовлення в Києві: "
-            "кухні, гардеробні, вітальні та кабінети. Проєктування, виробництво "
-            "та монтаж."
+            "Кухні, шафи та гардеробні на замовлення в Дніпрі. Якісні корпусні "
+            "меблі будь-якої складності: прорахунок, замовлення і збірка на місці. "
+            "Тел. 097 208 00 74."
         ),
         verbose_name="SEO опис (meta description)",
         help_text="До 155–160 символів. Показується в Google.",
     )
     seo_keywords = models.TextField(
         default=(
-            "меблі на замовлення Київ, кухні на замовлення, гардеробні Київ, "
-            "вбудовані меблі, меблі з масиву, проєктування меблів, "
-            "виробництво меблів Київ, монтаж меблів, ProProstir"
+            "меблі на замовлення Дніпро, кухні на замовлення Дніпро, "
+            "кухня на замовлення, шафи на замовлення Дніпро, шафа-купе на замовлення, "
+            "гардеробна на замовлення Дніпро, корпусні меблі Дніпро, "
+            "вбудовані меблі Дніпро, кухонні меблі на замовлення, якісні меблі Дніпро, "
+            "індивідуальні меблі, нестандартні меблі Дніпро, прорахунок меблів, "
+            "прорахунок кухні Дніпро, замовлення меблів Дніпро, збірка меблів Дніпро, "
+            "меблевий майстер Дніпро, меблі з МДФ, меблі будь-якої складності, "
+            "тумба під телевізор на замовлення, ProProstir"
         ),
         verbose_name="Ключові слова",
         help_text="Через кому. Можна оновлювати, коли змінюються послуги чи назва.",
@@ -319,28 +324,29 @@ class SiteSettings(TimeStampedModel):
     seo_geo_region = models.CharField(
         max_length=16,
         blank=True,
-        default="UA-30",
+        default="UA-12",
         verbose_name="Geo region",
-        help_text="Код регіону, наприклад UA-30 для Києва.",
+        help_text="Код регіону, наприклад UA-12 для Дніпропетровської області.",
     )
     seo_geo_placename = models.CharField(
         max_length=80,
         blank=True,
-        default="Київ",
+        default="Дніпро",
         verbose_name="Geo placename",
     )
     og_title = models.CharField(
         max_length=80,
         blank=True,
-        default="ProProstir — Від ідеї до вашого простору",
+        default="Якісні меблі на замовлення в Дніпрі — ProProstir",
         verbose_name="Open Graph заголовок",
         help_text="Якщо порожньо — використовується SEO заголовок.",
     )
     og_description = models.TextField(
         blank=True,
         default=(
-            "Унікальні кухні, гардеробні та корпусні меблі ручної роботи. "
-            "Від креслення до монтажу — одна майстерня в Києві."
+            "Прорахую вартість, замовлю виготовлення і зберу кухню, шафу чи "
+            "гардеробну в Дніпрі. Якісні меблі будь-якої складності — "
+            "від кошторису до встановлення."
         ),
         verbose_name="Open Graph опис",
         help_text="Якщо порожньо — використовується SEO опис.",
@@ -364,7 +370,7 @@ class SiteSettings(TimeStampedModel):
     og_image_alt = models.CharField(
         max_length=160,
         blank=True,
-        default="Меблі на замовлення ProProstir: від ідеї до вашого простору",
+        default="Кухня на замовлення в Дніпрі: горіх, білі фасади, кам'яна стільниця і вітрина — ProProstir",
         verbose_name="OG зображення alt",
     )
     twitter_card = models.CharField(
@@ -375,13 +381,16 @@ class SiteSettings(TimeStampedModel):
     twitter_title = models.CharField(
         max_length=80,
         blank=True,
-        default="",
+        default="Кухні, шафи і гардеробні на замовлення в Дніпрі",
         verbose_name="Twitter заголовок",
         help_text="Якщо порожньо — Open Graph або SEO заголовок.",
     )
     twitter_description = models.TextField(
         blank=True,
-        default="",
+        default=(
+            "Якісні меблі будь-якої складності в Дніпрі: прорахунок, "
+            "замовлення виготовлення і збірка на місці. ProProstir."
+        ),
         verbose_name="Twitter опис",
         help_text="Якщо порожньо — Open Graph або SEO опис.",
     )
@@ -407,14 +416,15 @@ class SiteSettings(TimeStampedModel):
     jsonld_description = models.TextField(
         blank=True,
         default=(
-            "ProProstir — від ідеї до вашого простору. Майстерня меблів "
-            "на замовлення в Києві: проєктування, виробництво та монтаж."
+            "ProProstir: кухні, шафи, гардеробні та корпусні меблі на замовлення "
+            "в Дніпрі. Прорахунок вартості, замовлення виготовлення і збірка на місці. "
+            "Виїзд по місту та в інші міста України."
         ),
         verbose_name="JSON-LD опис",
         help_text="Якщо порожньо — SEO опис.",
     )
     jsonld_city = models.CharField(
-        max_length=80, default="Київ", verbose_name="Місто"
+        max_length=80, default="Дніпро", verbose_name="Місто"
     )
     jsonld_country = models.CharField(
         max_length=8, default="UA", verbose_name="Країна (ISO)"
@@ -428,17 +438,17 @@ class SiteSettings(TimeStampedModel):
     jsonld_street = models.CharField(
         max_length=255,
         blank=True,
-        default="вул. Промислова 14, Стара Дарниця",
+        default="",
         verbose_name="Вулиця для schema",
         help_text="Якщо порожньо — поле адреси.",
     )
     jsonld_price_range = models.CharField(
-        max_length=16, default="$$$", verbose_name="Ціновий діапазон"
+        max_length=16, default="$$", verbose_name="Ціновий діапазон"
     )
     jsonld_area_served = models.CharField(
         max_length=160,
         blank=True,
-        default="Київ, Україна",
+        default="Дніпро, Кам'янське, Новомосковськ, Павлоград та інші міста України",
         verbose_name="Зона обслуговування",
     )
     jsonld_opening_hours = models.CharField(
@@ -449,21 +459,24 @@ class SiteSettings(TimeStampedModel):
         help_text="Формат schema.org, наприклад Mo-Fr 10:00-18:00.",
     )
     jsonld_latitude = models.CharField(
-        max_length=24, blank=True, default="", verbose_name="Широта"
+        max_length=24, blank=True, default="48.4647", verbose_name="Широта"
     )
     jsonld_longitude = models.CharField(
-        max_length=24, blank=True, default="", verbose_name="Довгота"
+        max_length=24, blank=True, default="35.0462", verbose_name="Довгота"
     )
     jsonld_services = models.TextField(
         blank=True,
         default=(
-            "Кухні на замовлення\n"
-            "Гардеробні\n"
-            "Вітальні\n"
-            "Кабінети\n"
-            "Проєктування меблів\n"
-            "Виробництво\n"
-            "Монтаж"
+            "Кухні на замовлення в Дніпрі\n"
+            "Шафи та шафи-купе на замовлення\n"
+            "Гардеробні на замовлення\n"
+            "Корпусні меблі на замовлення\n"
+            "Вбудовані меблі\n"
+            "Нестандартні меблі будь-якої складності\n"
+            "Прорахунок вартості меблів\n"
+            "Замовлення виготовлення меблів\n"
+            "Збірка та встановлення меблів\n"
+            "Меблі для вітальні та кабінету"
         ),
         verbose_name="Послуги (по одному в рядку)",
         help_text="Назви можна змінювати — вони потрапляють у schema.org OfferCatalog.",
@@ -482,7 +495,7 @@ class SiteSettings(TimeStampedModel):
         max_length=16, default="24", verbose_name="Майстрів (застаріле)"
     )
     stats_production = models.CharField(
-        max_length=16, default="100%", verbose_name="Виробництво (застаріле)"
+        max_length=16, default="", verbose_name="Виробництво (застаріле)"
     )
 
     workshop_quote = models.TextField(

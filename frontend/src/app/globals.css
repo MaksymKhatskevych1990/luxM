@@ -747,7 +747,10 @@ section[id] {
 
 .hero-brand-tag {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
+  max-width: 100%;
   gap: 0.45em;
   margin: 7px 0 0;
   font-family: Montserrat, var(--f-sans);
@@ -830,8 +833,8 @@ section[id] {
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(12px, 2vh, 24px) 24px;
+  grid-template-columns: repeat(var(--hero-stat-cols, 3), minmax(0, 1fr));
+  gap: clamp(12px, 2vh, 24px) 20px;
   margin-top: clamp(12px, 2.4vh, 28px);
   padding-top: clamp(12px, 2vh, 24px);
   border-top: 1px solid rgba(37, 37, 37, 0.1);
@@ -839,10 +842,15 @@ section[id] {
   width: 100%;
 }
 
+.hero-stats > * {
+  min-width: 0;
+}
+
 .hero-stat-value {
   font-size: clamp(1.5rem, 2.4vw, 2.25rem);
   color: var(--c-ink);
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .hero-scroll {
@@ -1031,19 +1039,21 @@ section[id] {
 }
 
 .hero--room .hero-foot {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   margin-top: clamp(16px, 2.4vh, 28px);
   padding-top: clamp(14px, 2vh, 22px);
   border-top: 1px solid rgba(243, 238, 230, 0.12);
 }
 
 .hero--room .hero-foot .hero-stats {
-  flex: 1;
-  min-width: 0;
-  width: auto;
+  flex: none;
+  width: 100%;
   margin-top: 0;
   padding-top: 0;
   border-top: none;
-  gap: 8px 16px;
+  gap: 8px 28px;
 }
 
 .hero--room .btn-primary {
