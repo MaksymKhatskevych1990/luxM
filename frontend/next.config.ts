@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
       },
+      {
+        source: "/hero/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+      },
+      {
+        source: "/works/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+      },
     ];
   },
   // Allow ngrok / LAN / other tunnels to load /_next assets in dev.

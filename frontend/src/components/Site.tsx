@@ -48,13 +48,9 @@ export default function Site({ data }: SiteProps) {
 
   return (
     <>
-      <JsonLd
-        settings={data.settings}
-        projects={data.projects}
-        sections={data.sections}
-      />
+      <JsonLd settings={data.settings} projects={data.projects} />
       <Header settings={data.settings} navigation={data.navigation} />
-      <main>
+      <main id="content">
         <Hero
           settings={data.settings}
           stats={data.hero_stats}
@@ -72,11 +68,7 @@ export default function Site({ data }: SiteProps) {
           <ProjectDetail project={featured} settings={data.settings} />
         ) : null}
         {isVisible(gallerySection) ? (
-          <Gallery
-            section={gallerySection}
-            categories={data.work_categories ?? []}
-            settings={data.settings}
-          />
+          <Gallery section={gallerySection} categories={data.work_categories ?? []} />
         ) : null}
         {isVisible(photographySection) ? (
           <Photography section={photographySection} details={data.craft_details} />

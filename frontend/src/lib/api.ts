@@ -47,6 +47,7 @@ export async function submitLead(payload: {
   email: string;
   telegram: string;
   attachment?: File | null;
+  hp_field?: string;
 }) {
   const body = new FormData();
   body.append("room_type", payload.room_type);
@@ -55,6 +56,7 @@ export async function submitLead(payload: {
   body.append("phone", payload.phone);
   body.append("email", payload.email);
   body.append("telegram", payload.telegram);
+  body.append("hp_field", payload.hp_field ?? "");
   if (payload.attachment) {
     body.append("attachment", payload.attachment);
   }

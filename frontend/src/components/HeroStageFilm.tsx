@@ -39,11 +39,11 @@ export default function HeroStageFilm({ onSettled }: HeroStageFilmProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
-    HERO_STAGES.forEach((stage) => {
-      const image = new window.Image();
-      image.src = stage.src;
-    });
-  }, []);
+    const upcoming = HERO_STAGES[Math.min(index + 1, LAST)];
+    if (!upcoming || upcoming.src === HERO_STAGES[index].src) return;
+    const image = new window.Image();
+    image.src = upcoming.src;
+  }, [index]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -84,7 +84,14 @@ export default function HeroStageFilm({ onSettled }: HeroStageFilmProps) {
           key={stage.src}
           className={`hero-film-frame${i === active ? " is-on" : ""}`}
         >
-          <img src={stage.src} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={stage.src}
+            alt=""
+            decoding={i === active ? "sync" : "async"}
+            fetchPriority={i === active ? "high" : "low"}
+            loading={i === active ? "eager" : "lazy"}
+          />
         </div>
       ))}
       <div className="hero-film-meta">

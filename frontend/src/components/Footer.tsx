@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
 import { homeHref, navByLocation } from "@/lib/content";
+import { telHref } from "@/lib/phone";
 import { services as landingPages } from "@/lib/services";
+import OutboundLink from "./OutboundLink";
 
 type FooterProps = {
   settings: SiteSettings;
@@ -28,7 +30,7 @@ function FooterLink({
         display: "block",
         fontFamily: "var(--f-sans)",
         fontSize: "0.875rem",
-        color: "rgba(247, 246, 242, 0.3)",
+        color: "rgba(247, 246, 242, 0.78)",
         textDecoration: "none",
         marginBottom: 10,
         transition: "color 0.2s",
@@ -86,7 +88,7 @@ export default function Footer({ settings, navigation }: FooterProps) {
               style={{
                 fontFamily: "var(--f-sans)",
                 fontSize: "0.875rem",
-                color: "rgba(247, 246, 242, 0.28)",
+                color: "rgba(247, 246, 242, 0.72)",
                 lineHeight: 1.6,
                 maxWidth: 200,
               }}
@@ -126,17 +128,34 @@ export default function Footer({ settings, navigation }: FooterProps) {
                 {settings.footer_contacts_heading}
               </div>
               {settings.email ? (
-                <FooterLink href={`mailto:${settings.email}`}>{settings.email}</FooterLink>
+                <OutboundLink
+                  href={`mailto:${settings.email}`}
+                  location="footer"
+                  className="footer-contact-link"
+                >
+                  {settings.email}
+                </OutboundLink>
               ) : null}
               {settings.phone ? (
-                <FooterLink href={`tel:${settings.phone.replace(/\s/g, "")}`}>
+                <OutboundLink
+                  href={telHref(settings.phone)}
+                  location="footer"
+                  className="footer-contact-link"
+                >
                   {settings.phone}
-                </FooterLink>
+                </OutboundLink>
               ) : null}
               {socials.map((item) => (
-                <FooterLink key={item.label} href={item.href} external>
+                <OutboundLink
+                  key={item.label}
+                  href={item.href}
+                  location="footer"
+                  className="footer-contact-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {item.label}
-                </FooterLink>
+                </OutboundLink>
               ))}
             </div>
           </div>

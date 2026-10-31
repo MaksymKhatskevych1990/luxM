@@ -1,12 +1,19 @@
-import type { PageSection, Project, SiteSettings } from "@/lib/types";
+import type { Project, SiteSettings } from "@/lib/types";
 import { SITE_URL } from "@/lib/site";
 import { seoServices } from "@/lib/seo";
 
 type JsonLdProps = {
   settings: SiteSettings;
   projects?: Project[];
-  sections?: PageSection[];
 };
+
+function profileUrl(url: string | undefined): string | null {
+  const value = (url || "").trim();
+  if (!value) return null;
+  if (/^https?:\/\/(www\.)?(t\.me|telegram\.me)\/?$/i.test(value)) return null;
+  if (/^https?:\/\/(www\.)?instagram\.com\/?$/i.test(value)) return null;
+  return value;
+}
 
 function abs(pathOrUrl: string): string {
   if (!pathOrUrl) return SITE_URL;
@@ -17,21 +24,19 @@ function abs(pathOrUrl: string): string {
   return `${SITE_URL}${path}`;
 }
 
-export default function JsonLd({ settings, projects = [], sections = [] }: JsonLdProps) {
+export default function JsonLd({ settings, projects = [] }: JsonLdProps) {
   const name = settings.jsonld_name || settings.brand_name;
   const description = settings.jsonld_description || settings.seo_description;
   const image = settings.og_image_url ? abs(settings.og_image_url) : undefined;
   const services = seoServices(settings);
   const canonical = abs(settings.seo_canonical_path || "/");
-  const sameAs = [
-    settings.instagram_url,
-    settings.telegram_url,
-    settings.whatsapp_url,
-  ].filter(Boolean);
+  const sameAs = [profileUrl(settings.instagram_url), profileUrl(settings.telegram_url)].filter(
+    (value): value is string => Boolean(value),
+  );
   const street = settings.jsonld_street?.trim() || "";
   const published = projects.filter((project) => project.is_published !== false);
 
-  const alternateName = [settings.tagline, "Меблі на замовлення в Дніпрі"].filter(
+  const alternateName = [settings.tagline].filter(
     (value, index, list) => Boolean(value) && value !== name && list.indexOf(value) === index,
   );
 
@@ -49,7 +54,7 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
   };
 
   const geo =
-    settings.jsonld_latitude && settings.jsonld_longitude
+    street && settings.jsonld_latitude && settings.jsonld_longitude
       ? {
           "@type": "GeoCoordinates",
           latitude: settings.jsonld_latitude,
@@ -69,7 +74,6 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     url: SITE_URL,
     telephone: settings.phone,
     ...(settings.email ? { email: settings.email } : {}),
-    priceRange: settings.jsonld_price_range,
     image,
     logo: settings.header_logo_url ? abs(settings.header_logo_url) : image,
     address,
@@ -78,7 +82,7 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
       ? { openingHours: settings.jsonld_opening_hours }
       : {}),
     areaServed: settings.jsonld_area_served || settings.jsonld_city,
-    sameAs,
+    ...(sameAs.length ? { sameAs } : {}),
     ...(services.length
       ? {
           hasOfferCatalog: {
@@ -122,44 +126,24 @@ export default function JsonLd({ settings, projects = [], sections = [] }: JsonL
     primaryImageOfPage: image,
   };
 
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: name,
-        item: SITE_URL,
-      },
-      ...sections
-        .filter((section) => section.is_visible !== false && section.section_id)
-        .map((section, index) => ({
-          "@type": "ListItem",
-          position: index + 2,
-          name: section.title || section.eyebrow || section.section_id,
-          item: `${SITE_URL}/#${section.section_id}`,
-        })),
-    ],
-  };
-
   const work = published.length
     ? {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: "Меблі на замовлення в Дніпрі",
+        name: "Вибрані роботи",
         itemListElement: published.slice(0, 8).map((project, index) => ({
           "@type": "ListItem",
           position: index + 1,
           name: project.seo_title || project.title,
-          description: project.seo_description || project.short_description,
-          url: `${SITE_URL}/#projects`,
-          image: project.image_url ? abs(project.image_url) : undefined,
+          ...(project.seo_description || project.short_description
+            ? { description: project.seo_description || project.short_description }
+            : {}),
+          ...(project.image_url ? { image: abs(project.image_url) } : {}),
         })),
       }
     : null;
 
-  const graphs = [business, website, webpage, breadcrumbs, work].filter(Boolean);
+  const graphs = [business, website, webpage, work].filter(Boolean);
 
   return (
     <>

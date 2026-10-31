@@ -13,7 +13,7 @@ export default function NotFound() {
   return (
     <>
       <Header settings={fallbackHome.settings} navigation={fallbackHome.navigation} />
-      <main className="section-pad">
+      <main id="content" className="section-pad">
         <div
           className="wrap"
           style={{ textAlign: "center", padding: "72px 0 96px", maxWidth: 720 }}
@@ -43,7 +43,7 @@ export default function NotFound() {
             }}
           >
             Можливо, вона була переміщена або ніколи не існувала. Поверніться на головну —
-            там проєкти, процес і команда.
+            там проєкти, процес і контакти.
           </p>
           <Link href="/" className="btn-primary">
             На головну

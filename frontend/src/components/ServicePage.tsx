@@ -1,19 +1,27 @@
 import Link from "next/link";
-import type { SiteSettings } from "@/lib/types";
-import type { NavItem } from "@/lib/types";
+import type { NavItem, SiteSettings, WorkItem } from "@/lib/types";
 import { services, type ServicePageData } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
+import { telHref } from "@/lib/phone";
 import Header from "./Header";
 import Footer from "./Footer";
+import OutboundLink from "./OutboundLink";
 
 type ServicePageProps = {
   service: ServicePageData;
   settings: SiteSettings;
   navigation: NavItem[];
+  examples?: WorkItem[];
 };
 
-export default function ServicePage({ service, settings, navigation }: ServicePageProps) {
-  const phoneHref = `tel:${settings.phone.replace(/[^\d+]/g, "")}`;
+export default function ServicePage({
+  service,
+  settings,
+  navigation,
+  examples = [],
+}: ServicePageProps) {
+  const phoneHref = telHref(settings.phone);
+  const enquiryText = settings.header_cta_text || "Замовити прорахунок";
   const others = services.filter((item) => item.slug !== service.slug);
   const pageUrl = `${SITE_URL}/${service.slug}`;
 
@@ -33,7 +41,7 @@ export default function ServicePage({ service, settings, navigation }: ServicePa
         serviceType: service.navLabel,
         description: service.description,
         url: pageUrl,
-        areaServed: "Дніпро",
+        areaServed: settings.jsonld_area_served || settings.jsonld_city || "Дніпро",
         provider: {
           "@type": "FurnitureStore",
           name: settings.brand_name,
@@ -41,9 +49,11 @@ export default function ServicePage({ service, settings, navigation }: ServicePa
           url: SITE_URL,
           address: {
             "@type": "PostalAddress",
-            addressLocality: "Дніпро",
-            addressRegion: "Дніпропетровська область",
-            addressCountry: "UA",
+            addressLocality: settings.jsonld_city || "Дніпро",
+            ...(settings.jsonld_city === "Дніпро" || settings.seo_geo_region === "UA-12"
+              ? { addressRegion: "Дніпропетровська область" }
+              : {}),
+            addressCountry: settings.jsonld_country || "UA",
           },
         },
       },
@@ -62,7 +72,7 @@ export default function ServicePage({ service, settings, navigation }: ServicePa
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <Header settings={settings} navigation={navigation} />
-      <main className="service-page">
+      <main id="content" className="service-page">
         <article className="wrap">
           <nav className="service-crumbs" aria-label="Навігаційний ланцюжок">
             <Link href="/">Головна</Link>
@@ -73,15 +83,26 @@ export default function ServicePage({ service, settings, navigation }: ServicePa
           <h1 className="font-serif service-title">{service.h1}</h1>
           <p className="service-lead">{service.lead}</p>
           <div className="service-actions">
-            <a className="btn-primary" href={phoneHref}>
+            <OutboundLink className="btn-primary" href={phoneHref} location="service">
               {settings.phone}
-            </a>
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a className="btn-ghost" href="/#contacts">
-              Замовити прорахунок
-            </a>
+            </OutboundLink>
+            <OutboundLink
+              className="btn-ghost"
+              href="/#contacts"
+              location="service"
+              eventName="enquiry_cta_click"
+            >
+              {enquiryText}
+            </OutboundLink>
           </div>
-          <img className="service-photo" src={service.image} alt={service.imageAlt} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="service-photo"
+            src={service.image}
+            alt={service.imageAlt}
+            fetchPriority="high"
+            decoding="async"
+          />
 
           <ul className="service-points">
             {service.points.map((point) => (
@@ -114,6 +135,22 @@ export default function ServicePage({ service, settings, navigation }: ServicePa
               </details>
             ))}
           </section>
+
+          {examples.length > 0 ? (
+            <section className="service-more" aria-labelledby="service-examples-title">
+              <h2 id="service-examples-title" className="font-serif">
+                Приклади: {service.navLabel.toLowerCase()}
+              </h2>
+              <ul>
+                {examples.map((item) => (
+                  <li key={item.slug}>
+                    <Link href={`/works/${item.slug}`}>{item.title}</Link>
+                    {item.summary ? <p>{item.summary}</p> : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <section className="service-more" aria-labelledby="service-more-title">
             <h2 id="service-more-title" className="font-serif">

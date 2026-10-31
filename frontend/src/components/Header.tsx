@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NavItem, SiteSettings } from "@/lib/types";
+import { trackEvent } from "@/lib/analytics";
+import { isEnquiryHref } from "@/lib/cta";
 import { homeHref, navByLocation } from "@/lib/content";
 
 type HeaderProps = {
@@ -20,6 +22,21 @@ export default function Header({ settings, navigation }: HeaderProps) {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  function trackEnquiry(href: string, location: string) {
+    if (isEnquiryHref(href)) {
+      trackEvent("enquiry_cta_click", { link_location: location });
+    }
+  }
 
   return (
     <header className="site-header">
@@ -51,7 +68,11 @@ export default function Header({ settings, navigation }: HeaderProps) {
           ))}
         </nav>
 
-        <a href={homeHref(settings.header_cta_href)} className="cta-invert desktop-cta">
+        <a
+          href={homeHref(settings.header_cta_href)}
+          className="cta-invert desktop-cta"
+          onClick={() => trackEnquiry(settings.header_cta_href, "header")}
+        >
           {settings.header_cta_text}
         </a>
 
@@ -60,6 +81,7 @@ export default function Header({ settings, navigation }: HeaderProps) {
           className="mobile-menu-btn"
           aria-label={open ? "Закрити меню" : "Відкрити меню"}
           aria-expanded={open}
+          aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
         >
           <span
@@ -96,7 +118,7 @@ export default function Header({ settings, navigation }: HeaderProps) {
       </div>
 
       {open ? (
-        <nav className="mobile-nav" aria-label="Мобільна навігація">
+        <nav id="mobile-nav" className="mobile-nav" aria-label="Мобільна навігація">
           {items.map((item) => (
             <a key={item.id} href={homeHref(item.href)} onClick={() => setOpen(false)}>
               {item.label}
@@ -106,7 +128,10 @@ export default function Header({ settings, navigation }: HeaderProps) {
             href={homeHref(settings.header_cta_href)}
             className="cta-invert"
             style={{ alignSelf: "flex-start", marginTop: 8 }}
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              trackEnquiry(settings.header_cta_href, "header_mobile");
+              setOpen(false);
+            }}
           >
             {settings.header_cta_text}
           </a>

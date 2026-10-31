@@ -145,17 +145,17 @@ class Command(BaseCommand):
         settings.hero_title_emphasis = "будь-якої"
         settings.hero_title_line2 = "складності."
         settings.hero_subline = "Прорахунок · Замовлення · Збірка"
-        settings.hero_cta_primary_text = "Дивитись проєкти"
-        settings.hero_cta_primary_href = "#projects"
-        settings.hero_cta_secondary_text = "Про процес"
-        settings.hero_cta_secondary_href = "#process"
+        settings.hero_cta_primary_text = "Замовити прорахунок"
+        settings.hero_cta_primary_href = "#contacts"
+        settings.hero_cta_secondary_text = "Дивитись проєкти"
+        settings.hero_cta_secondary_href = "#projects"
         settings.hero_floorplan_caption = "Технічне креслення · Масштаб 1:25"
         settings.hero_scroll_hint = "Гортати"
         settings.hero_founded_prefix = "Заснована"
         settings.hero_background_image_url = HERO_BACKGROUND_DEFAULT
 
         settings.phone = "+38 (097) 208 00 74"
-        settings.email = ""
+        settings.email = "proprostirua@gmail.com"
         settings.telegram = ""
         settings.whatsapp = "+38 (097) 208 00 74"
         settings.address = "Дніпро · працюємо по всій Україні"
@@ -343,7 +343,7 @@ class Command(BaseCommand):
                     title="Кожне замовлення —",
                     title_emphasis="свої меблі.",
                     cta_text="Всі проєкти →",
-                    cta_href="#gallery",
+                    cta_href="/works",
                     order=1,
                 ),
                 PageSection(
@@ -443,7 +443,7 @@ class Command(BaseCommand):
                 ),
                 NavItem(
                     label="Галерея",
-                    href="#gallery",
+                    href="/works",
                     location=NavItem.LOCATION_HEADER,
                     order=2,
                 ),

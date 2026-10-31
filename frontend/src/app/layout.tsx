@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import Analytics from "@/components/Analytics";
 import { SITE_URL } from "@/lib/site";
 import { fallbackHome } from "@/lib/fallback";
 import "./globals.css";
@@ -11,12 +12,6 @@ export const metadata: Metadata = {
     template: `%s | ${fallbackHome.settings.jsonld_name || fallbackHome.settings.brand_name}`,
   },
   description: fallbackHome.settings.seo_description,
-  alternates: {
-    canonical: "/",
-    languages: {
-      uk: "/",
-    },
-  },
 };
 
 export const viewport: Viewport = {
@@ -32,7 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uk">
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#content">
+          Перейти до вмісту
+        </a>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

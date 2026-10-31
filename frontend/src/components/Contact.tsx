@@ -1,7 +1,10 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { submitLead } from "@/lib/api";
+import { trackEvent, trackHref } from "@/lib/analytics";
+import { formatOpeningHours } from "@/lib/hours";
+import { phoneDigits, telHref } from "@/lib/phone";
 import type { PageSection, RoomType, SiteSettings } from "@/lib/types";
 
 type ContactProps = {
@@ -21,24 +24,58 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
   const [email, setEmail] = useState("");
   const [telegram, setTelegram] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [hpField, setHpField] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sendingRef = useRef(false);
+  const successRef = useRef<HTMLHeadingElement>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (sendingRef.current) return;
     if (!name.trim() || !phone.trim()) {
       setStatus("error");
       setError(settings.contact_validation_message);
       return;
     }
 
-    if (file && file.size > 15 * 1024 * 1024) {
+    const digits = phoneDigits(phone);
+    if (digits.length < 10 || digits.length > 15) {
       setStatus("error");
-      setError("Файл завеликий. Максимум 15 МБ.");
+      setError("Вкажіть коректний телефон: щонайменше 10 цифр.");
       return;
     }
 
+    if (file) {
+      const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+      const allowedExtensions = ["jpg", "jpeg", "png", "webp", "heic", "heif", "pdf"];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/heic",
+        "image/heif",
+        "application/pdf",
+        "",
+      ];
+      if (!allowedExtensions.includes(extension) || !allowedTypes.includes(file.type)) {
+        setStatus("error");
+        setError("Надішліть фото (JPG, PNG, WEBP, HEIC) або PDF.");
+        return;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        setStatus("error");
+        setError("Файл завеликий. Максимум 15 МБ.");
+        return;
+      }
+    }
+
+    sendingRef.current = true;
     setStatus("sending");
     setError("");
 
@@ -51,9 +88,14 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
         email: email.trim(),
         telegram: telegram.trim(),
         attachment: file,
+        hp_field: hpField,
       });
       setStatus("success");
+      if (!hpField.trim()) {
+        trackEvent("generate_lead", { form_id: "enquiry", room_type: room });
+      }
     } catch (err) {
+      sendingRef.current = false;
       setStatus("error");
       setError(err instanceof Error ? err.message : settings.contact_validation_message);
     }
@@ -65,7 +107,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
       ? {
           label: settings.contact_label_phone,
           value: settings.phone,
-          href: `tel:${settings.phone.replace(/\s/g, "")}`,
+          href: telHref(settings.phone),
         }
       : null,
     settings.email
@@ -87,6 +129,12 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
           label: settings.contact_label_whatsapp,
           value: settings.whatsapp || settings.contact_label_whatsapp,
           href: settings.whatsapp_url || undefined,
+        }
+      : null,
+    settings.jsonld_opening_hours
+      ? {
+          label: "Графік",
+          value: formatOpeningHours(settings.jsonld_opening_hours),
         }
       : null,
     settings.instagram_url
@@ -130,7 +178,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
               style={{
                 fontFamily: "var(--f-sans)",
                 fontSize: "1.0625rem",
-                color: "rgba(247, 246, 242, 0.45)",
+                color: "rgba(247, 246, 242, 0.82)",
                 lineHeight: 1.75,
                 margin: "32px 0 0",
                 maxWidth: 380,
@@ -151,6 +199,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                       {...(row.href.startsWith("http")
                         ? { target: "_blank", rel: "noopener noreferrer" }
                         : {})}
+                      onClick={() => trackHref(row.href || "", "contact")}
                       style={{
                         fontFamily: "var(--f-sans)",
                         fontSize: "0.9375rem",
@@ -180,12 +229,15 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                   {settings.contact_success_eyebrow}
                 </span>
                 <h3
+                  ref={successRef}
+                  tabIndex={-1}
                   className="font-serif"
                   style={{
                     fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
                     color: "var(--c-parchment)",
                     margin: "0 0 16px",
                     lineHeight: 1.2,
+                    outline: "none",
                   }}
                 >
                   {settings.contact_success_title}
@@ -194,7 +246,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                   style={{
                     fontFamily: "var(--f-sans)",
                     fontSize: "1rem",
-                    color: "rgba(247, 246, 242, 0.45)",
+                    color: "rgba(247, 246, 242, 0.82)",
                     lineHeight: 1.7,
                     maxWidth: 360,
                   }}
@@ -203,31 +255,32 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 </p>
               </div>
             ) : (
-              <form className="contact-form" onSubmit={onSubmit}>
+              <form className="contact-form" onSubmit={onSubmit} noValidate aria-busy={status === "sending"}>
                 <div className="contact-form-lead">
-                <div style={{ marginBottom: 36 }}>
-                  <span
-                    className="label label--light"
-                    style={{ display: "block", marginBottom: 14 }}
-                  >
-                    {settings.contact_room_heading}
-                  </span>
+                <fieldset className="contact-rooms">
+                  <legend className="label label--light">{settings.contact_room_heading}</legend>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {rooms.map((item) => (
                       <button
                         key={item.value}
                         type="button"
                         className={`chip${room === item.value ? " on" : ""}`}
+                        aria-pressed={room === item.value}
                         onClick={() => setRoom(item.value)}
                       >
                         {item.label}
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
                 <div style={{ marginBottom: 28 }}>
+                  <label className="sr-only" htmlFor="enquiry-message">
+                    {settings.contact_message_placeholder}
+                  </label>
                   <textarea
+                    id="enquiry-message"
+                    name="message"
                     rows={4}
                     placeholder={settings.contact_message_placeholder}
                     className="f-line"
@@ -239,9 +292,12 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 <div style={{ marginBottom: 28 }}>
                   <input
                     ref={fileInputRef}
+                    id="enquiry-file"
+                    name="attachment"
                     type="file"
-                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf"
+                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,.pdf"
                     className="contact-file-input"
+                    aria-describedby="enquiry-file-hint"
                     onChange={(e) => {
                       setFile(e.target.files?.[0] ?? null);
                       setError("");
@@ -253,7 +309,9 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <span>{file ? file.name : "Додати фото ніші або ескіз"}</span>
-                    <span className="contact-file-hint">JPG, PNG, WEBP або PDF · до 15 МБ</span>
+                    <span id="enquiry-file-hint" className="contact-file-hint">
+                      JPG, PNG, WEBP, HEIC або PDF · до 15 МБ
+                    </span>
                   </button>
                   {file ? (
                     <button
@@ -271,60 +329,88 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 </div>
 
                 <div className="contact-form-fields">
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "0 28px",
-                  }}
-                  className="contact-fields"
-                >
+                <div className="contact-fields">
+                  <div>
+                    <label className="sr-only" htmlFor="enquiry-name">
+                      {settings.contact_name_placeholder}
+                    </label>
+                    <input
+                      id="enquiry-name"
+                      name="name"
+                      placeholder={settings.contact_name_placeholder}
+                      className="f-line"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      autoComplete="name"
+                      required
+                      aria-invalid={status === "error" && !name.trim()}
+                      aria-describedby={status === "error" ? "enquiry-error" : undefined}
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only" htmlFor="enquiry-phone">
+                      {settings.contact_phone_placeholder}
+                    </label>
+                    <input
+                      id="enquiry-phone"
+                      name="phone"
+                      type="tel"
+                      inputMode="tel"
+                      placeholder={settings.contact_phone_placeholder}
+                      className="f-line"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      autoComplete="tel"
+                      required
+                      aria-invalid={status === "error" && phoneDigits(phone).length < 10}
+                      aria-describedby={status === "error" ? "enquiry-error" : undefined}
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only" htmlFor="enquiry-email">
+                      {settings.contact_email_placeholder}
+                    </label>
+                    <input
+                      id="enquiry-email"
+                      name="email"
+                      placeholder={settings.contact_email_placeholder}
+                      className="f-line"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      autoComplete="email"
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only" htmlFor="enquiry-telegram">
+                      {settings.contact_telegram_placeholder}
+                    </label>
+                    <input
+                      id="enquiry-telegram"
+                      name="telegram"
+                      placeholder={settings.contact_telegram_placeholder}
+                      className="f-line"
+                      value={telegram}
+                      onChange={(e) => setTelegram(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+
+                <div className="hp-field" aria-hidden="true" inert>
+                  <label htmlFor="enquiry-hp">Company</label>
                   <input
-                    placeholder={settings.contact_name_placeholder}
-                    className="f-line"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    style={{ marginBottom: 24 }}
-                    autoComplete="name"
-                    required
-                  />
-                  <input
-                    placeholder={settings.contact_phone_placeholder}
-                    className="f-line"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    style={{ marginBottom: 24 }}
-                    autoComplete="tel"
-                    required
-                  />
-                  <input
-                    placeholder={settings.contact_email_placeholder}
-                    className="f-line"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{ marginBottom: 24 }}
-                    autoComplete="email"
-                  />
-                  <input
-                    placeholder={settings.contact_telegram_placeholder}
-                    className="f-line"
-                    value={telegram}
-                    onChange={(e) => setTelegram(e.target.value)}
-                    style={{ marginBottom: 24 }}
+                    id="enquiry-hp"
+                    name="hp_field"
+                    tabIndex={-1}
                     autoComplete="off"
+                    value={hpField}
+                    onChange={(e) => setHpField(e.target.value)}
                   />
                 </div>
 
                 {status === "error" ? (
-                  <p
-                    style={{
-                      fontFamily: "var(--f-sans)",
-                      fontSize: "0.875rem",
-                      color: "var(--c-oak-pale)",
-                      margin: "0 0 16px",
-                    }}
-                  >
+                  <p id="enquiry-error" role="alert">
                     {error}
                   </p>
                 ) : null}
@@ -332,21 +418,7 @@ export default function Contact({ settings, roomTypes, section }: ContactProps) 
                 <button
                   type="submit"
                   disabled={status === "sending"}
-                  style={{
-                    marginTop: 8,
-                    padding: "16px 40px",
-                    background: "var(--c-gold-btn)",
-                    color: "var(--c-void)",
-                    border: "none",
-                    cursor: status === "sending" ? "wait" : "pointer",
-                    fontFamily: "var(--f-sans)",
-                    fontSize: "0.9375rem",
-                    letterSpacing: "0.06em",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 10,
-                    opacity: status === "sending" ? 0.7 : 1,
-                  }}
+                  className="contact-submit"
                 >
                   {status === "sending"
                     ? settings.contact_submit_loading

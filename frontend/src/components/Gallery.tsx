@@ -1,17 +1,15 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { PageSection, SiteSettings, WorkCategory, WorkItem } from "@/lib/types";
-import WorkModal from "./WorkModal";
+import type { PageSection, WorkCategory } from "@/lib/types";
 
 type GalleryProps = {
   section: PageSection;
   categories: WorkCategory[];
-  settings: SiteSettings;
 };
 
-export default function Gallery({ section, categories, settings }: GalleryProps) {
+export default function Gallery({ section, categories }: GalleryProps) {
   const visible = useMemo(
     () =>
       [...(categories || [])]
@@ -24,8 +22,6 @@ export default function Gallery({ section, categories, settings }: GalleryProps)
     [categories],
   );
   const [slug, setSlug] = useState(visible[0]?.slug ?? "");
-  const [active, setActive] = useState<WorkItem | null>(null);
-
   const current = visible.find((category) => category.slug === slug) ?? visible[0];
   if (!current) return null;
 
@@ -52,6 +48,9 @@ export default function Gallery({ section, categories, settings }: GalleryProps)
             </h2>
             {section.subtitle ? <p className="work-subtitle">{section.subtitle}</p> : null}
           </div>
+          <Link href="/works" className="work-all">
+            Усі роботи →
+          </Link>
         </div>
 
         {visible.length > 1 ? (
@@ -64,6 +63,7 @@ export default function Gallery({ section, categories, settings }: GalleryProps)
                   type="button"
                   role="tab"
                   aria-selected={selected}
+                  aria-controls={`home-works-${category.slug}`}
                   className={`work-filter${selected ? " is-active" : ""}`}
                   onClick={() => setSlug(category.slug)}
                 >
@@ -75,46 +75,37 @@ export default function Gallery({ section, categories, settings }: GalleryProps)
           </div>
         ) : null}
 
-        {current.description ? <p className="work-category-note">{current.description}</p> : null}
-
-        <div className="work-grid">
-          {current.items.map((item) => (
-            <article
-              key={item.id}
-              className="proj-card work-card"
-              role="button"
-              tabIndex={0}
-              onClick={() => setActive(item)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  setActive(item);
-                }
-              }}
+        {visible.map((category) => {
+          const selected = category.slug === current.slug;
+          return (
+            <div
+              key={category.slug}
+              id={`home-works-${category.slug}`}
+              role="tabpanel"
+              hidden={!selected}
             >
-              <div className="work-card-media">
-                {item.image_url ? (
-                  <Image
-                    src={item.image_url}
-                    alt={item.title}
-                    fill
-                    className="proj-img"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : null}
+              {category.description ? <p className="work-category-note">{category.description}</p> : null}
+              <div className="work-grid">
+                {category.items.map((item) => (
+                  <Link key={item.id} href={`/works/${item.slug}`} className="proj-card work-card">
+                    <div className="work-card-media">
+                      {item.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.image_url} alt={item.title} loading="lazy" decoding="async" />
+                      ) : null}
+                    </div>
+                    <div className="work-card-body">
+                      <span className="label">{category.name}</span>
+                      <h3 className="font-serif work-card-title">{item.title}</h3>
+                      {item.summary ? <p className="work-card-summary">{item.summary}</p> : null}
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <div className="work-card-body">
-                <span className="label">{current.name}</span>
-                <h3 className="font-serif work-card-title">{item.title}</h3>
-                {item.summary ? <p className="work-card-summary">{item.summary}</p> : null}
-              </div>
-            </article>
-          ))}
-        </div>
+            </div>
+          );
+        })}
       </div>
-
-      <WorkModal item={active} settings={settings} onClose={() => setActive(null)} />
     </section>
   );
 }

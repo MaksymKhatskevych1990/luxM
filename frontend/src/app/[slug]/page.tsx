@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ServicePage from "@/components/ServicePage";
-import { fetchHome } from "@/lib/api";
-import { fallbackHome } from "@/lib/fallback";
 import { getService, services } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
+import { loadHome, worksForService } from "@/lib/works";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -22,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: { absolute: service.title },
     description: service.description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages: { uk: url } },
     openGraph: {
       title: service.title,
       description: service.description,
@@ -39,14 +38,14 @@ export default async function LandingPage({ params }: PageProps) {
   const service = getService(slug);
   if (!service) notFound();
 
-  let data = fallbackHome;
-  try {
-    data = await fetchHome();
-  } catch {
-    data = fallbackHome;
-  }
+  const data = await loadHome();
 
   return (
-    <ServicePage service={service} settings={data.settings} navigation={data.navigation} />
+    <ServicePage
+      service={service}
+      settings={data.settings}
+      navigation={data.navigation}
+      examples={worksForService(data.work_categories, service.slug)}
+    />
   );
 }

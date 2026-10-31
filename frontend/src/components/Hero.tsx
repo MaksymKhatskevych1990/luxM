@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
+import Link from "next/link";
 import type { HeroScene, HeroStat, HeroZone, SiteSettings } from "@/lib/types";
+import { trackEvent } from "@/lib/analytics";
+import { isEnquiryHref } from "@/lib/cta";
+import { homeHref } from "@/lib/content";
+import { services } from "@/lib/services";
 import HeroStageFilm from "./HeroStageFilm";
 
 type HeroProps = {
@@ -32,6 +37,20 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
   const onSettled = useCallback(() => setInteractive(true), []);
 
   const active = zones.find((zone) => zone.id === activeId) ?? null;
+  const enquiry = {
+    href: settings.header_cta_href || "#contacts",
+    text: settings.header_cta_text || "Замовити прорахунок",
+  };
+  const primaryIsEnquiry = isEnquiryHref(settings.hero_cta_primary_href);
+  const primary = primaryIsEnquiry
+    ? { href: settings.hero_cta_primary_href, text: settings.hero_cta_primary_text }
+    : enquiry;
+  const secondary = primaryIsEnquiry
+    ? { href: settings.hero_cta_secondary_href, text: settings.hero_cta_secondary_text }
+    : { href: settings.hero_cta_primary_href, text: settings.hero_cta_primary_text };
+  const showSecondary = Boolean(
+    secondary.text && secondary.href && secondary.href !== primary.href,
+  );
 
   function placeTip(event: MouseEvent<SVGElement>) {
     const svg = event.currentTarget.ownerSVGElement ?? event.currentTarget;
@@ -81,13 +100,31 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
             <p>{settings.hero_subline}</p>
           </div>
 
+          <nav className="hero-categories anim-up d2" aria-label="Основні категорії меблів">
+            {services.map((service) => (
+              <Link key={service.slug} href={`/${service.slug}`}>
+                {service.navLabel}
+              </Link>
+            ))}
+          </nav>
+
           <div className="hero-cta anim-up d3">
-            <a href={settings.hero_cta_primary_href} className="btn-primary">
-              {settings.hero_cta_primary_text}
+            <a
+              href={homeHref(primary.href)}
+              className="btn-primary"
+              onClick={() => {
+                if (isEnquiryHref(primary.href)) {
+                  trackEvent("enquiry_cta_click", { link_location: "hero" });
+                }
+              }}
+            >
+              {primary.text}
             </a>
-            <a href={settings.hero_cta_secondary_href} className="btn-ghost">
-              {settings.hero_cta_secondary_text}
-            </a>
+            {showSecondary ? (
+              <a href={homeHref(secondary.href)} className="btn-ghost">
+                {secondary.text}
+              </a>
+            ) : null}
           </div>
 
           <div className="hero-foot anim-up d4">
