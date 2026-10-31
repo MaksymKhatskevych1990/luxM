@@ -13,6 +13,9 @@ from .models import (
     ProjectImage,
     ProjectStage,
     RoomType,
+    WorkCategory,
+    WorkItem,
+    WorkItemImage,
     SiteSettings,
     WorkshopImage,
     WorkshopStat,
@@ -195,6 +198,60 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_gallery(self, obj):
         images = obj.gallery.filter(is_published=True)
         return ProjectImageSerializer(images, many=True, context=self.context).data
+
+
+class WorkItemImageSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkItemImage
+        fields = ("id", "url", "caption", "order")
+
+    def get_url(self, obj):
+        return public_media_url(obj.resolved_url)
+
+
+class WorkItemSerializer(serializers.ModelSerializer):
+    gallery = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
+    category_slug = serializers.CharField(source="category.slug", read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
+
+    class Meta:
+        model = WorkItem
+        fields = (
+            "id",
+            "title",
+            "slug",
+            "summary",
+            "description",
+            "image_url",
+            "order",
+            "category_slug",
+            "category_name",
+            "gallery",
+        )
+
+    def get_image_url(self, obj):
+        return public_media_url(obj.cover_url)
+
+    def get_gallery(self, obj):
+        images = [image for image in obj.gallery.all() if image.is_published]
+        images.sort(key=lambda image: (image.order, image.pk or 0))
+        return WorkItemImageSerializer(images, many=True, context=self.context).data
+
+
+class WorkCategorySerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkCategory
+        fields = ("id", "name", "slug", "description", "order", "items")
+
+    def get_items(self, obj):
+        items = [item for item in obj.items.all() if item.is_published]
+        items.sort(key=lambda item: (item.order, item.pk or 0))
+        return WorkItemSerializer(items, many=True, context=self.context).data
 
 
 class MaterialSerializer(serializers.ModelSerializer):

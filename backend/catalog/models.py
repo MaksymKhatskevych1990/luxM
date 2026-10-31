@@ -2,6 +2,52 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
+_UA_TO_LATIN = str.maketrans(
+    {
+        "а": "a",
+        "б": "b",
+        "в": "v",
+        "г": "h",
+        "ґ": "g",
+        "д": "d",
+        "е": "e",
+        "є": "ie",
+        "ж": "zh",
+        "з": "z",
+        "и": "y",
+        "і": "i",
+        "ї": "yi",
+        "й": "y",
+        "к": "k",
+        "л": "l",
+        "м": "m",
+        "н": "n",
+        "о": "o",
+        "п": "p",
+        "р": "r",
+        "с": "s",
+        "т": "t",
+        "у": "u",
+        "ф": "f",
+        "х": "kh",
+        "ц": "ts",
+        "ч": "ch",
+        "ш": "sh",
+        "щ": "shch",
+        "ь": "",
+        "ю": "yu",
+        "я": "ya",
+        "’": "",
+        "'": "",
+        "ʼ": "",
+    }
+)
+
+
+def slugify_label(value: str) -> str:
+    """Latin slug from a Ukrainian label. ASCII slugify drops Cyrillic entirely."""
+    return slugify((value or "").lower().translate(_UA_TO_LATIN))
+
 MAX_VIDEO_BYTES = 100 * 1024 * 1024  # 100 MB
 
 
@@ -17,6 +63,15 @@ def project_video_upload_to(instance, filename):
 def project_gallery_upload_to(instance, filename):
     slug = instance.project.slug if instance.project_id else "project"
     return f"projects/{slug}/gallery/{filename}"
+
+
+def work_cover_upload_to(instance, filename):
+    return f"works/{instance.slug or 'item'}/cover/{filename}"
+
+
+def work_gallery_upload_to(instance, filename):
+    slug = instance.item.slug if instance.item_id else "item"
+    return f"works/{slug}/gallery/{filename}"
 
 
 def brand_upload_to(instance, filename):
@@ -842,6 +897,7 @@ class HeroStat(TimeStampedModel):
 class PageSection(TimeStampedModel):
     KEY_CHOICES = [
         ("projects", "Проєкти"),
+        ("gallery", "Галерея"),
         ("photography", "Фотографія"),
         ("materials", "Матеріали"),
         ("process", "Процес"),
@@ -1100,6 +1156,140 @@ class ProjectStage(TimeStampedModel):
 
     @property
     def resolved_image_url(self) -> str:
+        return media_or_url(self.image, self.image_url)
+
+
+class WorkCategory(TimeStampedModel):
+    name = models.CharField(max_length=80, verbose_name="Назва")
+    slug = models.SlugField(unique=True, blank=True, verbose_name="Слаг")
+    description = models.TextField(
+        blank=True,
+        verbose_name="Короткий опис категорії",
+        help_text="Пояснення над картками: чим відрізняються варіанти цього типу.",
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    is_published = models.BooleanField(default=True, verbose_name="Опублікована")
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Категорія галереї"
+        verbose_name_plural = "Категорії галереї"
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify_label(self.name) or "category"
+            slug = base
+            i = 1
+            while WorkCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
+class WorkItem(TimeStampedModel):
+    category = models.ForeignKey(
+        WorkCategory,
+        related_name="items",
+        on_delete=models.CASCADE,
+        verbose_name="Категорія",
+    )
+    title = models.CharField(max_length=200, verbose_name="Назва")
+    slug = models.SlugField(unique=True, blank=True, verbose_name="Слаг")
+    summary = models.TextField(
+        blank=True,
+        verbose_name="Коротко на картці",
+        help_text="Одне-два речення: чим цей варіант відрізняється.",
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name="Тонкощі варіанту",
+        help_text="Повний текст у вікні картки: планування, матеріали, кому підходить.",
+    )
+    image_url = models.URLField(
+        blank=True,
+        verbose_name="Обкладинка (URL)",
+        help_text="Якщо файл не завантажено. Інакше береться перше фото галереї.",
+    )
+    cover_image = models.ImageField(
+        upload_to=work_cover_upload_to,
+        blank=True,
+        null=True,
+        verbose_name="Обкладинка (файл)",
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    is_published = models.BooleanField(default=True, verbose_name="Опублікована")
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Робота"
+        verbose_name_plural = "Роботи галереї"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify_label(self.title) or "item"
+            slug = base
+            i = 1
+            while WorkItem.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    @property
+    def cover_url(self) -> str:
+        uploaded = media_or_url(self.cover_image, "")
+        if uploaded:
+            return uploaded
+        if self.image_url:
+            return self.image_url
+        photos = [
+            image
+            for image in self.gallery.all()
+            if image.is_published and image.resolved_url
+        ]
+        photos.sort(key=lambda image: (image.order, image.pk or 0))
+        return photos[0].resolved_url if photos else ""
+
+
+class WorkItemImage(TimeStampedModel):
+    item = models.ForeignKey(
+        WorkItem,
+        related_name="gallery",
+        on_delete=models.CASCADE,
+        verbose_name="Робота",
+    )
+    image = models.ImageField(
+        upload_to=work_gallery_upload_to,
+        blank=True,
+        null=True,
+        verbose_name="Фото (файл)",
+    )
+    image_url = models.URLField(
+        blank=True,
+        verbose_name="Фото (URL)",
+        help_text="Якщо файл не завантажено",
+    )
+    caption = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    is_published = models.BooleanField(default=True, verbose_name="Опубліковане")
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "Фото роботи"
+        verbose_name_plural = "Фото роботи"
+
+    def __str__(self):
+        return self.caption or f"{self.item.title} · фото {self.order}"
+
+    @property
+    def resolved_url(self) -> str:
         return media_or_url(self.image, self.image_url)
 
 

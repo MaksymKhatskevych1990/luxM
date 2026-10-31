@@ -16,6 +16,9 @@ from .models import (
     ProjectImage,
     ProjectStage,
     RoomType,
+    WorkCategory,
+    WorkItem,
+    WorkItemImage,
     SiteSettings,
     WorkshopImage,
     WorkshopStat,
@@ -520,6 +523,58 @@ class ProjectAdmin(admin.ModelAdmin):
     @admin.display(description="Фото")
     def gallery_count(self, obj: Project) -> int:
         return obj.gallery.filter(is_published=True).count()
+
+
+class WorkItemImageInline(admin.TabularInline):
+    model = WorkItemImage
+    extra = 2
+    fields = ("image", "image_url", "caption", "order", "is_published")
+    ordering = ("order", "id")
+
+
+@admin.register(WorkCategory)
+class WorkCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "is_published", "order")
+    list_editable = ("order", "is_published")
+    list_filter = ("is_published",)
+    search_fields = ("name", "description", "slug")
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("order", "id")
+    fields = ("name", "slug", "description", "order", "is_published")
+
+
+@admin.register(WorkItem)
+class WorkItemAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "slug", "is_published", "order")
+    list_editable = ("order", "is_published")
+    list_filter = ("is_published", "category")
+    search_fields = ("title", "summary", "description", "slug")
+    prepopulated_fields = {"slug": ("title",)}
+    autocomplete_fields = ("category",)
+    inlines = [WorkItemImageInline]
+    save_on_top = True
+    fieldsets = (
+        (
+            "Основне",
+            {
+                "fields": (
+                    "category",
+                    "title",
+                    "slug",
+                    "summary",
+                    "description",
+                )
+            },
+        ),
+        (
+            "Обкладинка",
+            {
+                "fields": ("cover_image", "image_url"),
+                "description": "Якщо обкладинки немає, на картці буде перше фото галереї.",
+            },
+        ),
+        ("Публікація", {"fields": ("is_published", "order")}),
+    )
 
 
 @admin.register(Material)

@@ -14,6 +14,7 @@ from .models import (
     Project,
     RoomType,
     SiteSettings,
+    WorkCategory,
     WorkshopImage,
     WorkshopStat,
 )
@@ -28,6 +29,7 @@ from .serializers import (
     ProjectSerializer,
     RoomTypeSerializer,
     SiteSettingsSerializer,
+    WorkCategorySerializer,
     WorkshopImageSerializer,
     WorkshopStatSerializer,
 )
@@ -70,6 +72,15 @@ class ProjectViewSet(ReadOnlyModelViewSet):
         return ctx
 
 
+class WorkCategoryViewSet(ReadOnlyModelViewSet):
+    serializer_class = WorkCategorySerializer
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
+    queryset = WorkCategory.objects.filter(is_published=True).prefetch_related(
+        "items__gallery"
+    )
+
+
 class MaterialViewSet(ReadOnlyModelViewSet):
     serializer_class = MaterialSerializer
     queryset = Material.objects.filter(is_published=True)
@@ -103,6 +114,9 @@ class HomePageAPIView(APIView):
                 "stages", "gallery"
             )
         )
+        work_categories = WorkCategory.objects.filter(
+            is_published=True
+        ).prefetch_related("items__gallery")
         featured = resolve_featured_project(settings, projects)
         scene = (
             HeroScene.objects.filter(is_published=True, is_active=True)
@@ -131,6 +145,9 @@ class HomePageAPIView(APIView):
                 ).data,
                 "projects": ProjectSerializer(
                     projects, many=True, context=ctx
+                ).data,
+                "work_categories": WorkCategorySerializer(
+                    work_categories, many=True, context=ctx
                 ).data,
                 "materials": MaterialSerializer(
                     Material.objects.filter(is_published=True), many=True

@@ -8,12 +8,14 @@ from .views import (
     ProcessStepViewSet,
     ProjectViewSet,
     SiteSettingsView,
+    WorkCategoryViewSet,
     WorkshopImageViewSet,
     WorkshopStatViewSet,
 )
 
 router = DefaultRouter()
 router.register("projects", ProjectViewSet, basename="project")
+router.register("work-categories", WorkCategoryViewSet, basename="work-category")
 router.register("materials", MaterialViewSet, basename="material")
 router.register("process-steps", ProcessStepViewSet, basename="process-step")
 router.register("craft-details", CraftDetailViewSet, basename="craft-detail")

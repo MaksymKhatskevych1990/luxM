@@ -98,6 +98,7 @@ def site_status() -> str:
             "tagline": settings.get("tagline"),
             "counts": {
                 "projects": len(home.get("projects") or []),
+                "work_categories": len(home.get("work_categories") or []),
                 "materials": len(home.get("materials") or []),
                 "sections": len(home.get("sections") or []),
                 "process_steps": len(home.get("process_steps") or []),
@@ -155,6 +156,31 @@ def list_projects() -> str:
 def get_project(slug: str) -> str:
     """Повний опублікований проєкт за slug: тексти, SEO, етапи, галерея."""
     return dumps(api_get(f"projects/{slug}/"))
+
+
+@mcp.tool()
+def list_works() -> str:
+    """Галерея робіт: категорії і картки з коротким описом, без фото."""
+    home = api_get("home/")
+    categories = []
+    for category in home.get("work_categories") or []:
+        categories.append(
+            {
+                "slug": category.get("slug"),
+                "name": category.get("name"),
+                "description": category.get("description"),
+                "items": [
+                    {
+                        "slug": item.get("slug"),
+                        "title": item.get("title"),
+                        "summary": item.get("summary"),
+                        "photo_count": len(item.get("gallery") or []),
+                    }
+                    for item in category.get("items") or []
+                ],
+            }
+        )
+    return dumps(categories)
 
 
 @mcp.tool()

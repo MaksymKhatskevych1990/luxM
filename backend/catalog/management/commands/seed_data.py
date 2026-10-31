@@ -15,9 +15,13 @@ from catalog.models import (
     ProjectStage,
     RoomType,
     SiteSettings,
+    WorkCategory,
+    WorkItem,
+    WorkItemImage,
     WorkshopImage,
     WorkshopStat,
 )
+from catalog.work_gallery import create_work_gallery
 
 IMG = {
     "kitchen": (
@@ -114,6 +118,7 @@ class Command(BaseCommand):
         self._seed_sections()
         self._seed_nav()
         self._seed_room_types()
+        self._seed_works()
         kitchen = self._seed_projects()
         settings.featured_project = kitchen
         settings.save(update_fields=["featured_project", "updated_at"])
@@ -338,8 +343,20 @@ class Command(BaseCommand):
                     title="Кожне замовлення —",
                     title_emphasis="свої меблі.",
                     cta_text="Всі проєкти →",
-                    cta_href="#projects",
+                    cta_href="#gallery",
                     order=1,
+                ),
+                PageSection(
+                    key="gallery",
+                    section_id="gallery",
+                    eyebrow="Галерея робіт",
+                    title="Різні варіанти —",
+                    title_emphasis="під вашу кімнату.",
+                    subtitle=(
+                        "Оберіть тип меблів і відкрийте картку: "
+                        "кілька фото і те, чим цей варіант відрізняється."
+                    ),
+                    order=2,
                 ),
                 PageSection(
                     key="photography",
@@ -425,22 +442,28 @@ class Command(BaseCommand):
                     order=1,
                 ),
                 NavItem(
+                    label="Галерея",
+                    href="#gallery",
+                    location=NavItem.LOCATION_HEADER,
+                    order=2,
+                ),
+                NavItem(
                     label="Процес",
                     href="#process",
                     location=NavItem.LOCATION_HEADER,
-                    order=2,
+                    order=3,
                 ),
                 NavItem(
                     label="Про роботу",
                     href="#workshop",
                     location=NavItem.LOCATION_HEADER,
-                    order=3,
+                    order=4,
                 ),
                 NavItem(
                     label="Контакти",
                     href="#contacts",
                     location=NavItem.LOCATION_HEADER,
-                    order=4,
+                    order=5,
                 ),
                 NavItem(
                     label="Прорахунок",
@@ -504,6 +527,10 @@ class Command(BaseCommand):
                 RoomType(value="other", label="Інше", order=5),
             ]
         )
+
+    def _seed_works(self):
+        WorkCategory.objects.all().delete()
+        create_work_gallery(WorkCategory, WorkItem, WorkItemImage)
 
     def _seed_projects(self):
         Project.objects.all().delete()

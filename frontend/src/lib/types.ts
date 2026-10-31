@@ -190,6 +190,35 @@ export type ProjectGalleryImage = {
   order: number;
 };
 
+export type WorkGalleryImage = {
+  id: number;
+  url: string;
+  caption: string;
+  order: number;
+};
+
+export type WorkItem = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string;
+  description: string;
+  image_url: string;
+  order: number;
+  category_slug: string;
+  category_name: string;
+  gallery: WorkGalleryImage[];
+};
+
+export type WorkCategory = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  order: number;
+  items: WorkItem[];
+};
+
 export type Project = {
   id: number;
   title: string;
@@ -293,6 +322,7 @@ export type HomePayload = {
   room_types: RoomType[];
   featured_project_slug: string | null;
   projects: Project[];
+  work_categories: WorkCategory[];
   materials: Material[];
   process_steps: ProcessStep[];
   craft_details: CraftDetail[];

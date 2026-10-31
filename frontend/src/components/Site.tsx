@@ -4,6 +4,7 @@ import Header from "./Header";
 import Hero from "./Hero";
 import Projects from "./Projects";
 import ProjectDetail from "./ProjectDetail";
+import Gallery from "./Gallery";
 import Photography from "./Photography";
 import DrawingReality from "./DrawingReality";
 import Materials from "./Materials";
@@ -36,6 +37,7 @@ function resolveFeaturedProject(data: HomePayload): Project | undefined {
 export default function Site({ data }: SiteProps) {
   const featured = resolveFeaturedProject(data);
   const projectsSection = getSection(data.sections, "projects");
+  const gallerySection = getSection(data.sections, "gallery");
   const photographySection = getSection(data.sections, "photography");
   const materialsSection = getSection(data.sections, "materials");
   const processSection = getSection(data.sections, "process");
@@ -68,6 +70,13 @@ export default function Site({ data }: SiteProps) {
         ) : null}
         {isVisible(projectsSection) && featured ? (
           <ProjectDetail project={featured} settings={data.settings} />
+        ) : null}
+        {isVisible(gallerySection) ? (
+          <Gallery
+            section={gallerySection}
+            categories={data.work_categories ?? []}
+            settings={data.settings}
+          />
         ) : null}
         {isVisible(photographySection) ? (
           <Photography section={photographySection} details={data.craft_details} />
