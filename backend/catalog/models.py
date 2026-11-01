@@ -1,5 +1,9 @@
+import re
+
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.db import models
+from django.forms import CharField as FormCharField
 from django.utils.text import slugify
 
 _UA_TO_LATIN = str.maketrans(
@@ -125,6 +129,47 @@ def media_or_url(file_field, url_value: str = "") -> str:
         except ValueError:
             pass
     return url_value or ""
+
+
+def normalize_image_reference(value: str) -> str:
+    """Add a scheme to a pasted instagram.com link."""
+    value = (value or "").strip()
+    if re.match(r"^(?:www\.)?instagram\.com/", value, re.IGNORECASE):
+        return "https://" + value
+    return value
+
+
+def validate_url_or_site_path(value: str) -> None:
+    """Accept https://… and site paths such as /works/photo.jpg."""
+    if not value:
+        return
+    if value.startswith("/") and not value.startswith("//"):
+        return
+    URLValidator()(value)
+
+
+class SitePathOrURLFormField(FormCharField):
+    def to_python(self, value):
+        value = super().to_python(value)
+        return normalize_image_reference(value) if value else value
+
+
+class SitePathOrURLField(models.URLField):
+    """URLField that also stores root-relative media paths used on the site."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators = [
+            validator
+            for validator in self.validators
+            if not isinstance(validator, URLValidator)
+        ]
+        self.validators.append(validate_url_or_site_path)
+
+    def formfield(self, **kwargs):
+        kwargs.setdefault("form_class", SitePathOrURLFormField)
+        kwargs.setdefault("validators", self.validators)
+        return models.CharField.formfield(self, **kwargs)
 
 
 HERO_BACKGROUND_DEFAULT = (
@@ -1209,10 +1254,10 @@ class WorkItem(TimeStampedModel):
         verbose_name="Тонкощі варіанту",
         help_text="Повний текст у вікні картки: планування, матеріали, кому підходить.",
     )
-    image_url = models.URLField(
+    image_url = SitePathOrURLField(
         blank=True,
         verbose_name="Обкладинка (URL)",
-        help_text="Якщо файл не завантажено. Інакше береться перше фото галереї.",
+        help_text="Посилання на пост або ріл Instagram, пряма адреса картинки https://… або шлях /works/…. Якщо вибрано файл, зберігається він.",
     )
     cover_image = models.ImageField(
         upload_to=work_cover_upload_to,
@@ -1271,10 +1316,10 @@ class WorkItemImage(TimeStampedModel):
         null=True,
         verbose_name="Фото (файл)",
     )
-    image_url = models.URLField(
+    image_url = SitePathOrURLField(
         blank=True,
         verbose_name="Фото (URL)",
-        help_text="Якщо файл не завантажено",
+        help_text="Посилання на пост або ріл Instagram, пряма адреса картинки https://… або шлях /works/…. Якщо вибрано файл, зберігається він.",
     )
     caption = models.CharField(max_length=200, blank=True, verbose_name="Підпис")
     order = models.PositiveIntegerField(default=0, verbose_name="Порядок")

@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from .forms import WorkItemAdminForm, WorkItemImageForm
+
 from .models import (
     CraftDetail,
     HeroScene,
@@ -527,6 +529,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class WorkItemImageInline(admin.TabularInline):
     model = WorkItemImage
+    form = WorkItemImageForm
     extra = 2
     fields = ("image", "image_url", "caption", "order", "is_published")
     ordering = ("order", "id")
@@ -545,6 +548,7 @@ class WorkCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(WorkItem)
 class WorkItemAdmin(admin.ModelAdmin):
+    form = WorkItemAdminForm
     list_display = ("title", "category", "slug", "is_published", "order")
     list_editable = ("order", "is_published")
     list_filter = ("is_published", "category")
@@ -570,7 +574,7 @@ class WorkItemAdmin(admin.ModelAdmin):
             "Обкладинка",
             {
                 "fields": ("cover_image", "image_url"),
-                "description": "Якщо обкладинки немає, на картці буде перше фото галереї.",
+                "description": "Три способи: файл з комп'ютера; посилання на пост Instagram — фото збережеться на сайт; пряма адреса картинки https://… або шлях /works/…. Якщо обкладинки немає, на картці буде перше фото галереї.",
             },
         ),
         ("Публікація", {"fields": ("is_published", "order")}),

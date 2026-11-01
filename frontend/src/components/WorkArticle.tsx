@@ -6,6 +6,7 @@ import { absoluteUrl, serviceForCategory, workHref, workPageTitle } from "@/lib/
 import Header from "./Header";
 import Footer from "./Footer";
 import OutboundLink from "./OutboundLink";
+import WorkGallery from "./WorkGallery";
 
 type WorkArticleProps = {
   item: WorkItem;
@@ -94,23 +95,7 @@ export default function WorkArticle({
             </OutboundLink>
           </div>
 
-          {photos.length > 0 ? (
-            <div className="work-page-photos">
-              {photos.map((photo, index) => (
-                <figure key={photo.id} className="work-page-figure">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={photo.url}
-                    alt={photo.caption || item.title}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    fetchPriority={index === 0 ? "high" : "low"}
-                  />
-                  {photo.caption ? <figcaption>{photo.caption}</figcaption> : null}
-                </figure>
-              ))}
-            </div>
-          ) : null}
+          <WorkGallery photos={photos} title={item.title} />
 
           {item.description ? <div className="work-page-body">{item.description}</div> : null}
 
