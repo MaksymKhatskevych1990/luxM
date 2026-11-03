@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WorksCatalog from "@/components/WorksCatalog";
 import { SITE_URL } from "@/lib/site";
-import { allWorks, loadHome, publishedCategories } from "@/lib/works";
+import { absoluteUrl, allWorks, loadHome, publishedCategories } from "@/lib/works";
 
 const title = "Галерея робіт: кухні, шафи і гардероби в Дніпрі";
 const description =
@@ -12,18 +12,25 @@ const description =
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/works", languages: { uk: "/works" } },
-  openGraph: {
-    title: `${title} | ProProstir`,
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await loadHome();
+  const cover = allWorks(data.work_categories).find((item) => item.image_url);
+  return {
+    title,
     description,
-    url: "/works",
-    locale: "uk_UA",
-    type: "website",
-  },
-};
+    alternates: { canonical: "/works", languages: { uk: "/works" } },
+    openGraph: {
+      title: `${title} | ProProstir`,
+      description,
+      url: "/works",
+      locale: "uk_UA",
+      type: "website",
+      images: cover
+        ? [{ url: absoluteUrl(cover.image_url), alt: cover.title }]
+        : undefined,
+    },
+  };
+}
 
 export default async function WorksPage() {
   const data = await loadHome();

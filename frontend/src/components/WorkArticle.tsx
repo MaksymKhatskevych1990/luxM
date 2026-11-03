@@ -3,10 +3,65 @@ import type { NavItem, SiteSettings, WorkCategory, WorkItem } from "@/lib/types"
 import { SITE_URL } from "@/lib/site";
 import { telHref } from "@/lib/phone";
 import { absoluteUrl, serviceForCategory, workHref, workPageTitle } from "@/lib/works";
+import type { ServicePageData } from "@/lib/services";
 import Header from "./Header";
 import Footer from "./Footer";
 import OutboundLink from "./OutboundLink";
 import WorkGallery from "./WorkGallery";
+
+function WorkCopy({ text }: { text: string }) {
+  const marker = "Тонкощі цього варіанту:";
+  const index = text.indexOf(marker);
+  if (index === -1) {
+    return <div className="work-page-body">{text}</div>;
+  }
+  const intro = text.slice(0, index).trim();
+  const after = text.slice(index + marker.length).trim();
+  const [pointsBlock, ...rest] = after.split(/\n\n/);
+  const points = pointsBlock
+    .split("\n")
+    .map((line) => line.replace(/^—\s*/, "").trim())
+    .filter(Boolean);
+  const outro = rest.join("\n\n").trim();
+
+  return (
+    <div className="work-page-body">
+      {intro ? <p>{intro}</p> : null}
+      <h2>Тонкощі цього варіанту</h2>
+      <ul>
+        {points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+      {outro ? <p>{outro}</p> : null}
+    </div>
+  );
+}
+
+function WorkOrderNotes({ service }: { service: ServicePageData }) {
+  const faqs = service.faqs.slice(0, 2);
+  return (
+    <section className="work-page-service" aria-labelledby="work-order">
+      <h2 id="work-order" className="font-serif">
+        {service.h1}
+      </h2>
+      <p>{service.lead}</p>
+      {faqs.length > 0 ? (
+        <div className="work-page-faqs">
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      <p>
+        <Link href={`/${service.slug}`}>{service.h1}</Link>
+      </p>
+    </section>
+  );
+}
 
 type WorkArticleProps = {
   item: WorkItem;
@@ -81,6 +136,7 @@ export default function WorkArticle({
           <p className="label label--oak">{category.name}</p>
           <h1 className="font-serif work-page-title">{item.title}</h1>
           {item.summary ? <p className="service-lead">{item.summary}</p> : null}
+          {category.description ? <p className="work-category-note">{category.description}</p> : null}
           <div className="service-actions">
             <OutboundLink className="btn-primary" href={phoneHref} location="work">
               {settings.phone}
@@ -97,13 +153,9 @@ export default function WorkArticle({
 
           <WorkGallery photos={photos} title={item.title} />
 
-          {item.description ? <div className="work-page-body">{item.description}</div> : null}
+          {item.description ? <WorkCopy text={item.description} /> : null}
 
-          {service ? (
-            <p className="work-page-service">
-              <Link href={`/${service.slug}`}>{service.h1}</Link>
-            </p>
-          ) : null}
+          {service ? <WorkOrderNotes service={service} /> : null}
 
           {related.length > 0 ? (
             <section className="service-more" aria-labelledby="related-works">

@@ -6,6 +6,7 @@ import { fallbackHome } from "@/lib/fallback";
 
 export const metadata: Metadata = {
   title: "Сторінку не знайдено",
+  description: "Такої сторінки на сайті немає. Поверніться на головну або в галерею робіт ProProstir.",
   robots: { index: false, follow: true },
 };
 

@@ -61,15 +61,55 @@ export function worksForService(
     .flatMap((category) => category.items);
 }
 
+const TITLE_BRAND = " | ProProstir";
+const TITLE_LIMIT = 60;
+
 export function workPageTitle(item: WorkItem): string {
-  return `${item.title} на замовлення в Дніпрі`;
+  const withOrder = `${item.title} на замовлення в Дніпрі`;
+  if (withOrder.length + TITLE_BRAND.length <= TITLE_LIMIT) return withOrder;
+  const withCity = `${item.title} в Дніпрі`;
+  if (withCity.length + TITLE_BRAND.length <= TITLE_LIMIT) return withCity;
+  const room = TITLE_LIMIT - TITLE_BRAND.length;
+  if (item.title.length <= room) return item.title;
+  return `${item.title.slice(0, room - 1).trim()}…`;
+}
+
+function metaSentences(item: WorkItem): string[] {
+  const raw = `${item.summary || ""} ${item.description || ""}`.trim() || item.title;
+  return raw
+    .replace(/Тонкощі цього варіанту:\s*/gi, " ")
+    .replace(/—/g, " ")
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
 }
 
 export function workMetaDescription(item: WorkItem): string {
-  const source = (item.summary || item.description || item.title).replace(/\s+/g, " ").trim();
-  const withCity = /дніпр/i.test(source) ? source : `${source} Прорахунок і збірка в Дніпрі.`;
-  if (withCity.length <= 170) return withCity;
-  return `${withCity.slice(0, 167).trim()}…`;
+  const sentences = metaSentences(item);
+  let text = "";
+  let clipped = false;
+  for (const sentence of sentences) {
+    const next = text ? `${text} ${sentence}` : sentence;
+    if (next.length <= 160) {
+      text = next;
+      if (text.length >= 120) break;
+      continue;
+    }
+    if (text.length >= 120) break;
+    const room = 157 - text.length - (text ? 1 : 0);
+    if (room >= 25) {
+      const slice = sentence.slice(0, room).replace(/\s+\S*$/, "").trim();
+      text = `${text}${text ? " " : ""}${slice || sentence.slice(0, room).trim()}…`;
+      clipped = true;
+    }
+    break;
+  }
+  if (!clipped && text.length <= 148 && !/дніпр/i.test(text)) {
+    text = `${text} У Дніпрі.`.trim();
+  }
+  if (text.length > 160) return `${text.slice(0, 157).trim()}…`;
+  return text || item.title;
 }
 
 export async function loadHome(): Promise<HomePayload> {
