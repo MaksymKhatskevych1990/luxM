@@ -88,6 +88,8 @@ export default function HeroStageFilm({ onSettled }: HeroStageFilmProps) {
           <img
             src={stage.src}
             alt=""
+            width={4096}
+            height={1564}
             decoding={i === active ? "sync" : "async"}
             fetchPriority={i === active ? "high" : "low"}
             loading={i === active ? "eager" : "lazy"}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { NavItem, SiteSettings, WorkItem } from "@/lib/types";
 import { services, type ServicePageData } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
+import { absoluteUrl } from "@/lib/works";
 import { telHref } from "@/lib/phone";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -41,6 +42,7 @@ export default function ServicePage({
         serviceType: service.navLabel,
         description: service.description,
         url: pageUrl,
+        image: absoluteUrl(service.image),
         areaServed: settings.jsonld_area_served || settings.jsonld_city || "Дніпро",
         provider: {
           "@type": "FurnitureStore",
@@ -100,6 +102,8 @@ export default function ServicePage({
             className="service-photo"
             src={service.image}
             alt={service.imageAlt}
+            width={1200}
+            height={750}
             fetchPriority="high"
             decoding="async"
           />

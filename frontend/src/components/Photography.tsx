@@ -118,7 +118,7 @@ export default function Photography({ section, details }: PhotographyProps) {
                   <div style={{ width: 14, height: 1, background: "var(--c-oak)" }} />
                   <span
                     className="label"
-                    style={{ color: "rgba(247, 246, 242, 0.3)", fontSize: "0.5625rem" }}
+                    style={{ color: "rgba(247, 246, 242, 0.78)", fontSize: "0.5625rem" }}
                   >
                     {item.title}
                   </span>

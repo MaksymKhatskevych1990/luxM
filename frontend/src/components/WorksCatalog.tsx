@@ -22,7 +22,14 @@ export default function WorksCatalog({ categories }: WorksCatalogProps) {
                   {item.image_url ? (
                     // Real photo URL in HTML, not only a client carousel.
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.image_url} alt={item.title} loading="lazy" decoding="async" />
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      width={640}
+                      height={480}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : null}
                 </div>
                 <div className="work-card-body">

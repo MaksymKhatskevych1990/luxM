@@ -62,7 +62,7 @@ export default function Process({ section, steps }: ProcessProps) {
             {section.title_emphasis ? (
               <>
                 {" "}
-                <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                <em style={{ color: "var(--c-oak-text)" }}>{section.title_emphasis}</em>
               </>
             ) : null}
           </h2>

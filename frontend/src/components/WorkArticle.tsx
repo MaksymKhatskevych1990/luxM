@@ -87,6 +87,7 @@ export default function WorkArticle({
     : item.image_url
       ? [{ id: item.id, url: item.image_url, caption: item.title, order: 0 }]
       : [];
+  const primaryImage = photos[0]?.url ? absoluteUrl(photos[0].url) : undefined;
 
   const schema = {
     "@context": "https://schema.org",
@@ -111,7 +112,7 @@ export default function WorkArticle({
         description: item.summary || item.description,
         url: pageUrl,
         inLanguage: "uk",
-        primaryImageOfPage: absoluteUrl(photos[0]?.url || ""),
+        ...(primaryImage ? { primaryImageOfPage: primaryImage } : {}),
         about: item.title,
         isPartOf: { "@type": "WebSite", name: settings.brand_name, url: SITE_URL },
       },

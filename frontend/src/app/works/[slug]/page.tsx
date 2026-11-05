@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import WorkArticle from "@/components/WorkArticle";
 import {
+  absoluteUrl,
+  allWorks,
   findWork,
   loadHome,
   workHref,
@@ -9,11 +11,16 @@ import {
   workPageTitle,
 } from "@/lib/works";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateStaticParams() {
+  const data = await loadHome();
+  return allWorks(data.work_categories).map((item) => ({ slug: item.slug }));
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -22,19 +29,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!found) return {};
   const path = workHref(found.item.slug);
   const description = workMetaDescription(found.item);
+  const image = found.item.image_url
+    ? absoluteUrl(found.item.image_url)
+    : undefined;
+  const pageTitle = workPageTitle(found.item);
   return {
-    title: workPageTitle(found.item),
+    title: pageTitle,
     description,
     alternates: { canonical: path, languages: { uk: path } },
     openGraph: {
-      title: `${workPageTitle(found.item)} | ProProstir`,
+      title: `${pageTitle} | ProProstir`,
       description,
       url: path,
       locale: "uk_UA",
       type: "article",
-      images: found.item.image_url
-        ? [{ url: found.item.image_url, alt: found.item.title }]
-        : undefined,
+      siteName: "ProProstir",
+      images: image ? [{ url: image, alt: found.item.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${pageTitle} | ProProstir`,
+      description,
+      images: image ? [image] : undefined,
     },
   };
 }

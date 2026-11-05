@@ -11,8 +11,6 @@ const extraOrigins = (process.env.ALLOWED_DEV_ORIGINS || "")
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  // Keep trailing slashes for Django APPEND_SLASH via /api/[...path] proxy.
-  skipTrailingSlashRedirect: true,
   async rewrites() {
     return [
       {

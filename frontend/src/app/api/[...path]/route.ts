@@ -38,6 +38,7 @@ async function proxy(req: NextRequest, path: string[]) {
   const responseHeaders = new Headers(upstream.headers);
   responseHeaders.delete("transfer-encoding");
   responseHeaders.delete("connection");
+  responseHeaders.set("X-Robots-Tag", "noindex, nofollow");
 
   return new Response(upstream.body, {
     status: upstream.status,

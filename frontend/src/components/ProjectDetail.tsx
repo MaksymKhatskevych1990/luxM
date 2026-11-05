@@ -200,7 +200,7 @@ export default function ProjectDetail({ project, settings }: ProjectDetailProps)
                     setPlaying(true);
                   }}
                 >
-                  <span style={{ marginRight: 5, opacity: 0.45 }}>{pad(i + 1)}</span>
+                  <span style={{ marginRight: 5 }}>{pad(i + 1)}</span>
                   {stage.title}
                 </button>
               ))}

@@ -10,7 +10,7 @@ const title = "Галерея робіт: кухні, шафи і гардеро
 const description =
   "Фото кухонь, шаф і гардеробних на замовлення в Дніпрі. У кожній роботі видно планування, матеріали і кому підходить цей варіант.";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await loadHome();
@@ -25,9 +25,16 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/works",
       locale: "uk_UA",
       type: "website",
+      siteName: "ProProstir",
       images: cover
         ? [{ url: absoluteUrl(cover.image_url), alt: cover.title }]
         : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ProProstir`,
+      description,
+      images: cover ? [absoluteUrl(cover.image_url)] : undefined,
     },
   };
 }

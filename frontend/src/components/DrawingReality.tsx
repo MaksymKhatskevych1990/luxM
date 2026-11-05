@@ -65,7 +65,7 @@ export default function DrawingReality({ settings, section }: DrawingRealityProp
             {section?.title_emphasis ? (
               <>
                 {" "}
-                <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                <em style={{ color: "var(--c-oak-text)" }}>{section.title_emphasis}</em>
               </>
             ) : null}
           </h2>

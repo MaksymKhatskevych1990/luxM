@@ -17,8 +17,7 @@ function getClientApiUrl() {
 
 export async function fetchHome(): Promise<HomePayload> {
   const res = await fetch(`${getServerApiUrl()}/home/`, {
-    // Always get fresh CMS content (gallery, video, SEO) during local/dev.
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
 
   if (!res.ok) {
@@ -61,7 +60,7 @@ export async function submitLead(payload: {
     body.append("attachment", payload.attachment);
   }
 
-  const res = await fetch(`${getClientApiUrl()}/leads/`, {
+  const res = await fetch(`${getClientApiUrl()}/leads`, {
     method: "POST",
     body,
   });

@@ -3,7 +3,7 @@ import { services } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
 import { allWorks, loadHome } from "@/lib/works";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const home = await loadHome();

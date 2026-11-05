@@ -42,7 +42,7 @@ export default function Gallery({ section, categories }: GalleryProps) {
               {section.title_emphasis ? (
                 <>
                   <br />
-                  <em>{section.title_emphasis}</em>
+                  <em style={{ color: "var(--c-oak-text)" }}>{section.title_emphasis}</em>
                 </>
               ) : null}
             </h2>
@@ -91,7 +91,14 @@ export default function Gallery({ section, categories }: GalleryProps) {
                     <div className="work-card-media">
                       {item.image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.image_url} alt={item.title} loading="lazy" decoding="async" />
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          width={640}
+                          height={480}
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : null}
                     </div>
                     <div className="work-card-body">

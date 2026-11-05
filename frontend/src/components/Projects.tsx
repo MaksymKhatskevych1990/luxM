@@ -58,7 +58,7 @@ export default function Projects({ section, projects, settings }: ProjectsProps)
               {section.title_emphasis ? (
                 <>
                   <br />
-                  <em style={{ color: "var(--c-oak)" }}>{section.title_emphasis}</em>
+                  <em style={{ color: "var(--c-oak-text)" }}>{section.title_emphasis}</em>
                 </>
               ) : null}
             </h2>

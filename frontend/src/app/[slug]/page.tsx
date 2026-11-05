@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import ServicePage from "@/components/ServicePage";
 import { getService, services } from "@/lib/services";
 import { SITE_URL } from "@/lib/site";
-import { loadHome, worksForService } from "@/lib/works";
+import { absoluteUrl, loadHome, worksForService } from "@/lib/works";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const service = getService(slug);
   if (!service) return {};
   const url = `${SITE_URL}/${service.slug}`;
+  const image = absoluteUrl(service.image);
   return {
     title: { absolute: service.title },
     description: service.description,
@@ -28,7 +29,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url,
       locale: "uk_UA",
       type: "website",
-      images: [{ url: service.image, alt: service.imageAlt }],
+      siteName: "ProProstir",
+      images: [{ url: image, alt: service.imageAlt }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: service.title,
+      description: service.description,
+      images: [image],
     },
   };
 }

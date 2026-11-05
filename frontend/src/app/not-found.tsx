@@ -31,7 +31,7 @@ export default function NotFound() {
           >
             Сторінку
             <br />
-            <em style={{ color: "var(--c-oak)" }}>не знайдено.</em>
+            <em style={{ color: "var(--c-oak-text)" }}>не знайдено.</em>
           </h1>
           <p
             style={{
@@ -46,9 +46,14 @@ export default function NotFound() {
             Можливо, вона була переміщена або ніколи не існувала. Поверніться на головну —
             там проєкти, процес і контакти.
           </p>
-          <Link href="/" className="btn-primary">
-            На головну
-          </Link>
+          <div className="service-actions" style={{ justifyContent: "center" }}>
+            <Link href="/" className="btn-primary">
+              На головну
+            </Link>
+            <Link href="/works" className="btn-ghost">
+              Галерея робіт
+            </Link>
+          </div>
         </div>
       </main>
       <Footer settings={fallbackHome.settings} navigation={fallbackHome.navigation} />
