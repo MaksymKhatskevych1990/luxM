@@ -204,7 +204,7 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
                     onClick={() => activate(zone)}
                     tabIndex={interactive ? 0 : -1}
                     role="button"
-                    aria-label={`${zone.name}: ${zone.service}`}
+                    aria-label={zone.name}
                   />
                 ))}
               </svg>
@@ -215,8 +215,6 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
                   style={{ left: `${tip.x}%`, top: `${tip.y}%` }}
                 >
                   <span className="label label--oak">{active.name}</span>
-                  {active.service ? <b>{active.service}</b> : null}
-                  {active.materials ? <small>{active.materials}</small> : null}
                 </div>
               ) : null}
             </div>

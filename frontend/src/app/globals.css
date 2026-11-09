@@ -1282,13 +1282,11 @@ section[id] {
 .hero-zones path,
 .hero-zones rect {
   fill: transparent;
-  stroke: transparent;
-  stroke-width: 0.35;
+  stroke: none;
   cursor: pointer;
   outline: none;
   mix-blend-mode: screen;
-  transition: fill 0.28s var(--ease-out), stroke 0.28s var(--ease-out),
-    filter 0.28s var(--ease-out);
+  transition: fill 0.28s var(--ease-out);
 }
 
 .hero-zones path:hover,
@@ -1298,17 +1296,14 @@ section[id] {
 .hero-zones rect.is-active,
 .hero-zones rect:focus-visible {
   fill: rgba(232, 210, 170, 0.42);
-  stroke: rgba(247, 236, 214, 0.95);
-  filter: drop-shadow(0 0 18px rgba(228, 197, 122, 0.9));
+  stroke: none;
 }
 
 .hero-tooltip {
   position: absolute;
   z-index: 5;
   transform: translate(-50%, calc(-100% - 14px));
-  min-width: 200px;
-  max-width: 260px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   background: rgba(28, 27, 25, 0.9);
   color: #f7f6f2;
   pointer-events: none;
