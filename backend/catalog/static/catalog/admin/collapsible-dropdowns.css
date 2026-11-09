@@ -68,3 +68,24 @@
 .select2-container .select2-results__option--highlighted[aria-selected] {
   color: #fff !important;
 }
+
+/* File picker on the dark admin theme: light control, dark filename. */
+input[type="file"] {
+  color-scheme: light;
+  color: #1c1b19 !important;
+  background: #fff !important;
+  border: 1px solid #cfc8ba;
+  border-radius: 4px;
+  padding: 6px 8px;
+  max-width: 100%;
+}
+
+input[type="file"]::file-selector-button {
+  color: #1c1b19 !important;
+  background: #efe8d8 !important;
+  border: 1px solid #c8c2b4;
+  border-radius: 3px;
+  padding: 4px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+}
