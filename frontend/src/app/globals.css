@@ -1169,6 +1169,35 @@ section[id] {
   display: block;
 }
 
+.hero-zone-pop {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+  transform: scale(1.045);
+  transform-origin: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+  animation: hero-pop 0.28s var(--ease-out);
+}
+
+.hero-zone-pop img {
+  position: absolute;
+  max-width: none;
+  width: auto;
+  height: auto;
+  object-fit: fill;
+  transform: none;
+}
+
+@keyframes hero-pop {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
 .hero-film-frame.is-on img {
   filter: none;
 }
@@ -1243,7 +1272,8 @@ section[id] {
     transition: none;
   }
 
-  .hero-film-frame img {
+  .hero-film-frame img,
+  .hero-zone-pop {
     animation: none;
     transform: none;
   }
@@ -1295,7 +1325,7 @@ section[id] {
 .hero-zones rect:hover,
 .hero-zones rect.is-active,
 .hero-zones rect:focus-visible {
-  fill: rgba(232, 210, 170, 0.42);
+  fill: transparent;
   stroke: none;
 }
 

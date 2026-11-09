@@ -7,7 +7,7 @@ import { trackEvent } from "@/lib/analytics";
 import { isEnquiryHref } from "@/lib/cta";
 import { homeHref } from "@/lib/content";
 import { services } from "@/lib/services";
-import HeroStageFilm from "./HeroStageFilm";
+import HeroStageFilm, { HERO_STAGES } from "./HeroStageFilm";
 
 type HeroProps = {
   settings: SiteSettings;
@@ -182,6 +182,29 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
           >
             <div className="hero-film-stage">
               <HeroStageFilm onSettled={onSettled} />
+              {active ? (
+                <div
+                  className="hero-zone-pop"
+                  style={{
+                    left: `${Number(active.x)}%`,
+                    top: `${Number(active.y)}%`,
+                    width: `${Number(active.width)}%`,
+                    height: `${Number(active.height)}%`,
+                  }}
+                  aria-hidden="true"
+                >
+                  <img
+                    src={HERO_STAGES[HERO_STAGES.length - 1].src}
+                    alt=""
+                    style={{
+                      width: `${10000 / Number(active.width)}%`,
+                      height: `${10000 / Number(active.height)}%`,
+                      left: `${(-Number(active.x) / Number(active.width)) * 100}%`,
+                      top: `${(-Number(active.y) / Number(active.height)) * 100}%`,
+                    }}
+                  />
+                </div>
+              ) : null}
               <svg
                 className="hero-zones"
                 viewBox="0 0 100 100"
