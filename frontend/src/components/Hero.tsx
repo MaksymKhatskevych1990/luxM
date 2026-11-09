@@ -7,7 +7,13 @@ import { trackEvent } from "@/lib/analytics";
 import { isEnquiryHref } from "@/lib/cta";
 import { homeHref } from "@/lib/content";
 import { services } from "@/lib/services";
-import HeroStageFilm, { HERO_STAGES } from "./HeroStageFilm";
+import HeroStageFilm from "./HeroStageFilm";
+
+function isWindowZone(zone: HeroZone) {
+  const name = zone.name.trim().toLocaleLowerCase("uk");
+  const tag = zone.tag.trim().toLocaleLowerCase("uk");
+  return name === "вікно" || name === "окно" || tag === "вікно" || tag === "окно";
+}
 
 type HeroProps = {
   settings: SiteSettings;
@@ -18,7 +24,10 @@ type HeroProps = {
 export default function Hero({ settings, stats, scene }: HeroProps) {
   const items = [...stats].sort((a, b) => a.order - b.order);
   const zones = useMemo(
-    () => [...(scene?.zones ?? [])].sort((a, b) => a.order - b.order),
+    () =>
+      [...(scene?.zones ?? [])]
+        .filter((zone) => !isWindowZone(zone))
+        .sort((a, b) => a.order - b.order),
     [scene],
   );
   const [interactive, setInteractive] = useState(false);
@@ -176,35 +185,10 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
 
         {showFilm ? (
           <div
-            className={`hero-room-visual${active ? " is-dimmed" : ""}${
-              interactive ? " is-interactive" : ""
-            }`}
+            className={`hero-room-visual${interactive ? " is-interactive" : ""}`}
           >
             <div className="hero-film-stage">
               <HeroStageFilm onSettled={onSettled} />
-              {active ? (
-                <div
-                  className="hero-zone-pop"
-                  style={{
-                    left: `${Number(active.x)}%`,
-                    top: `${Number(active.y)}%`,
-                    width: `${Number(active.width)}%`,
-                    height: `${Number(active.height)}%`,
-                  }}
-                  aria-hidden="true"
-                >
-                  <img
-                    src={HERO_STAGES[HERO_STAGES.length - 1].src}
-                    alt=""
-                    style={{
-                      width: `${10000 / Number(active.width)}%`,
-                      height: `${10000 / Number(active.height)}%`,
-                      left: `${(-Number(active.x) / Number(active.width)) * 100}%`,
-                      top: `${(-Number(active.y) / Number(active.height)) * 100}%`,
-                    }}
-                  />
-                </div>
-              ) : null}
               <svg
                 className="hero-zones"
                 viewBox="0 0 100 100"
@@ -227,7 +211,7 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
                     onClick={() => activate(zone)}
                     tabIndex={interactive ? 0 : -1}
                     role="button"
-                    aria-label={zone.name}
+                    aria-label={zone.service ? `${zone.name}: ${zone.service}` : zone.name}
                   />
                 ))}
               </svg>
@@ -238,6 +222,8 @@ export default function Hero({ settings, stats, scene }: HeroProps) {
                   style={{ left: `${tip.x}%`, top: `${tip.y}%` }}
                 >
                   <span className="label label--oak">{active.name}</span>
+                  {active.service ? <b>{active.service}</b> : null}
+                  {active.materials ? <small>{active.materials}</small> : null}
                 </div>
               ) : null}
             </div>
