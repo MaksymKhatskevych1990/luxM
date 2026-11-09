@@ -1,262 +1,141 @@
-type FloorPlanProps = {
-  idPrefix?: string;
-};
-
-export default function FloorPlan({ idPrefix = "fp" }: FloorPlanProps) {
-  const a1 = `${idPrefix}-a1`;
-  const a2 = `${idPrefix}-a2`;
+/**
+ * Plan of the kitchen in /works/2024-10-08-a.jpg, in the same 16:10 frame
+ * the photo uses (object-fit: cover). 160×100 matches that frame.
+ */
+export default function FloorPlan() {
+  const ink = "#252525";
+  const oak = "#9A7E55";
+  const wash = "rgba(184,155,114,0.08)";
 
   return (
     <svg
-      viewBox="0 0 560 400"
-      aria-label="Технічне креслення"
-      style={{ width: "100%", height: "auto", display: "block" }}
+      viewBox="0 0 160 100"
+      preserveAspectRatio="xMidYMid meet"
+      aria-label="Креслення кутової кухні: пенал, духовки, мийка, вітрина і стіл"
+      style={{ width: "100%", height: "100%", display: "block" }}
     >
-      <defs>
-        <marker
-          id={a1}
-          markerWidth="5"
-          markerHeight="5"
-          refX="2.5"
-          refY="2.5"
-          orient="auto"
-        >
-          <path d="M0,0 L5,2.5 L0,5 Z" fill="#9A7E55" />
-        </marker>
-        <marker
-          id={a2}
-          markerWidth="5"
-          markerHeight="5"
-          refX="2.5"
-          refY="2.5"
-          orient="auto-start-reverse"
-        >
-          <path d="M0,0 L5,2.5 L0,5 Z" fill="#9A7E55" />
-        </marker>
-      </defs>
       <text
-        x="20"
-        y="16"
+        x="4"
+        y="5.5"
         fill="#B89B72"
-        fontSize="7.5"
-        fontFamily="'DM Mono'"
-        letterSpacing="0.13em"
+        fontSize="2.1"
+        fontFamily="'DM Mono', ui-monospace, monospace"
+        letterSpacing="0.12em"
       >
-        ФОРМА STUDIO · КУХНЯ-ОСТРІВ · ПЛ.001 · М 1:25
+        PROPROSTIR · КУХНЯ КУТОВА · ПЛ.001 · М 1:25
       </text>
-      <line x1="20" y1="22" x2="540" y2="22" stroke="#B89B72" strokeWidth="0.4" />
-      <rect
-        x="28"
-        y="38"
-        width="500"
-        height="320"
-        fill="none"
-        stroke="#252525"
-        strokeWidth="1.5"
-      />
-      <rect
-        x="28"
-        y="38"
-        width="310"
-        height="52"
-        fill="rgba(184,155,114,0.06)"
-        stroke="#252525"
-        strokeWidth="0.75"
-      />
-      <line
-        x1="28"
-        y1="64"
-        x2="338"
-        y2="64"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="6 3"
-      />
-      <line x1="80" y1="38" x2="80" y2="90" stroke="#252525" strokeWidth="0.4" />
-      <line x1="130" y1="38" x2="130" y2="90" stroke="#252525" strokeWidth="0.4" />
-      <line x1="180" y1="38" x2="180" y2="90" stroke="#252525" strokeWidth="0.4" />
-      <line x1="230" y1="38" x2="230" y2="90" stroke="#252525" strokeWidth="0.4" />
-      <line x1="280" y1="38" x2="280" y2="90" stroke="#252525" strokeWidth="0.4" />
-      <line x1="54" y1="52" x2="66" y2="52" stroke="#252525" strokeWidth="1.2" />
-      <line x1="104" y1="52" x2="116" y2="52" stroke="#252525" strokeWidth="1.2" />
-      <line x1="154" y1="52" x2="166" y2="52" stroke="#252525" strokeWidth="1.2" />
-      <line x1="204" y1="52" x2="216" y2="52" stroke="#252525" strokeWidth="1.2" />
-      <line x1="254" y1="52" x2="266" y2="52" stroke="#252525" strokeWidth="1.2" />
-      <rect
-        x="28"
-        y="38"
-        width="52"
-        height="220"
-        fill="rgba(184,155,114,0.06)"
-        stroke="#252525"
-        strokeWidth="0.75"
-      />
-      <line
-        x1="28"
-        y1="90"
-        x2="80"
-        y2="90"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="4 2"
-      />
-      <line
-        x1="28"
-        y1="140"
-        x2="80"
-        y2="140"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="4 2"
-      />
-      <line
-        x1="28"
-        y1="190"
-        x2="80"
-        y2="190"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="4 2"
-      />
-      <line
-        x1="28"
-        y1="220"
-        x2="80"
-        y2="220"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="4 2"
-      />
-      <rect
-        x="148"
-        y="168"
-        width="260"
-        height="132"
-        fill="rgba(247,246,242,0.5)"
-        stroke="#252525"
-        strokeWidth="1.2"
-      />
-      <rect
-        x="152"
-        y="172"
-        width="252"
-        height="124"
-        fill="none"
-        stroke="#252525"
-        strokeWidth="0.4"
-        strokeDasharray="5 3"
-      />
-      <circle cx="200" cy="232" r="20" fill="none" stroke="#252525" strokeWidth="0.65" />
-      <circle cx="248" cy="232" r="20" fill="none" stroke="#252525" strokeWidth="0.65" />
-      <circle cx="308" cy="232" r="20" fill="none" stroke="#252525" strokeWidth="0.65" />
-      <circle cx="356" cy="232" r="20" fill="none" stroke="#252525" strokeWidth="0.65" />
+      <line x1="4" y1="7.2" x2="156" y2="7.2" stroke="#B89B72" strokeWidth="0.25" />
+
+      <rect x="8" y="24" width="32" height="64" fill={wash} stroke={ink} strokeWidth="0.45" />
+      <line x1="26" y1="24" x2="26" y2="88" stroke={ink} strokeWidth="0.3" />
+      <line x1="8" y1="42" x2="26" y2="42" stroke={ink} strokeWidth="0.25" strokeDasharray="1.4 0.8" />
+      <line x1="8" y1="58" x2="26" y2="58" stroke={ink} strokeWidth="0.25" strokeDasharray="1.4 0.8" />
+      <line x1="8" y1="74" x2="26" y2="74" stroke={ink} strokeWidth="0.25" strokeDasharray="1.4 0.8" />
       <text
-        x="278"
-        y="345"
-        textAnchor="middle"
+        x="17"
+        y="36"
         fill="#77736C"
-        fontSize="7"
-        fontFamily="'DM Mono'"
-        letterSpacing="0.1em"
+        fontSize="1.7"
+        fontFamily="'DM Mono', ui-monospace, monospace"
+        textAnchor="middle"
+        letterSpacing="0.08em"
       >
-        ОСТРІВ · ДУБ / КАМІНЬ
+        Пенал
       </text>
-      <rect
-        x="400"
-        y="38"
-        width="72"
-        height="88"
-        fill="rgba(239,237,231,0.6)"
-        stroke="#252525"
-        strokeWidth="0.75"
-      />
-      <line x1="436" y1="38" x2="436" y2="126" stroke="#252525" strokeWidth="0.4" />
+
+      <rect x="28" y="47" width="10" height="9" fill="rgba(247,246,242,0.55)" stroke={ink} strokeWidth="0.35" />
+      <rect x="28" y="58" width="10" height="9" fill="rgba(247,246,242,0.55)" stroke={ink} strokeWidth="0.35" />
+      <line x1="29.2" y1="51.5" x2="36.8" y2="51.5" stroke={ink} strokeWidth="0.25" />
+      <line x1="29.2" y1="62.5" x2="36.8" y2="62.5" stroke={ink} strokeWidth="0.25" />
+
+      <rect x="40" y="30" width="72" height="20" fill={wash} stroke={ink} strokeWidth="0.4" />
+      <line x1="40" y1="40" x2="112" y2="40" stroke={ink} strokeWidth="0.22" strokeDasharray="2 1" />
+      <line x1="58" y1="30" x2="58" y2="50" stroke={ink} strokeWidth="0.22" />
+      <line x1="76" y1="30" x2="76" y2="50" stroke={ink} strokeWidth="0.22" />
+      <line x1="94" y1="30" x2="94" y2="50" stroke={ink} strokeWidth="0.22" />
+
+      <rect x="40" y="61" width="72" height="8" fill="rgba(247,246,242,0.35)" stroke={ink} strokeWidth="0.4" />
+      <rect x="70" y="62.4" width="16" height="5.2" fill="none" stroke={ink} strokeWidth="0.35" />
+      <circle cx="78" cy="65" r="1.5" fill="none" stroke={ink} strokeWidth="0.3" />
+      <circle cx="78" cy="65" r="0.45" fill={ink} />
+
+      <rect x="72" y="68" width="40" height="22" fill={wash} stroke={ink} strokeWidth="0.4" />
+      <line x1="72" y1="76" x2="112" y2="76" stroke={ink} strokeWidth="0.22" strokeDasharray="1.6 0.9" />
+      <line x1="72" y1="84" x2="112" y2="84" stroke={ink} strokeWidth="0.22" strokeDasharray="1.6 0.9" />
+
+      <rect x="114" y="12" width="18" height="80" fill="rgba(239,237,231,0.45)" stroke={ink} strokeWidth="0.45" />
+      <line x1="123" y1="12" x2="123" y2="92" stroke={ink} strokeWidth="0.25" />
+      {[24, 36, 48, 60, 72, 84].map((y) => (
+        <line key={y} x1="114" y1={y} x2="132" y2={y} stroke={ink} strokeWidth="0.2" />
+      ))}
       <text
-        x="418"
-        y="86"
+        x="123"
+        y="18"
         fill="#77736C"
-        fontSize="6.5"
-        fontFamily="'DM Mono'"
+        fontSize="1.7"
+        fontFamily="'DM Mono', ui-monospace, monospace"
         textAnchor="middle"
+        letterSpacing="0.08em"
+      >
+        Вітрина
+      </text>
+
+      <rect x="42" y="73" width="32" height="7" fill="rgba(247,246,242,0.72)" stroke={ink} strokeWidth="0.5" />
+      <rect
+        x="50"
+        y="81"
+        width="16"
+        height="13"
+        rx="3"
+        fill="rgba(247,246,242,0.72)"
+        stroke={ink}
+        strokeWidth="0.4"
+      />
+      <path d="M52 85 H64" stroke={ink} strokeWidth="0.25" />
+
+      <line x1="78" y1="62.4" x2="100" y2="22" stroke={oak} strokeWidth="0.28" />
+      <text
+        x="101"
+        y="21"
+        fill={oak}
+        fontSize="1.8"
+        fontFamily="'DM Mono', ui-monospace, monospace"
         letterSpacing="0.06em"
       >
-        Хол.
+        Мийка
       </text>
-      <rect
-        x="158"
-        y="46"
-        width="72"
-        height="32"
-        fill="none"
-        stroke="#252525"
-        strokeWidth="0.6"
-      />
-      <circle cx="194" cy="62" r="11" fill="none" stroke="#252525" strokeWidth="0.5" />
-      <circle cx="194" cy="62" r="3" fill="#252525" />
-      <line
-        x1="28"
-        y1="378"
-        x2="528"
-        y2="378"
-        stroke="#9A7E55"
-        strokeWidth="0.5"
-        markerEnd={`url(#${a1})`}
-        markerStart={`url(#${a2})`}
-      />
+      <line x1="33" y1="52" x2="48" y2="24" stroke={oak} strokeWidth="0.28" />
       <text
-        x="278"
-        y="390"
-        textAnchor="middle"
-        fill="#9A7E55"
-        fontSize="7.5"
-        fontFamily="'DM Mono'"
-        letterSpacing="0.1em"
+        x="49"
+        y="23"
+        fill={oak}
+        fontSize="1.8"
+        fontFamily="'DM Mono', ui-monospace, monospace"
+        letterSpacing="0.06em"
       >
-        4 200 мм
+        Духовки
       </text>
-      <line
-        x1="548"
-        y1="38"
-        x2="548"
-        y2="358"
-        stroke="#9A7E55"
-        strokeWidth="0.5"
-        markerEnd={`url(#${a1})`}
-        markerStart={`url(#${a2})`}
-      />
+      <line x1="58" y1="76" x2="78" y2="56" stroke={oak} strokeWidth="0.28" />
       <text
-        x="556"
-        y="200"
-        textAnchor="middle"
-        fill="#9A7E55"
-        fontSize="7.5"
-        fontFamily="'DM Mono'"
-        letterSpacing="0.1em"
-        transform="rotate(90,556,200)"
+        x="79"
+        y="55.5"
+        fill={oak}
+        fontSize="1.8"
+        fontFamily="'DM Mono', ui-monospace, monospace"
+        letterSpacing="0.06em"
       >
-        2 900 мм
+        Обідній стіл
       </text>
-      <line x1="194" y1="62" x2="300" y2="26" stroke="#B89B72" strokeWidth="0.45" />
       <text
-        x="303"
-        y="24"
-        fill="#B89B72"
-        fontSize="7"
-        fontFamily="'DM Mono'"
+        x="61"
+        y="97"
+        textAnchor="middle"
+        fill="#77736C"
+        fontSize="1.7"
+        fontFamily="'DM Mono', ui-monospace, monospace"
         letterSpacing="0.08em"
       >
-        Мийка — нерж. сталь
-      </text>
-      <line x1="278" y1="168" x2="360" y2="140" stroke="#B89B72" strokeWidth="0.45" />
-      <text
-        x="363"
-        y="138"
-        fill="#B89B72"
-        fontSize="7"
-        fontFamily="'DM Mono'"
-        letterSpacing="0.08em"
-      >
-        Острів 2600×1100
+        ГОРІХ · КАМІНЬ · ОДНЕ КРІСЛО
       </text>
     </svg>
   );

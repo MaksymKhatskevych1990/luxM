@@ -109,17 +109,12 @@ export default function DrawingReality({ settings, section }: DrawingRealityProp
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: "var(--c-parchment)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  background: "rgba(247, 246, 242, 0.72)",
                   opacity: 1 - progress,
                   pointerEvents: "none",
                 }}
               >
-                <div style={{ width: "92%", padding: "40px 0" }}>
-                  <FloorPlan idPrefix="draw" />
-                </div>
+                <FloorPlan />
               </div>
               <div
                 style={{
