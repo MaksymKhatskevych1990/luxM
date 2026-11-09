@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import type { PageSection, Project, SiteSettings } from "@/lib/types";
-import ProjectModal from "./ProjectModal";
 
 type ProjectsProps = {
   section: PageSection;
@@ -15,39 +14,56 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function Projects({ section, projects, settings }: ProjectsProps) {
-  const [active, setActive] = useState<Project | null>(null);
+function craftPoints(project: Project): string[] {
+  const category = `${project.category} ${project.title}`.toLocaleLowerCase("uk");
+  if (category.includes("кух")) {
+    return [
+      "Корпус виставлений по рівню, стик зі стіною без щілини",
+      "Фасади в одну лінію, однаковий зазор по всіх швах",
+      "Петлі, доводчики і техніка відрегульовані на місці",
+    ];
+  }
+  if (category.includes("гард")) {
+    return [
+      "Секції зібрані в одну площину по всій висоті",
+      "Напрямні ящиків і штанги виставлені без перекосу",
+      "Підсвітка і зазори дверцят перевірені після встановлення",
+    ];
+  }
+  return [
+    "Корпус підігнаний до стіни, підлоги і сусідніх секцій",
+    "Фасади і ящики ходять рівно, фурнітура відрегульована",
+    "Після збірки перевірений кожен стик і зазор",
+  ];
+}
+
+export default function Projects({ section, projects }: ProjectsProps) {
   const items = [...projects].sort((a, b) => a.order - b.order).slice(0, 4);
-  const featured = items[0];
-  const portrait = items[1];
-  const rest = items.slice(2);
-  const allLabel = section.cta_text || "";
-  const allHref = section.cta_href || `#${section.section_id || "projects"}`;
+  const [activeId, setActiveId] = useState(items[0]?.id ?? null);
+  const active = items.find((project) => project.id === activeId) ?? items[0];
+  const [origin, setOrigin] = useState({ x: 50, y: 42 });
+  const [zoomed, setZoomed] = useState(false);
+
+  if (!active) return null;
+
+  const points = craftPoints(active);
+
+  function track(event: MouseEvent<HTMLDivElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setOrigin({
+      x: ((event.clientX - rect.left) / rect.width) * 100,
+      y: ((event.clientY - rect.top) / rect.height) * 100,
+    });
+    setZoomed(true);
+  }
 
   return (
     <section id={section.section_id || undefined} className="section-pad">
       <div className="wrap">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: 64,
-            paddingBottom: 24,
-            borderBottom: "1px solid rgba(37, 37, 37, 0.1)",
-          }}
-        >
+        <div className="craft-heading">
           <div>
             {section.eyebrow ? <span className="label">{section.eyebrow}</span> : null}
-            <h2
-              className="font-serif"
-              style={{
-                fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                color: "var(--c-ink)",
-                margin: "14px 0 0",
-                lineHeight: 1.1,
-              }}
-            >
+            <h2 className="font-serif craft-title">
               {section.title}
               {section.title_line2 ? (
                 <>
@@ -57,267 +73,79 @@ export default function Projects({ section, projects, settings }: ProjectsProps)
               ) : null}
               {section.title_emphasis ? (
                 <>
-                  <br />
-                  <em style={{ color: "var(--c-oak-text)" }}>{section.title_emphasis}</em>
+                  {" "}
+                  <em>{section.title_emphasis}</em>
                 </>
               ) : null}
             </h2>
           </div>
-          {allLabel ? (
-            <a
-              href={allHref}
-              className="desktop-only"
-              style={{
-                fontFamily: "var(--f-mono)",
-                fontSize: "0.75rem",
-                letterSpacing: "0.1em",
-                color: "var(--c-stone)",
-                textDecoration: "none",
-                borderBottom: "1px solid rgba(119, 115, 108, 0.3)",
-                paddingBottom: 2,
-              }}
-            >
-              {allLabel}
-            </a>
-          ) : null}
+          <p className="craft-lead">
+            {section.subtitle ||
+              "Наведіть на фото — побачите руку збирача: зазори фасадів, фурнітуру і підгонку до стіни."}
+          </p>
         </div>
 
-        <div className="proj-grid-inner">
-          {featured ? (
-            <article
-              className="proj-card"
-              role="button"
-              tabIndex={0}
-              onClick={() => setActive(featured)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setActive(featured);
-                }
-              }}
-              style={{
-                gridColumn: 1,
-                gridRow: 1,
-                position: "relative",
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                style={{
-                  aspectRatio: "16 / 9",
-                  overflow: "hidden",
-                  background: "var(--c-linen)",
-                  position: "relative",
-                }}
-              >
-                <Image
-                  src={featured.image_url}
-                  alt={featured.title}
-                  fill
-                  className="proj-img"
-                  sizes="(max-width: 768px) 100vw, 66vw"
-                  priority
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to top, rgba(28, 27, 25, 0.6) 0%, transparent 55%)",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: "28px 32px",
-                }}
-              >
-                <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
-                  <span className="label label--oak">{pad(featured.order)}</span>
-                  <span className="label" style={{ color: "rgba(247, 246, 242, 0.45)" }}>
-                    {featured.materials_label}
-                  </span>
-                </div>
-                <h3
-                  className="font-serif"
-                  style={{
-                    fontSize: "clamp(1.375rem, 2vw, 2rem)",
-                    color: "var(--c-parchment)",
-                    margin: 0,
-                  }}
-                >
-                  {featured.title}
-                </h3>
-                {featured.short_description || featured.seo_description ? (
-                  <p
-                    className="proj-meta"
-                    style={{
-                      fontFamily: "var(--f-sans)",
-                      fontSize: "0.9rem",
-                      color: "rgba(247, 246, 242, 0.7)",
-                      marginTop: 8,
-                      maxWidth: 560,
-                    }}
-                  >
-                    {featured.short_description || featured.seo_description}
-                  </p>
-                ) : null}
-              </div>
-            </article>
-          ) : null}
+        <div className="craft-layout">
+          <div
+            className={`craft-zoom${zoomed ? " is-on" : ""}`}
+            onMouseMove={track}
+            onMouseLeave={() => setZoomed(false)}
+          >
+            <Image
+              src={active.image_url}
+              alt={active.title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 62vw"
+              className="craft-zoom-img"
+              style={{ transformOrigin: `${origin.x}% ${origin.y}%` }}
+            />
+            <span className="craft-zoom-hint label">
+              {zoomed ? "Зум збірки" : "Наведіть — зум"}
+            </span>
+          </div>
 
-          {portrait ? (
-            <article
-              className="proj-card"
-              role="button"
-              tabIndex={0}
-              onClick={() => setActive(portrait)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setActive(portrait);
-                }
-              }}
-              style={{
-                gridColumn: 2,
-                gridRow: "1 / 3",
-                position: "relative",
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                style={{
-                  height: "100%",
-                  minHeight: 520,
-                  overflow: "hidden",
-                  background: "var(--c-linen)",
-                  position: "relative",
-                }}
-              >
-                <Image
-                  src={portrait.image_url}
-                  alt={portrait.title}
-                  fill
-                  className="proj-img"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to top, rgba(28, 27, 25, 0.65) 0%, transparent 60%)",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: 24,
-                }}
-              >
-                <span className="label label--oak">
-                  {pad(portrait.order)} / {portrait.materials_label}
-                </span>
-                <h3
-                  className="font-serif"
-                  style={{
-                    fontSize: "1.375rem",
-                    color: "var(--c-parchment)",
-                    margin: "8px 0 0",
-                  }}
-                >
-                  {portrait.title}
-                </h3>
-                {portrait.short_description || portrait.description ? (
-                  <p
-                    className="proj-meta"
-                    style={{
-                      fontFamily: "var(--f-sans)",
-                      fontSize: "0.8125rem",
-                      color: "rgba(247, 246, 242, 0.7)",
-                      marginTop: 6,
-                    }}
-                  >
-                    {portrait.short_description || portrait.description}
-                  </p>
-                ) : null}
-              </div>
-            </article>
-          ) : null}
-
-          {rest.length > 0 ? (
-            <div className="proj-pair" style={{ gridColumn: 1, gridRow: 2 }}>
-              {rest.map((project) => (
-                <article
-                  key={project.id}
-                  className="proj-card"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setActive(project)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setActive(project);
-                    }
-                  }}
-                  style={{ position: "relative", cursor: "pointer" }}
-                >
-                  <div
-                    style={{
-                      aspectRatio: "4 / 3",
-                      overflow: "hidden",
-                      background: "var(--c-linen)",
-                      position: "relative",
-                    }}
-                  >
-                    <Image
-                      src={project.image_url}
-                      alt={project.title}
-                      fill
-                      className="proj-img"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
-                  <div style={{ padding: "16px 0 0" }}>
-                    <span className="label">
-                      {pad(project.order)} · {project.materials_label}
-                    </span>
-                    <h3
-                      className="font-serif"
-                      style={{
-                        fontSize: "1.125rem",
-                        color: "var(--c-ink)",
-                        margin: "8px 0 0",
-                      }}
-                    >
-                      {project.title}
-                    </h3>
-                  </div>
-                </article>
+          <div className="craft-side">
+            <p className="label">{pad(active.order)} · {active.materials_label}</p>
+            <h3 className="font-serif craft-name">{active.title}</h3>
+            <ul className="craft-points">
+              {points.map((point) => (
+                <li key={point}>{point}</li>
               ))}
+            </ul>
+            <div className="craft-switch" role="listbox" aria-label="Оберіть роботу для зуму">
+              {items.map((project) => {
+                const selected = project.id === active.id;
+                return (
+                  <button
+                    key={project.id}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    className={`craft-switch-btn${selected ? " is-on" : ""}`}
+                    onClick={() => {
+                      setActiveId(project.id);
+                      setZoomed(false);
+                      setOrigin({ x: 50, y: 42 });
+                    }}
+                  >
+                    <span className="craft-switch-thumb">
+                      <Image
+                        src={project.image_url}
+                        alt=""
+                        fill
+                        sizes="72px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    </span>
+                    <span>{project.title}</span>
+                  </button>
+                );
+              })}
             </div>
-          ) : null}
+          </div>
         </div>
       </div>
-
-      <ProjectModal
-        project={active}
-        settings={settings}
-        onClose={() => setActive(null)}
-      />
     </section>
   );
 }

@@ -339,11 +339,15 @@ class Command(BaseCommand):
                 PageSection(
                     key="projects",
                     section_id="projects",
-                    eyebrow="Вибрані роботи",
-                    title="Кожне замовлення —",
-                    title_emphasis="свої меблі.",
-                    cta_text="Всі проєкти →",
-                    cta_href="/works",
+                    eyebrow="Майстерність",
+                    title="Збірка",
+                    title_emphasis="зблизька.",
+                    subtitle=(
+                        "Наведіть на фото — побачите руку збирача: "
+                        "зазори фасадів, фурнітуру і підгонку до стіни."
+                    ),
+                    cta_text="",
+                    cta_href="",
                     order=1,
                 ),
                 PageSection(
